@@ -1,0 +1,19 @@
+name: TERRAFORM WORKSPACE
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-workspace:
+    uses: nuvibit/github-terraform-workflows/.github/workflows/terraform-workspace.yml@v1
+    with:
+      tflint_repo: "nuvibit/github-tflint-config"
+      tflint_repo_config_path: "aws/.tflint.hcl"
+    secrets:
+      GHE_API_TOKEN: ${{ secrets.GHE_API_TOKEN }}
+      TFE_API_TOKEN: ${{ secrets.TFE_API_TOKEN }}

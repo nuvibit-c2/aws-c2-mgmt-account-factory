@@ -1,0 +1,19 @@
+[
+    {
+        "group_name": "sg-aws-c2-admin",
+        "group_member_user_names": [
+            "stefano.franco@nuvibit.com"
+        ]
+    },
+    {
+        "group_name": "sg-aws-c2-billing",
+        "group_member_user_names": []
+    },
+    {
+        "group_name": "sg-aws-c2-support",
+        "group_member_user_names": [
+            "jonas.saegesser@nuvibit.com",
+            "andreas.moor@nuvibit.com"
+        ]
+    }
+]

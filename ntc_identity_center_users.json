@@ -1,0 +1,20 @@
+[
+    {
+        "user_name": "stefano.franco@nuvibit.com",
+        "primary_email": "stefano.franco@nuvibit.com",
+        "first_name": "Stefano",
+        "last_name": "Franco"
+    },
+    {
+        "user_name": "jonas.saegesser@nuvibit.com",
+        "primary_email": "jonas.saegesser@nuvibit.com",
+        "first_name": "Jonas",
+        "last_name": "Sägesser"
+    },
+    {
+        "user_name": "andreas.moor@nuvibit.com",
+        "primary_email": "andreas.moor@nuvibit.com",
+        "first_name": "Andreas",
+        "last_name": "Moor"
+    }
+]
