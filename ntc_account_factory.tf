@@ -106,7 +106,7 @@ module "account_factory" {
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
   account_lifecycle_customization_steps  = local.account_factory_lifecycle_customization_steps
   # baseline_scopes                        = local.account_factory_baseline_scopes
-  notification_email_subscribers         = local.account_factory_notification_email_subscribers
+  notification_email_subscribers = local.account_factory_notification_email_subscribers
 
   providers = {
     aws           = aws.euc1
