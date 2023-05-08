@@ -9,7 +9,7 @@ env = os.environ.copy()
 
 
 def lambda_handler(event, context):
-  account_role  = env['ORGANIZATIONS_MEMBER_ROLE_NAME']
+  account_role  = env['ORGANIZATIONS_MEMBER_ROLE']
   suspended_ou_id = env['SUSPENDED_OU_ID']
   region_name = env['REGION']
 

@@ -9,8 +9,8 @@ env = os.environ.copy()
 
 
 def lambda_handler(event, context):
-  opt_in_regions = json.loads(env['opt_in_regions'])
-  account_role  = env['ORGANIZATIONS_MEMBER_ROLE_NAME']
+  opt_in_regions = json.loads(env['OPT_IN_REGIONS'])
+  account_role  = env['ORGANIZATIONS_MEMBER_ROLE']
   region_name = env['REGION']
 
   # check event status

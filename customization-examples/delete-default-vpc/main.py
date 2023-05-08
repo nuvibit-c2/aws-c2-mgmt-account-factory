@@ -11,7 +11,7 @@ vpc_id = []
 
 
 def lambda_handler(event, context):
-  account_role  = env['ORGANIZATIONS_MEMBER_ROLE_NAME']
+  account_role  = env['ORGANIZATIONS_MEMBER_ROLE']
   region_name = env['REGION']
 
   # check event status

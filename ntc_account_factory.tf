@@ -11,11 +11,35 @@ locals {
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_factory_lifecycle_customization_steps = [
     {
+      step_name                  = "on_account_creation_enable_opt_in_regions"
+      organizations_event_name   = "CreateAccountResult"
+      lambda_package_source_path = "${path.module}/customization-examples/enable-opt-in-regions"
+      lambda_file_name           = "main.py"
+      environment_variables = {
+        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+        "OPT_IN_REGIONS" : ["eu-central-2"]
+        "REGION" : "eu-central-1"
+      }
+    },
+    {
+      step_name                  = "on_account_creation_increase_service_quota"
+      organizations_event_name   = "CreateAccountResult"
+      lambda_package_source_path = "${path.module}/customization-examples/increase-service-quota"
+      lambda_file_name           = "main.py"
+      environment_variables = {
+        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+        "REGION" : "eu-central-1"
+      }
+    },
+    {
       step_name                  = "on_account_creation_delete_default_vpc"
       organizations_event_name   = "CreateAccountResult"
       lambda_package_source_path = "${path.module}/customization-examples/delete-default-vpc"
       lambda_file_name           = "main.py"
-      environment_variables      = {}
+      environment_variables = {
+        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+        "REGION" : "eu-central-1"
+      }
     },
     {
       step_name                  = "on_account_deletion_move_account_to_suspended_ou"
@@ -23,7 +47,9 @@ locals {
       lambda_package_source_path = "${path.module}/customization-examples/move-to-suspended-ou"
       lambda_file_name           = "main.py"
       environment_variables = {
+        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
         "SUSPENDED_OU_ID" : local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
+        "REGION" : "eu-central-1"
       }
     }
   ]
