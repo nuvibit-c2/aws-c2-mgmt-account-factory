@@ -17,7 +17,7 @@ locals {
       lambda_file_name           = "main.py"
       environment_variables = {
         "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-        "OPT_IN_REGIONS" : ["eu-central-2"]
+        "OPT_IN_REGIONS" : jsonencode(["eu-central-2"])
         "REGION" : "eu-central-1"
       }
     },
