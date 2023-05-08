@@ -14,7 +14,7 @@ locals {
   }
 
   # by default existing node parameters will be merged with new parameters to avoid deleting parameters
-  replace_parameters = true
+  ntc_parameters_replace = true
 
   # the ntc parameter bucket should ideally be created in same pipeline as account factory
   # all organization accounts are granted read permission for all parameters
@@ -80,5 +80,5 @@ module "ntc_parameters_writer" {
   bucket_name        = local.ntc_parameters_bucket_name
   parameter_node     = local.ntc_parameters_writer_node
   node_parameters    = local.ntc_parameters_to_write
-  replace_parameters = local.replace_parameters
+  replace_parameters = local.ntc_parameters_replace
 }
