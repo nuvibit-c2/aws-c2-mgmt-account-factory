@@ -58,14 +58,14 @@ locals {
   account_factory_notification_email_subscribers = ["stefano.franco@nuvibit.com"]
 
   # list of baseline definitions for accounts in a specific scope
-  account_factory_baseline_scopes = [
+  account_factory_account_baseline_scopes = [
     {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
       aws_provider_version = "4.59.0"
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for all accounts in scope
-      decommission_all = false
+      decommission_all = true
       # (optional) decommission baseline terraform code for specific accounts in scope
       decommission_account_names = []
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -131,8 +131,8 @@ module "account_factory" {
   account_factory_bucket_name            = local.account_factory_bucket_name
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
   account_lifecycle_customization_steps  = local.account_factory_lifecycle_customization_steps
-  # baseline_scopes                        = local.account_factory_baseline_scopes
-  notification_email_subscribers = local.account_factory_notification_email_subscribers
+  account_baseline_scopes                = local.account_factory_account_baseline_scopes
+  notification_email_subscribers         = local.account_factory_notification_email_subscribers
 
   providers = {
     aws           = aws.euc1
