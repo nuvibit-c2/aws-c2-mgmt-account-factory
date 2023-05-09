@@ -13,13 +13,21 @@ def lambda_handler(event, context):
   suspended_ou_id = env['SUSPENDED_OU_ID']
   region_name = env['REGION']
 
+  # check previous step function result if exists
+  taskresult = event.get("taskresult", "")
+
   # check event status
-  close_account_status = event['detail']['serviceEventDetails']['closeAccountStatus']
-  account_id = None
+  try:
+    close_account_status = event['serviceEventDetails']['closeAccountStatus']
+  except:
+    raise Exception(f"could not access event details")
+
+  # check account id
   if close_account_status['state'] == 'SUCCEEDED':
     account_id = close_account_status['accountId']
   else:
-    raise Exception(f"Account suspension was not successfull!")
+    raise Exception(f"account suspension was not successfull!")
+  
   logger.info(f"account_id: {account_id}")
 
   # assume org mgmt role
@@ -74,9 +82,8 @@ def lambda_handler(event, context):
       DestinationParentId=suspended_ou_id
     )
   except Exception as e:
-    logger.info(f"moving suspended account '{account_name}' to suspended OU failed!")
     logger.error(e)
-    pass
+    raise Exception(f"moving suspended account '{account_name}' to suspended OU failed!")
   
   # return json
   response_json = {

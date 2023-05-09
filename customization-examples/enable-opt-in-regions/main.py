@@ -13,13 +13,21 @@ def lambda_handler(event, context):
   account_role  = env['ORGANIZATIONS_MEMBER_ROLE']
   region_name = env['REGION']
 
+  # check previous step function result if exists
+  taskresult = event.get("taskresult", "")
+
   # check event status
-  create_account_status = event['detail']['serviceEventDetails']['createAccountStatus']
-  account_id = None
+  try:
+    create_account_status = event['serviceEventDetails']['createAccountStatus']
+  except:
+    raise Exception(f"could not access event details")
+
+  # check account id
   if create_account_status['state'] == 'SUCCEEDED':
     account_id = create_account_status['accountId']
   else:
-    raise Exception("Account creation was not Successfull!")
+    raise Exception(f"account creation was not successfull!")
+  
   logger.info(f"account_id: {account_id}")
 
   # assume org mgmt role
@@ -49,9 +57,8 @@ def lambda_handler(event, context):
     response = organizations_client.describe_account(AccountId=account_id)
     account_name = response["Account"]["Name"]
   except Exception as e:
-    logger.info("could not get account name!")
     logger.error(e)
-    pass
+    raise Exception("could not get account name!")
 
   # enable opt-in regions
   logger.info("Enabling opt-in regions")
@@ -72,9 +79,8 @@ def lambda_handler(event, context):
 
       logger.info(f"region '{region}' successfully enabled!")
     except Exception as e:
-      logger.info(f"failed to enable region '{region}'.")
       logger.error(e)
-      pass
+      raise Exception("failed to enable region '{region}'!")
 
   # return json
   response_json = {
