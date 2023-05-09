@@ -22,13 +22,15 @@ def lambda_handler(event, context):
   try:
     create_account_status = event['serviceEventDetails']['createAccountStatus']
   except:
-    raise Exception(f"could not access event details")
+    logger.error(f"could not access event details")
+    pass
 
   # check account id
   if create_account_status['state'] == 'SUCCEEDED':
     account_id = create_account_status['accountId']
   else:
-    raise Exception(f"account creation was not successfull!")
+    logger.error(f"account creation was not successfull!")
+    pass
   
   logger.info(f"account_id: {account_id}")
 

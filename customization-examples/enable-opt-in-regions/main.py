@@ -21,13 +21,15 @@ def lambda_handler(event, context):
   try:
     create_account_status = event['serviceEventDetails']['createAccountStatus']
   except:
-    raise Exception(f"could not access event details")
+    logger.error(f"could not access event details")
+    pass
 
   # check account id
   if create_account_status['state'] == 'SUCCEEDED':
     account_id = create_account_status['accountId']
   else:
-    raise Exception(f"account creation was not successfull!")
+    logger.error(f"account creation was not successfull!")
+    pass
   
   logger.info(f"account_id: {account_id}")
 
@@ -59,8 +61,9 @@ def lambda_handler(event, context):
     response = organizations_client.describe_account(AccountId=account_id)
     account_name = response["Account"]["Name"]
   except Exception as e:
+    logger.error("could not get account name!")
     logger.error(e)
-    raise Exception("could not get account name!")
+    pass
 
   # enable opt-in regions
   logger.info("Enabling opt-in regions")
@@ -81,8 +84,9 @@ def lambda_handler(event, context):
 
       logger.info(f"region '{region}' successfully enabled!")
     except Exception as e:
+      logger.error("failed to enable region '{region}'!")
       logger.error(e)
-      raise Exception("failed to enable region '{region}'!")
+      pass
 
   # return json
   response_json = {
