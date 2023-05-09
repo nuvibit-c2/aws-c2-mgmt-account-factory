@@ -20,8 +20,9 @@ def lambda_handler(event, context):
   # check event status
   try:
     close_account_status = event['serviceEventDetails']['closeAccountStatus']
-  except:
+  except Exception as e:
     logger.error(f"could not access event details")
+    logger.info(e)
     pass
 
   # check account id
