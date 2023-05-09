@@ -9,6 +9,7 @@ env = os.environ.copy()
 
 
 def lambda_handler(event, context):
+  current_account_id = boto3.client('sts').get_caller_identity().get('Account')
   account_role  = env['ORGANIZATIONS_MEMBER_ROLE']
   region_name = env['REGION']
 
@@ -39,9 +40,10 @@ def lambda_handler(event, context):
   ]
 
   # assume org mgmt role
+  account_role_arn = f"arn:aws:iam::{current_account_id}:role/{account_role}"
   logger.info(f"assume Organizations member role in org management acccount")
   sts_client = boto3.client('sts', region_name=region_name)
-  assumedRoleObject = sts_client.assume_role(RoleArn=account_role, RoleSessionName="ntc-account-factory")
+  assumedRoleObject = sts_client.assume_role(RoleArn=account_role_arn, RoleSessionName="ntc-account-factory")
   org_mgmt_credentials = assumedRoleObject['Credentials']
   
   sts_org_mgmt = boto3.client(
@@ -69,9 +71,10 @@ def lambda_handler(event, context):
     raise Exception("could not get account name")
 
   # assume org member role
+  account_role_arn = f"arn:aws:iam::{account_id}:role/{account_role}"
   logger.info(f"assume Organizations member role in acccount '{account_name}'")
   role_arn = f"arn:aws:iam::{account_id}:role/{account_role}"
-  assumedRoleObject = sts_org_mgmt.assume_role(RoleArn=role_arn, RoleSessionName="ntc-account-factory")
+  assumedRoleObject = sts_org_mgmt.assume_role(RoleArn=account_role_arn, RoleSessionName="ntc-account-factory")
   client_credentials = assumedRoleObject['Credentials']
 
   # increase limits
