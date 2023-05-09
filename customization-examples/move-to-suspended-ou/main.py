@@ -21,16 +21,14 @@ def lambda_handler(event, context):
   try:
     close_account_status = event['serviceEventDetails']['closeAccountStatus']
   except Exception as e:
-    logger.error(f"could not access event details")
-    logger.info(e)
-    pass
+    logger.error(e)
+    raise Exception(f"could not access event details")
 
   # check account id
   if close_account_status['state'] == 'SUCCEEDED':
     account_id = close_account_status['accountId']
   else:
-    logger.error(f"account suspension was not successfull!")
-    pass
+    raise Exception(f"account suspension was not successfull!")
   
   logger.info(f"account_id: {account_id}")
 
@@ -78,9 +76,7 @@ def lambda_handler(event, context):
     for account in response['Accounts']:
       root_ou_account_ids += account['Id']
     if account_id not in root_ou_account_ids:
-      logger.error(f"suspended account '{account_name}' is not in root OU as expected!")
-      # logger.info(e)
-      pass
+      raise Exception(f"suspended account '{account_name}' is not in root OU as expected!")
 
     # move account to suspended ou
     response = organizations_client.move_account(
@@ -89,9 +85,8 @@ def lambda_handler(event, context):
       DestinationParentId=suspended_ou_id
     )
   except Exception as e:
-    logger.error(f"moving suspended account '{account_name}' to suspended OU failed!")
     logger.info(e)
-    pass
+    raise Exception(f"moving suspended account '{account_name}' to suspended OU failed!")
   
   # return json
   response_json = {

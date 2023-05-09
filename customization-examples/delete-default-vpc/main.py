@@ -22,21 +22,19 @@ def lambda_handler(event, context):
   try:
     create_account_status = event['serviceEventDetails']['createAccountStatus']
   except Exception as e:
-    logger.error(f"could not access event details")
-    logger.info(e)
-    pass
+    logger.error(e)
+    raise Exception(f"could not access event details")
 
   # check account id
   if create_account_status['state'] == 'SUCCEEDED':
     account_id = create_account_status['accountId']
   else:
-    logger.error(f"account creation was not successfull!")
-    pass
+    raise Exception(f"account creation was not successfull!")
   
   logger.info(f"account_id: {account_id}")
 
   # get active regions
-  logger.info("Get all active AWS Regions")
+  logger.info(f"Get all active AWS Regions")
   ec2_client = boto3.client('ec2', region_name=region_name)
   regions = get_regions(ec2_client)
 
@@ -68,9 +66,8 @@ def lambda_handler(event, context):
     response = organizations_client.describe_account(AccountId=account_id)
     account_name = response["Account"]["Name"]
   except Exception as e:
-    logger.info("could not get account name!")
     logger.error(e)
-    pass
+    raise Exception("could not get account name!")
 
   # assume org member role
   account_role_arn = f"arn:aws:iam::{account_id}:role/{account_role}"
@@ -79,7 +76,7 @@ def lambda_handler(event, context):
   assumedRoleObject = sts_org_mgmt.assume_role(RoleArn=account_role_arn, RoleSessionName="ntc-account-factory")
   client_credentials = assumedRoleObject['Credentials']
 
-  logger.info("Start default vpc deletion")
+  logger.info(f"Start default vpc deletion")
   for region in regions:
 
     ec2_client= boto3.client(
@@ -100,7 +97,7 @@ def lambda_handler(event, context):
       vpc_id = attribs[0]['AttributeValues'][0]['AttributeValue']
 
     if vpc_id == 'none':
-      logger.info('VPC (default) was not found in the {} region.'.format(region))
+      logger.info(f"VPC (default) was not found in the '{region}' region.")
       continue
     # Are there any existing resources?  Since most resources attach an ENI, let's check..
 
@@ -120,7 +117,7 @@ def lambda_handler(event, context):
       continue
 
     if eni:
-      logger.info('VPC {} has existing resources in the {} region.'.format(vpc_id, region))
+      logger.info(f"VPC '{vpc_id}' has existing resources in the '{region}' region.")
       continue
 
 
@@ -136,7 +133,7 @@ def lambda_handler(event, context):
     "account_name": account_name,
     "account_id": account_id,
   }
-  logger.info("default vpcs are deleted")
+  logger.info(f"default vpcs are deleted")
   return response_json
 
 
@@ -285,7 +282,7 @@ def delete_vpc(ec2_client, vpc_id, region):
     logger.error(e.response['Error'])
 
   else:
-    logger.info('VPC {} has been deleted from the {} region.'.format(vpc_id, region))
+    logger.info(f"VPC '{vpc_id}' has been deleted from the '{region}' region.")
 
   return
 

@@ -21,16 +21,14 @@ def lambda_handler(event, context):
   try:
     create_account_status = event['serviceEventDetails']['createAccountStatus']
   except Exception as e:
-    logger.error(f"could not access event details")
-    logger.info(e)
-    pass
+    logger.error(e)
+    raise Exception(f"could not access event details")
 
   # check account id
   if create_account_status['state'] == 'SUCCEEDED':
     account_id = create_account_status['accountId']
   else:
-    logger.error(f"account creation was not successfull!")
-    pass
+    raise Exception(f"account creation was not successfull!")
   
   logger.info(f"account_id: {account_id}")
 
@@ -62,12 +60,11 @@ def lambda_handler(event, context):
     response = organizations_client.describe_account(AccountId=account_id)
     account_name = response["Account"]["Name"]
   except Exception as e:
-    logger.error("could not get account name!")
     logger.error(e)
-    pass
+    raise Exception(f"could not get account name!")
 
   # enable opt-in regions
-  logger.info("Enabling opt-in regions")
+  logger.info(f"Enabling opt-in regions")
   for region in opt_in_regions:
     try:
       account = boto3.client(
@@ -78,21 +75,32 @@ def lambda_handler(event, context):
         aws_session_token = org_mgmt_credentials['SessionToken'],
       )
 
-      response = account.enable_region(
-          AccountId=account_id,
-          RegionName=region
+      # get enabled regions
+      response = account.list_regions(
+        AccountId=account_id,
+        RegionOptStatusContains=['ENABLED']
       )
+      enabled_regions = []
+      for r in response["Regions"]:
+        enabled_regions.append(r["RegionName"])
 
-      logger.info(f"region '{region}' successfully enabled!")
+      # skip if region is already enabled
+      if region not in enabled_regions:
+        response = account.enable_region(
+            AccountId=account_id,
+            RegionName=region
+        )
+        logger.info(f"region '{region}' successfully enabled!")
+      else:
+        logger.info(f"region '{region}' already enabled!")
     except Exception as e:
-      logger.error("failed to enable region '{region}'!")
       logger.error(e)
-      pass
+      raise Exception(f"failed to enable region '{region}'!") 
 
   # return json
   response_json = {
     "account_name": account_name,
     "account_id": account_id,
   }
-  logger.info("opt-in regions for account '{account_name}' successfully activated")
+  logger.info(f"opt-in regions for account '{account_name}' successfully activated")
   return response_json
