@@ -20,7 +20,7 @@ def lambda_handler(event, context):
 
   # check event status
   try:
-    create_account_status = event['serviceEventDetails']['createAccountStatus']
+    create_account_status = event['detail']['serviceEventDetails']['createAccountStatus']
   except Exception as e:
     logger.error(e)
     raise Exception(f"could not access event details")

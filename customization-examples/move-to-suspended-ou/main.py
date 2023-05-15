@@ -19,7 +19,7 @@ def lambda_handler(event, context):
 
   # check event status
   try:
-    close_account_status = event['serviceEventDetails']['closeAccountStatus']
+    close_account_status = event['detail']['serviceEventDetails']['closeAccountStatus']
   except Exception as e:
     logger.error(e)
     raise Exception(f"could not access event details")
@@ -74,8 +74,10 @@ def lambda_handler(event, context):
     # check if closed account is in root ou
     root_ou_account_ids = []
     for account in response['Accounts']:
-      root_ou_account_ids += account['Id']
+      root_ou_account_ids.append(account['Id'])
     if account_id not in root_ou_account_ids:
+      logger.info(account_id)
+      logger.info(root_ou_account_ids)
       raise Exception(f"suspended account '{account_name}' is not in root OU as expected!")
 
     # move account to suspended ou
