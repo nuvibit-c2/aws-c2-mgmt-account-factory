@@ -4,6 +4,7 @@
 locals {
   # this bucket stores required files for account factory
   account_factory_bucket_name = "aws-c2-ntc-account-factory"
+
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
@@ -11,46 +12,52 @@ locals {
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_factory_lifecycle_customization_steps = [
     {
-      step_name                  = "on_account_creation_enable_opt_in_regions"
-      organizations_event_name   = "CreateAccountResult"
-      lambda_package_source_path = "${path.module}/customization-examples/enable-opt-in-regions"
-      lambda_file_name           = "main.py"
-      environment_variables = {
-        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-        "OPT_IN_REGIONS" : jsonencode(["eu-central-2"])
-        "REGION" : "eu-central-1"
-      }
+      organizations_event_trigger = "CreateAccountResult"
+      step_sequence = [
+        {
+          step_name                  = "on_account_creation_enable_opt_in_regions"
+          lambda_package_source_path = "${path.module}/customization-examples/enable-opt-in-regions"
+          lambda_handler             = "main.lambda_handler"
+          environment_variables = {
+            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+            "OPT_IN_REGIONS" : jsonencode(["eu-central-2"])
+            "REGION" : "eu-central-1"
+          }
+        },
+        {
+          step_name                  = "on_account_creation_increase_service_quota"
+          lambda_package_source_path = "${path.module}/customization-examples/increase-service-quota"
+          lambda_handler             = "main.lambda_handler"
+          environment_variables = {
+            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+            "REGION" : "eu-central-1"
+          }
+        },
+        {
+          step_name                  = "on_account_creation_delete_default_vpc"
+          lambda_package_source_path = "${path.module}/customization-examples/delete-default-vpc"
+          lambda_handler             = "main.lambda_handler"
+          environment_variables = {
+            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+            "REGION" : "eu-central-1"
+          }
+        },
+      ]
     },
     {
-      step_name                  = "on_account_creation_increase_service_quota"
-      organizations_event_name   = "CreateAccountResult"
-      lambda_package_source_path = "${path.module}/customization-examples/increase-service-quota"
-      lambda_file_name           = "main.py"
-      environment_variables = {
-        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-        "REGION" : "eu-central-1"
-      }
-    },
-    {
-      step_name                  = "on_account_creation_delete_default_vpc"
-      organizations_event_name   = "CreateAccountResult"
-      lambda_package_source_path = "${path.module}/customization-examples/delete-default-vpc"
-      lambda_file_name           = "main.py"
-      environment_variables = {
-        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-        "REGION" : "eu-central-1"
-      }
-    },
-    {
-      step_name                  = "on_account_deletion_move_account_to_suspended_ou"
-      organizations_event_name   = "CloseAccountResult"
-      lambda_package_source_path = "${path.module}/customization-examples/move-to-suspended-ou"
-      lambda_file_name           = "main.py"
-      environment_variables = {
-        "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-        "SUSPENDED_OU_ID" : local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
-        "REGION" : "eu-central-1"
-      }
+      organizations_event_trigger = "CloseAccountResult"
+      step_sequence = [
+        {
+          step_name                  = "on_account_deletion_move_account_to_suspended_ou"
+          lambda_package_source_path = "${path.module}/customization-examples/move-to-suspended-ou"
+          lambda_handler             = "main.lambda_handler"
+          environment_variables = {
+            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+            "SUSPENDED_OU_ID" : local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
+            "REGION" : "eu-central-1"
+          }
+        }
+      ]
     }
   ]
 
