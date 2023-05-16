@@ -8,7 +8,7 @@ locals {
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
-  # customization steps can either be defined manually or consumed via template module
+  # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
   account_factory_lifecycle_customization_templates = [
     {
