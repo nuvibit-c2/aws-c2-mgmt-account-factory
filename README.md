@@ -12,6 +12,101 @@
 <!-- DESCRIPTION -->
 [Terraform workspace][terraform-workspace-url] repository to provision and manage the NTC Account Factory
 
+<!-- Account Lifecycle Customization -->
+## Account Lifecycle Customization
+Dynamic Lambda Step Functions manage the customized Account Lifecycle.<br>
+Possible triggers for these Step Functions are AWS Organizations Events.<br>
+Lambda Step Function can be tested manually by executing with an example event.<br>
+
+### Example Event "CreateAccountResult" after creating a new AWS Account
+```json
+{
+    "version": "0",
+    "id": "68679d28-343e-d8ec-4a8c-cdd430223a5d",
+    "detail-type": "AWS Service Event via CloudTrail",
+    "source": "aws.organizations",
+    "account": "111122223333",
+    "time": "2023-05-15T08:27:14Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "accountId": "111122223333",
+            "invokedBy": "AWS Internal"
+        },
+        "eventTime": "2023-05-15T08:26:57Z",
+        "eventSource": "organizations.amazonaws.com",
+        "eventName": "CreateAccountResult",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "AWS Internal",
+        "userAgent": "AWS Internal",
+        "requestParameters": null,
+        "responseElements": null,
+        "eventID": "e5e20ada-7d1c-434d-bac2-32e156df4d93",
+        "readOnly": false,
+        "eventType": "AwsServiceEvent",
+        "managementEvent": true,
+        "recipientAccountId": "111122223333",
+        "serviceEventDetails": {
+            "createAccountStatus": {
+                "id": "car-3fbd74c0f2fa11ed8b6e0a41b5dcf48f",
+                "state": "SUCCEEDED",
+                "accountName": "****",
+                "accountId": "INSERT_ACCOUNT_ID",
+                "requestedTimestamp": "May 15, 2023 8:26:54 AM",
+                "completedTimestamp": "May 15, 2023 8:26:57 AM"
+            }
+        },
+        "eventCategory": "Management"
+    }
+}
+```
+
+### Example Event "CloseAccountResult" after deleting an existing AWS Account
+```json
+{
+    "version": "0",
+    "id": "68679d28-343e-d8ec-4a8c-cdd430223a5d",
+    "detail-type": "AWS Service Event via CloudTrail",
+    "source": "aws.organizations",
+    "account": "111122223333",
+    "time": "2023-05-15T08:27:14Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "accountId": "111122223333",
+            "invokedBy": "organizations.amazonaws.com"
+        },
+        "eventTime": "2022-03-18T18:17:06Z",
+        "eventSource": "organizations.amazonaws.com",
+        "eventName": "CloseAccountResult",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "organizations.amazonaws.com",
+        "userAgent": "organizations.amazonaws.com",
+        "requestParameters": null,
+        "responseElements": null,
+        "eventID": "EXAMPLE8-90ab-cdef-fedc-ba987EXAMPLE",
+        "readOnly": false,
+        "eventType": "AwsServiceEvent",
+        "managementEvent": true,
+        "recipientAccountId": "111122223333",
+        "serviceEventDetails": {
+            "closeAccountStatus": {
+                "accountId": "INSERT_ACCOUNT_ID",
+                "state": "SUCCEEDED",
+                "requestedTimestamp": "Mar 18, 2022 6:16:58 PM",
+                "completedTimestamp": "Mar 18, 2022 6:16:58 PM"
+            }
+        },
+        "eventCategory": "Management"
+    }
+}
+```
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

@@ -8,55 +8,61 @@ locals {
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
+  # customization steps can either be defined manually or consumed via template module
+  # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
+  account_factory_lifecycle_customization_templates = [
+    {
+      template_name               = "enable_opt_in_regions"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+      opt_in_regions              = ["eu-central-2"]
+    },
+    {
+      template_name               = "increase_service_quota"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+    },
+    {
+      template_name               = "delete_default_vpc"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+    },
+    {
+      template_name               = "move_to_suspended_ou"
+      organizations_event_trigger = "CloseAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+      suspended_ou_id             = local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
+    }
+  ]
+  
+  # template module outputs customization steps grouped by template name
+  account_lifecycle_customization_steps = module.accounf_lifecycle_templates["account_lifecycle_customization_steps"]
+
   # provide lambda packages for additional account lifecycle customization e.g. delete default vpc
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_factory_lifecycle_customization_steps = [
     {
       organizations_event_trigger = "CreateAccountResult"
       step_sequence = [
-        {
-          step_name                  = "on_account_creation_enable_opt_in_regions"
-          lambda_package_source_path = "${path.module}/customization-examples/enable-opt-in-regions"
-          lambda_handler             = "main.lambda_handler"
-          environment_variables = {
-            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-            "OPT_IN_REGIONS" : jsonencode(["eu-central-2"])
-            "REGION" : "eu-central-1"
-          }
-        },
-        {
-          step_name                  = "on_account_creation_increase_service_quota"
-          lambda_package_source_path = "${path.module}/customization-examples/increase-service-quota"
-          lambda_handler             = "main.lambda_handler"
-          environment_variables = {
-            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-            "REGION" : "eu-central-1"
-          }
-        },
-        {
-          step_name                  = "on_account_creation_delete_default_vpc"
-          lambda_package_source_path = "${path.module}/customization-examples/delete-default-vpc"
-          lambda_handler             = "main.lambda_handler"
-          environment_variables = {
-            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-            "REGION" : "eu-central-1"
-          }
-        },
+        # {
+        #   step_name                  = "on_account_creation_enable_opt_in_regions"
+        #   lambda_package_source_path = "INSERT_LAMBDA_SOURCE_PATH"
+        #   lambda_handler             = "main.lambda_handler"
+        #   environment_variables = {
+        #     "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
+        #     "OPT_IN_REGIONS" : jsonencode(["eu-central-2"])
+        #     "DEFAULT_REGION" : "eu-central-1"
+        #   }
+        # }
+        local.account_lifecycle_customization_steps["enable_opt_in_regions"],
+        local.account_lifecycle_customization_steps["increase_service_quota"],
+        local.account_lifecycle_customization_steps["delete_default_vpc"]
       ]
     },
     {
       organizations_event_trigger = "CloseAccountResult"
       step_sequence = [
-        {
-          step_name                  = "on_account_deletion_move_account_to_suspended_ou"
-          lambda_package_source_path = "${path.module}/customization-examples/move-to-suspended-ou"
-          lambda_handler             = "main.lambda_handler"
-          environment_variables = {
-            "ORGANIZATIONS_MEMBER_ROLE" : "OrganizationAccountAccessRole"
-            "SUSPENDED_OU_ID" : local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
-            "REGION" : "eu-central-1"
-          }
-        }
+        local.account_lifecycle_customization_steps["move_to_suspended_ou"]
       ]
     }
   ]
@@ -126,6 +132,15 @@ locals {
       }
     )
   ]
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
+# ---------------------------------------------------------------------------------------------------------------------
+module "accounf_lifecycle_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=beta"
+
+  account_lifecycle_customization_templates = local.account_factory_lifecycle_customization_templates
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
