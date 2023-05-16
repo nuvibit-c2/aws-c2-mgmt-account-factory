@@ -34,7 +34,7 @@ locals {
       suspended_ou_id             = local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
     }
   ]
-  
+
   # template module outputs customization steps grouped by template name
   account_lifecycle_customization_steps = module.accounf_lifecycle_templates["account_lifecycle_customization_steps"]
 
