@@ -1,3 +1,7 @@
+data "aws_iam_policy" "baseline_execution" {
+  arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
@@ -34,7 +38,6 @@ locals {
       suspended_ou_id             = local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
     }
   ]
-
   # template module outputs customization steps grouped by template name
   account_lifecycle_customization_steps = module.accounf_lifecycle_templates["account_lifecycle_customization_steps"]
 
@@ -69,6 +72,23 @@ locals {
 
   # notify on step functions or pipeline errors via email
   account_factory_notification_email_subscribers = ["stefano.franco@nuvibit.com"]
+  
+  # account baseline can either be defined by customer or consumed via template module
+  # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
+  account_factory_baseline_templates = [
+    {
+      template_name = "iam_role"
+      iam_role_inputs = {
+        role_name                  = "new_baseline_execution_role"
+        policy_json                = data.aws_iam_policy.baseline_execution.policy
+        role_principal_type        = "AWS"
+        # grant account (org management) permission to assume role in member account
+        role_principal_identifiers = [data.aws_caller_identity.current.account_id]
+      }
+    }
+  ]
+  # template module outputs terraform baseline files grouped by template name
+  account_baseline_terraform_files = module.accounf_baseline_templates["account_baseline_terraform_files"]
 
   # list of baseline definitions for accounts in a specific scope
   account_factory_account_baseline_scopes = [
@@ -78,7 +98,7 @@ locals {
       aws_provider_version = "4.59.0"
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for all accounts in scope
-      decommission_all = true
+      decommission_all = false
       # (optional) decommission baseline terraform code for specific accounts in scope
       decommission_account_names = []
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -87,8 +107,8 @@ locals {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_contents = [
-        file("${path.module}/baseline-examples/baseline_iam+vpc.tf")
         # templatefile("${path.module}/baseline-examples/baseline_iam+vpc.tftpl", { vpc_cidr = "192.168.0.0/24" })
+        local.account_baseline_terraform_files["iam_role"]
       ]
       # baseline terraform code will be provisioned in each specified region
       regions = ["us-east-1", "eu-central-1"]
@@ -141,6 +161,15 @@ module "accounf_lifecycle_templates" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=beta"
 
   account_lifecycle_customization_templates = local.account_factory_lifecycle_customization_templates
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ NTC ACCOUNT BASELINE TEMPLATES
+# ---------------------------------------------------------------------------------------------------------------------
+module "accounf_baseline_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=beta"
+
+  account_baseline_templates = local.account_factory_baseline_templates
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
