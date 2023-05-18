@@ -72,16 +72,16 @@ locals {
 
   # notify on step functions or pipeline errors via email
   account_factory_notification_email_subscribers = ["stefano.franco@nuvibit.com"]
-  
+
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
   account_factory_baseline_templates = [
     {
       template_name = "iam_role"
       iam_role_inputs = {
-        role_name                  = "new_baseline_execution_role"
-        policy_json                = data.aws_iam_policy.baseline_execution.policy
-        role_principal_type        = "AWS"
+        role_name           = "new_baseline_execution_role"
+        policy_json         = data.aws_iam_policy.baseline_execution.policy
+        role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
         role_principal_identifiers = [data.aws_caller_identity.current.account_id]
       }
