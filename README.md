@@ -125,6 +125,7 @@ Lambda Step Function can be tested manually by executing with an example event.<
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_accounf_baseline_templates"></a> [accounf\_baseline\_templates](#module\_accounf\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | beta |
 | <a name="module_accounf_lifecycle_templates"></a> [accounf\_lifecycle\_templates](#module\_accounf\_lifecycle\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | beta |
 | <a name="module_account_factory"></a> [account\_factory](#module\_account\_factory) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory | beta |
 | <a name="module_identity_center"></a> [identity\_center](#module\_identity\_center) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-identity-center | beta |
@@ -137,6 +138,7 @@ Lambda Step Function can be tested manually by executing with an example event.<
 | Name | Type |
 |------|------|
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy.baseline_execution](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |
 | [aws_organizations_organization.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/organizations_organization) | data source |
 | [aws_region.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
