@@ -188,6 +188,6 @@ module "account_factory" {
 
   providers = {
     aws           = aws.euc1
-    aws.us_east_1 = aws.use1
+    aws.us_east_1 = aws.use1 # required for account lifecycle cloudtrail
   }
 }
