@@ -116,7 +116,8 @@ locals {
       main_region = "eu-central-1"
       # add accounts to this baseline scope by ou_path
       target_ou_paths = [
-        "/root/workloads/prod"
+        "/root/workloads/prod",
+        "/root/workloads/dev"
       ]
       # (optional) add accounts to this baseline scope by name
       target_account_names = [
