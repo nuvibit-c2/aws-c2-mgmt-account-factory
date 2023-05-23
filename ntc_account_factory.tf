@@ -45,7 +45,9 @@ locals {
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_factory_lifecycle_customization_steps = [
     {
+      # organizations event (e.g. when a new AWS account is created) which should trigger a lambda step_sequence
       organizations_event_trigger = "CreateAccountResult"
+      # step sequence defines the order in which lambda steps are executed
       step_sequence = [
         # {
         #   step_name                  = "on_account_creation_enable_opt_in_regions"
@@ -77,9 +79,18 @@ locals {
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
   account_factory_baseline_templates = [
     {
+      file_name     = "security_core"
+      template_name = "security_core"
+      security_core_inputs = {
+        org_management_account_id = data.aws_caller_identity.current.account_id
+        security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
+      }
+    },
+    {
+      file_name     = "iam_role_admin"
       template_name = "iam_role"
       iam_role_inputs = {
-        role_name           = "new_baseline_execution_role"
+        role_name           = "baseline_execution_role_admin"
         policy_json         = data.aws_iam_policy.baseline_execution.policy
         role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
@@ -106,8 +117,11 @@ locals {
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
-      baseline_terraform_contents = [
-        # templatefile("${path.module}/baseline-examples/baseline_iam+vpc.tftpl", { vpc_cidr = "192.168.0.0/24" })
+      baseline_terraform_files = [
+        # {
+        #   file_name = "baseline_iam_roles"
+        #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
+        # },
         local.account_baseline_terraform_files["iam_role"]
       ]
       # baseline terraform code will be provisioned in each specified region
