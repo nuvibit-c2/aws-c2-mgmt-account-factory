@@ -155,7 +155,7 @@ locals {
       ]
     },
     {
-      scope_name            = "security-core"
+      scope_name = "security-core"
       # reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 2
       terraform_version     = "1.3.9"
