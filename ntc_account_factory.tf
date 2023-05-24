@@ -1,7 +1,3 @@
-data "aws_iam_policy" "baseline_execution" {
-  arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
@@ -90,8 +86,19 @@ locals {
       file_name     = "iam_role_admin"
       template_name = "iam_role"
       iam_role_inputs = {
-        role_name           = "baseline_execution_role_admin"
-        policy_json         = data.aws_iam_policy.baseline_execution.policy
+        role_name = "baseline_execution_role_admin"
+        policy_json = jsonencode(
+          {
+            "Version" : "2012-10-17",
+            "Statement" : [
+              {
+                "Effect" : "Allow",
+                "Action" : "*",
+                "Resource" : "*"
+              }
+            ]
+          }
+        )
         role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
         role_principal_identifiers = [data.aws_caller_identity.current.account_id]
@@ -122,13 +129,14 @@ locals {
         #   file_name = "baseline_iam_roles"
         #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
         # },
-        local.account_baseline_terraform_files["iam_role"]
+        local.account_baseline_terraform_files["iam_role_admin"]
       ]
       # baseline terraform code will be provisioned in each specified region
       regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       main_region = "eu-central-1"
-      # add accounts to this baseline scope by ou_path
+      # at least one target must be defined
+      # (optional) add accounts to this baseline scope by ou_path
       target_ou_paths = [
         "/root/workloads/prod",
         "/root/workloads/dev"
@@ -144,6 +152,23 @@ locals {
         #   key   = "AccountType"
         #   value = "workload"
         # }
+      ]
+    },
+    {
+      scope_name            = "security-core"
+      # reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 2
+      terraform_version     = "1.3.9"
+      aws_provider_version  = "4.59.0"
+      decommission_all      = false
+      baseline_terraform_files = [
+        local.account_baseline_terraform_files["security_core"]
+      ]
+      # apply security-core baseline in all enabled regions
+      regions     = data.aws_regions.enabled.names
+      main_region = "eu-central-1"
+      target_account_names = [
+        "aws-c2-management"
       ]
     }
   ]
