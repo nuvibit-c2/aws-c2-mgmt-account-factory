@@ -52,10 +52,10 @@ locals {
 module "ntc_parameters_bucket" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=beta"
 
-  force_destroy        = false
-  bucket_name          = local.ntc_parameters_bucket_name
-  org_id               = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
-  parameter_nodes      = local.ntc_parameter_nodes
+  force_destroy   = false
+  bucket_name     = local.ntc_parameters_bucket_name
+  org_id          = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
+  parameter_nodes = local.ntc_parameter_nodes
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
