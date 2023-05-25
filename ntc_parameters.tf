@@ -7,10 +7,8 @@ locals {
 
   # parameters that are managed by org management account
   ntc_parameters_to_write = {
-    organizations : {
-      "core_account_ids" : local.account_factory_core_account_ids
-    }
-    identity_center : {}
+    # account_list : local.account_factory_list_enriched
+    core_accounts = local.account_factory_core_account_ids
   }
 
   # by default existing node parameters will be merged with new parameters to avoid deleting parameters
@@ -21,8 +19,7 @@ locals {
   # only the parameter node owner account is granted write access to his corresponding parameters
   ntc_parameter_nodes = [
     {
-      "node_name" = "account-factory",
-      # in this example the account factory is NOT delegated to a dedicated account
+      "node_name"                = "account-factory",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
       "node_owner_iam_user_name" = "aws-c2-account-factory"
     },
@@ -59,7 +56,6 @@ module "ntc_parameters_bucket" {
   bucket_name          = local.ntc_parameters_bucket_name
   org_id               = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
   parameter_nodes      = local.ntc_parameter_nodes
-  account_factory_list = local.account_factory_list_enriched
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

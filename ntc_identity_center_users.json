@@ -16,5 +16,23 @@
         "primary_email": "andreas.moor@nuvibit.com",
         "first_name": "Andreas",
         "last_name": "Moor"
+    },
+    {
+        "user_name": "michael.ullrich@nuvibit.com",
+        "primary_email": "michael.ullrich@nuvibit.com",
+        "first_name": "Michael",
+        "last_name": "Ullrich"
+    },
+    {
+        "user_name": "roman.plessl@nuvibit.com",
+        "primary_email": "roman.plessl@nuvibit.com",
+        "first_name": "Roman",
+        "last_name": "Plessl"
+    },
+    {
+        "user_name": "christoph.siegrist@nuvibit.com",
+        "primary_email": "christoph.siegrist@nuvibit.com",
+        "first_name": "Christoph",
+        "last_name": "Siegrist"
     }
 ]

@@ -68,8 +68,16 @@ locals {
     }
   ]
 
-  # notify on step functions or pipeline errors via email
-  account_factory_notification_email_subscribers = ["stefano.franco@nuvibit.com"]
+  # notify on account lifecycle step functions or account baseline pipeline errors
+  account_factory_notification_settings = {
+    # multiple subscriptions with different protocols is supported
+    subscriptions = [
+      {
+        protocol    = "email"
+        subscribers = ["stefano.franco@nuvibit.com"]
+      }
+    ]
+  }
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
@@ -223,7 +231,7 @@ module "account_factory" {
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
   account_lifecycle_customization_steps  = local.account_factory_lifecycle_customization_steps
   account_baseline_scopes                = local.account_factory_account_baseline_scopes
-  notification_email_subscribers         = local.account_factory_notification_email_subscribers
+  account_factory_notification_settings  = local.account_factory_notification_settings
 
   providers = {
     aws           = aws.euc1
