@@ -73,8 +73,8 @@ locals {
     # multiple subscriptions with different protocols is supported
     subscriptions = [
       {
-        protocol    = "email"
-        subscribers = ["stefano.franco@nuvibit.com"]
+        protocol  = "email"
+        endpoints = ["stefano.franco@nuvibit.com"]
       }
     ]
   }
