@@ -88,6 +88,22 @@ locals {
       security_core_inputs = {
         org_management_account_id = data.aws_caller_identity.current.account_id
         security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
+        # new organizations accounts can be auto-enabled in security tooling
+        securityhub_auto_enable_organization_members = "NEW"
+        guardduty_auto_enable_organization_members   = "NEW"
+        # pre-existing accounts can be individually added as members
+        enable_organization_members_by_acccount_ids = [
+          "228120440352"
+        ]
+        # omit if you dont want to archive guardduty findings in s3
+        guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
+        guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
+        # admin delegations and regional settings will be provisioned for each service
+        service_principals = [
+          "config.amazonaws.com",
+          "guardduty.amazonaws.com",
+          "securityhub.amazonaws.com"
+        ]
       }
     },
     {
@@ -95,6 +111,7 @@ locals {
       template_name = "iam_role"
       iam_role_inputs = {
         role_name = "baseline_execution_role_admin"
+        # policy can be submitted directly as JSON or via data source aws_iam_policy_document
         policy_json = jsonencode(
           {
             "Version" : "2012-10-17",
@@ -143,8 +160,8 @@ locals {
       regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       main_region = "eu-central-1"
-      # at least one target must be defined
-      # (optional) add accounts to this baseline scope by ou_path
+      # at least one target must be defined but multiple targets can be combined
+      # (optional) add accounts to this baseline scope by exact ou_path
       target_ou_paths = [
         "/root/workloads/prod",
         "/root/workloads/dev"
@@ -176,7 +193,8 @@ locals {
       regions     = data.aws_regions.enabled.names
       main_region = "eu-central-1"
       target_account_names = [
-        "aws-c2-management"
+        "aws-c2-management",
+        "aws-c2-security"
       ]
     }
   ]
