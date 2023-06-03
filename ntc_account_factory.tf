@@ -88,6 +88,15 @@ locals {
       security_core_inputs = {
         org_management_account_id = data.aws_caller_identity.current.account_id
         security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
+        # enable additional securityhub standards
+        # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
+        securityhub_enabled_standards = [
+          "aws-foundational-security-best-practices/v/1.0.0",
+          "cis-aws-foundations-benchmark/v/1.2.0",
+          # "cis-aws-foundations-benchmark/v/1.4.0",
+          # "nist-800-53/v/5.0.0",
+          # "pci-dss/v/3.2.1"
+        ]
         # new organizations accounts can be auto-enabled in security tooling
         securityhub_auto_enable_organization_members = "NEW"
         guardduty_auto_enable_organization_members   = "NEW"
@@ -184,7 +193,7 @@ locals {
       # reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 2
       terraform_version     = "1.3.9"
-      aws_provider_version  = "4.59.0"
+      aws_provider_version  = "4.66.0"
       decommission_all      = false
       baseline_terraform_files = [
         local.account_baseline_terraform_files["security_core"]
