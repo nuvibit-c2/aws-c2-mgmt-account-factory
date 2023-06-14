@@ -4,11 +4,6 @@
 locals {
   # users and groups with global permissions for all accounts
   global_sso_permissions = {
-    #
-    admin_users   = []
-    billing_users = []
-    support_users = []
-    #
     admin_groups = [
       "sg-aws-c2-admin"
     ]
@@ -93,32 +88,27 @@ locals {
       permissions = [
         {
           permission_set_name : "AdministratorAccess"
-          # combine users with global sso permissions and users with sso permissions from account map
-          users : concat(local.global_sso_permissions.admin_users, account.sso_permissions.admin_users)
-          groups : concat(local.global_sso_permissions.admin_groups, account.sso_permissions.admin_groups)
-          # alternatively groups names can also be dynamically associated
-          # groups : ["sg-aws-admins-${account.account_id}"]
+          # combine global sso permissions and sso permissions from account map
+          groups : concat(local.global_sso_permissions.admin_groups, account.customer_values.sso_admin_groups)
+          # alternatively groups can also be dynamically associated via predefined naming
+          # groups : ["sg-aws-admin-${account.account_id}"]
         },
         {
           permission_set_name : "Billing+ViewOnlyAccess"
-          # combine users with global sso permissions and users with sso permissions from account map
-          users : concat(local.global_sso_permissions.billing_users, account.sso_permissions.billing_users)
-          groups : concat(local.global_sso_permissions.billing_groups, account.sso_permissions.billing_groups)
-          # alternatively groups names can also be dynamically associated
+          # combine global sso permissions and sso permissions from account map
+          groups : concat(local.global_sso_permissions.billing_groups, account.customer_values.sso_billing_groups)
+          # alternatively groups can also be dynamically associated via predefined naming
           # groups : ["sg-aws-billing-${account.account_id}"]
         },
         {
           permission_set_name : "SupportUser+ReadOnlyAccess"
-          # combine users with global sso permissions and users with sso permissions from account map
-          users : concat(local.global_sso_permissions.support_users, account.sso_permissions.support_users)
-          groups : concat(local.global_sso_permissions.support_groups, account.sso_permissions.support_groups)
-          # alternatively groups names can also be dynamically associated
+          # combine global sso permissions and sso permissions from account map
+          groups : concat(local.global_sso_permissions.support_groups, account.customer_values.sso_support_groups)
+          # alternatively groups can also be dynamically associated via predefined naming
           # groups : ["sg-aws-support-${account.account_id}"]
         }
       ]
     }
-    # only add sso permissions if account is not suspended
-    if account.ou_path != "/root/suspended"
   ]
 }
 

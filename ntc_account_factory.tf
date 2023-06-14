@@ -91,8 +91,8 @@ locals {
         # enable additional securityhub standards
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
         securityhub_enabled_standards = [
-          "aws-foundational-security-best-practices/v/1.0.0",
-          "cis-aws-foundations-benchmark/v/1.2.0",
+          # "aws-foundational-security-best-practices/v/1.0.0",
+          # "cis-aws-foundations-benchmark/v/1.2.0",
           # "cis-aws-foundations-benchmark/v/1.4.0",
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
@@ -107,6 +107,9 @@ locals {
         # omit if you dont want to archive guardduty findings in s3
         guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
         guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
+        # s3 bucket and iam role is required if config is in list of service_principals
+        config_log_archive_bucket_arn   = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
+        config_log_archive_iam_role_arn = try(local.ntc_parameters["security"]["config_iam_role_arn"], "")
         # admin delegations and regional settings will be provisioned for each service
         service_principals = [
           "config.amazonaws.com",
@@ -202,8 +205,16 @@ locals {
       regions     = data.aws_regions.enabled.names
       main_region = "eu-central-1"
       target_account_names = [
-        "aws-c2-management",
-        "aws-c2-security"
+        # "aws-c2-management",
+        # "aws-c2-security",
+        # "aws-c2-log-archive",
+        # "aws-c2-connectivity"
+      ]
+      target_account_tags = [
+        {
+          key   = "AccountType"
+          value = "core"
+        }
       ]
     }
   ]

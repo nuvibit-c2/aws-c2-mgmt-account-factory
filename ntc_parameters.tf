@@ -56,6 +56,10 @@ module "ntc_parameters_bucket" {
   bucket_name     = local.ntc_parameters_bucket_name
   org_id          = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
   parameter_nodes = local.ntc_parameter_nodes
+
+  providers = {
+    aws = aws.euc1
+  }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -65,6 +69,10 @@ module "ntc_parameters_reader" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=beta"
 
   bucket_name = local.ntc_parameters_bucket_name
+
+  providers = {
+    aws = aws.euc1
+  }
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -77,4 +85,8 @@ module "ntc_parameters_writer" {
   parameter_node     = local.ntc_parameters_writer_node
   node_parameters    = local.ntc_parameters_to_write
   replace_parameters = local.ntc_parameters_replace
+
+  providers = {
+    aws = aws.euc1
+  }
 }
