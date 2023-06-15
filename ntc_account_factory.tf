@@ -107,9 +107,9 @@ locals {
         # omit if you dont want to archive guardduty findings in s3
         guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
         guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
-        # s3 bucket and iam role is required if config is in list of service_principals
-        config_log_archive_bucket_arn   = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
-        config_log_archive_iam_role_arn = try(local.ntc_parameters["security"]["config_iam_role_arn"], "")
+        # s3 bucket and kms key arn is required if config is in list of service_principals
+        config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
+        config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
         # admin delegations and regional settings will be provisioned for each service
         service_principals = [
           "config.amazonaws.com",
