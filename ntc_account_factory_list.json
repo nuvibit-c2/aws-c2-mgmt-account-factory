@@ -9,10 +9,17 @@
             "AccountType": "core",
             "AccountDescription": "This account manages the AWS Organization"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     },
     {
@@ -25,10 +32,17 @@
             "AccountType": "core",
             "AccountDescription": "This account manages centralized connectivity"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     },
     {
@@ -41,10 +55,17 @@
             "AccountType": "core",
             "AccountDescription": "This account manages centralized security"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     },
     {
@@ -57,10 +78,17 @@
             "AccountType": "core",
             "AccountDescription": "This account manages the centralized log archive"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     },
     {
@@ -73,10 +101,17 @@
             "AccountType": "workload",
             "AccountDescription": "This account manages workload in prod stage"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     },
     {
@@ -89,10 +124,17 @@
             "AccountType": "workload",
             "AccountDescription": "This account manages application XY in dev stage"
         },
-        "customer_values" : {
-            "sso_admin_groups" : [],
-            "sso_billing_groups" : [],
-            "sso_support_groups" : []
+        "alternate_contacts": [
+            {
+                "type": "SECURITY",
+                "name": "Security Operation Center",
+                "email_address": "security@nuvibit.com"
+            }
+        ],
+        "customer_values": {
+            "sso_admin_groups": [],
+            "sso_billing_groups": [],
+            "sso_support_groups": []
         }
     }
 ]
