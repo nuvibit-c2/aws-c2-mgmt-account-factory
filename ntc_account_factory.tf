@@ -219,6 +219,11 @@ locals {
     }
   ]
 
+  # increase quotas for aws services used in account factory
+  account_factory_increase_aws_service_quotas = {
+    codebuild_concurrent_runs_arm_small = 20
+  }
+
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
   account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_list.json"))
 
@@ -267,9 +272,10 @@ module "account_factory" {
   account_factory_list                   = local.account_factory_list
   account_factory_bucket_name            = local.account_factory_bucket_name
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
+  account_factory_notification_settings  = local.account_factory_notification_settings
   account_lifecycle_customization_steps  = local.account_factory_lifecycle_customization_steps
   account_baseline_scopes                = local.account_factory_account_baseline_scopes
-  account_factory_notification_settings  = local.account_factory_notification_settings
+  increase_aws_service_quotas            = local.account_factory_increase_aws_service_quotas
 
   providers = {
     aws           = aws.euc1
