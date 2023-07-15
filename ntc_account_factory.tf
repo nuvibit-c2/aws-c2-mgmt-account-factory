@@ -175,6 +175,15 @@ locals {
         # },
         local.account_baseline_terraform_files["iam_role_admin"]
       ]
+      # add delay to pipeline to avoid errors on first run
+      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+      pipeline_delay_options = {
+        wait_for_seconds    = 120
+        wait_retry_count    = 5
+        wait_for_regions    = true
+        wait_for_aws_config = true
+        wait_for_guardduty  = true
+      }
       # baseline terraform code will be provisioned in each specified region
       regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
