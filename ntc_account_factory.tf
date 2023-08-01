@@ -8,39 +8,6 @@ locals {
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
-  # customization steps can either be defined by customer or consumed via template module
-  # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
-  account_factory_lifecycle_customization_templates = [
-    {
-      template_name               = "enable_opt_in_regions"
-      organizations_event_trigger = "CreateAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-      opt_in_regions              = ["eu-central-2"]
-    },
-    {
-      template_name               = "increase_service_quota"
-      organizations_event_trigger = "CreateAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-      quota_increases = [
-        {
-          quota_code   = "L-0DA4ABF3"
-          service_code = "iam"
-          value        = 20
-        }
-      ]
-    },
-    {
-      template_name               = "delete_default_vpc"
-      organizations_event_trigger = "CreateAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-    },
-    {
-      template_name               = "move_to_suspended_ou"
-      organizations_event_trigger = "CloseAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-      suspended_ou_id             = local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
-    }
-  ]
   # template module outputs customization steps grouped by template name
   account_lifecycle_customization_steps = module.accounf_lifecycle_templates["account_lifecycle_customization_steps"]
 
@@ -86,72 +53,9 @@ locals {
     ]
   }
 
-  # account baseline can either be defined by customer or consumed via template module
-  # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
-  account_factory_baseline_templates = [
-    {
-      file_name     = "security_core"
-      template_name = "security_core"
-      security_core_inputs = {
-        org_management_account_id = data.aws_caller_identity.current.account_id
-        security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
-        # enable additional securityhub standards
-        # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
-        securityhub_enabled_standards = [
-          # "aws-foundational-security-best-practices/v/1.0.0",
-          # "cis-aws-foundations-benchmark/v/1.2.0",
-          # "cis-aws-foundations-benchmark/v/1.4.0",
-          # "nist-800-53/v/5.0.0",
-          # "pci-dss/v/3.2.1"
-        ]
-        # new organizations accounts can be auto-enabled in security tooling
-        securityhub_auto_enable_organization_members = "NEW"
-        guardduty_auto_enable_organization_members   = "NEW"
-        # pre-existing accounts can be individually added as members
-        enable_organization_members_by_acccount_ids = [
-          "228120440352"
-        ]
-        # omit if you dont want to archive guardduty findings in s3
-        guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
-        guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
-        # s3 bucket and kms key arn is required if config is in list of service_principals
-        config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
-        config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
-        # admin delegations and regional settings will be provisioned for each service
-        service_principals = [
-          "config.amazonaws.com",
-          "guardduty.amazonaws.com",
-          "securityhub.amazonaws.com"
-        ]
-      }
-    },
-    {
-      file_name     = "iam_role_admin"
-      template_name = "iam_role"
-      iam_role_inputs = {
-        role_name = "baseline_execution_role_admin"
-        # policy can be submitted directly as JSON or via data source aws_iam_policy_document
-        policy_json = jsonencode(
-          {
-            "Version" : "2012-10-17",
-            "Statement" : [
-              {
-                "Effect" : "Allow",
-                "Action" : "*",
-                "Resource" : "*"
-              }
-            ]
-          }
-        )
-        role_principal_type = "AWS"
-        # grant account (org management) permission to assume role in member account
-        role_principal_identifiers = [data.aws_caller_identity.current.account_id]
-      }
-    }
-  ]
   # template module outputs terraform baseline files grouped by template name
   account_baseline_terraform_files = module.accounf_baseline_templates["account_baseline_terraform_files"]
-
+  
   # list of baseline definitions for accounts in a specific scope
   account_factory_account_baseline_scopes = [
     {
@@ -220,6 +124,7 @@ locals {
       # apply security-core baseline in all enabled regions
       regions     = data.aws_regions.enabled.names
       main_region = "eu-central-1"
+      # security-core baseline should first be rolled out for org-management account
       target_account_names = [
         # "aws-c2-management",
         # "aws-c2-security",
@@ -241,7 +146,7 @@ locals {
   }
 
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
-  account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_list.json"))
+  account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_manifest.json"))
 
   # get values from module outputs
   # get account ids for all accounts and for core accounts
@@ -259,24 +164,6 @@ locals {
       }
     )
   ]
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
-# ---------------------------------------------------------------------------------------------------------------------
-module "accounf_lifecycle_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=beta"
-
-  account_lifecycle_customization_templates = local.account_factory_lifecycle_customization_templates
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT BASELINE TEMPLATES
-# ---------------------------------------------------------------------------------------------------------------------
-module "accounf_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=beta"
-
-  account_baseline_templates = local.account_factory_baseline_templates
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
