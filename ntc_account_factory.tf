@@ -55,7 +55,7 @@ locals {
 
   # template module outputs terraform baseline files grouped by template name
   account_baseline_terraform_files = module.accounf_baseline_templates["account_baseline_terraform_files"]
-  
+
   # list of baseline definitions for accounts in a specific scope
   account_factory_account_baseline_scopes = [
     {
