@@ -77,7 +77,8 @@ locals {
         #   file_name = "baseline_iam_roles"
         #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
         # },
-        local.account_baseline_terraform_files["iam_role_admin"]
+        local.account_baseline_terraform_files["iam_role_admin"],
+        local.account_baseline_terraform_files["security_member"]
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
