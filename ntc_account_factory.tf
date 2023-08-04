@@ -115,10 +115,11 @@ locals {
     {
       scope_name = "security-core"
       # reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 2
-      terraform_version     = "1.3.9"
-      aws_provider_version  = "4.66.0"
-      decommission_all      = false
+      terraform_parallelism        = 2
+      terraform_version            = "1.3.9"
+      aws_provider_version         = "4.66.0"
+      decommission_all             = false
+      schedule_rerun_every_x_hours = 24
       baseline_terraform_files = [
         local.account_baseline_terraform_files["security_core"]
       ]
