@@ -30,7 +30,6 @@ locals {
         #   }
         # }
         local.account_lifecycle_customization_steps["enable_opt_in_regions"],
-        local.account_lifecycle_customization_steps["increase_service_quota"],
         local.account_lifecycle_customization_steps["delete_default_vpc"]
       ]
     },
