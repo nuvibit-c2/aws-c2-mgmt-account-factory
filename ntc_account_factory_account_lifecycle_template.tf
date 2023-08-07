@@ -12,18 +12,6 @@ locals {
       opt_in_regions              = ["eu-central-2"]
     },
     {
-      template_name               = "increase_service_quota"
-      organizations_event_trigger = "CreateAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-      quota_increases = [
-        {
-          quota_code   = "L-0DA4ABF3"
-          service_code = "iam"
-          value        = 20
-        }
-      ]
-    },
-    {
       template_name               = "delete_default_vpc"
       organizations_event_trigger = "CreateAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
