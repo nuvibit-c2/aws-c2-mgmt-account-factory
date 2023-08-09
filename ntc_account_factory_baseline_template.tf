@@ -4,7 +4,7 @@
 locals {
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
-  account_factory_baseline_templates = [
+  account_baseline_templates = [
     {
       file_name     = "security_core"
       template_name = "security_core"
@@ -89,8 +89,8 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
-module "accounf_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=beta"
+module "account_baseline_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.0.0"
 
-  account_baseline_templates = local.account_factory_baseline_templates
+  account_baseline_templates = local.account_baseline_templates
 }

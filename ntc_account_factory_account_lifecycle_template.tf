@@ -4,7 +4,7 @@
 locals {
   # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
-  account_factory_lifecycle_customization_templates = [
+  account_lifecycle_customization_templates = [
     {
       template_name               = "enable_opt_in_regions"
       organizations_event_trigger = "CreateAccountResult"
@@ -28,8 +28,8 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
-module "accounf_lifecycle_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=beta"
+module "account_lifecycle_customization_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.0"
 
-  account_lifecycle_customization_templates = local.account_factory_lifecycle_customization_templates
+  account_lifecycle_customization_templates = local.account_lifecycle_customization_templates
 }

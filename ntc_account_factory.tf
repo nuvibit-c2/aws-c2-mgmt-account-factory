@@ -9,11 +9,11 @@ locals {
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
   # template module outputs customization steps grouped by template name
-  account_lifecycle_customization_steps = module.accounf_lifecycle_templates["account_lifecycle_customization_steps"]
+  generated_account_lifecycle_customization_steps = module.account_lifecycle_customization_templates["account_lifecycle_customization_steps"]
 
   # provide lambda packages for additional account lifecycle customization e.g. delete default vpc
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
-  account_factory_lifecycle_customization_steps = [
+  account_lifecycle_customization_steps = [
     {
       # organizations event (e.g. when a new AWS account is created) which should trigger a lambda step_sequence
       organizations_event_trigger = "CreateAccountResult"
@@ -29,14 +29,14 @@ locals {
         #     "DEFAULT_REGION" : "eu-central-1"
         #   }
         # }
-        local.account_lifecycle_customization_steps["enable_opt_in_regions"],
-        local.account_lifecycle_customization_steps["delete_default_vpc"]
+        local.generated_account_lifecycle_customization_steps["enable_opt_in_regions"],
+        local.generated_account_lifecycle_customization_steps["delete_default_vpc"]
       ]
     },
     {
       organizations_event_trigger = "CloseAccountResult"
       step_sequence = [
-        local.account_lifecycle_customization_steps["move_to_suspended_ou"]
+        local.generated_account_lifecycle_customization_steps["move_to_suspended_ou"]
       ]
     }
   ]
@@ -53,10 +53,10 @@ locals {
   }
 
   # template module outputs terraform baseline files grouped by template name
-  account_baseline_terraform_files = module.accounf_baseline_templates["account_baseline_terraform_files"]
+  generated_account_baseline_terraform_files = module.account_baseline_templates["account_baseline_terraform_files"]
 
   # list of baseline definitions for accounts in a specific scope
-  account_factory_account_baseline_scopes = [
+  account_baseline_scopes = [
     {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
@@ -76,8 +76,8 @@ locals {
         #   file_name = "baseline_iam_roles"
         #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
         # },
-        local.account_baseline_terraform_files["iam_role_admin"],
-        local.account_baseline_terraform_files["security_member"]
+        local.generated_account_baseline_terraform_files["iam_role_admin"],
+        local.generated_account_baseline_terraform_files["security_member"]
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -120,7 +120,7 @@ locals {
       decommission_all             = false
       schedule_rerun_every_x_hours = 24
       baseline_terraform_files = [
-        local.account_baseline_terraform_files["security_core"]
+        local.generated_account_baseline_terraform_files["security_core"]
       ]
       # apply security-core baseline in all enabled regions
       regions     = data.aws_regions.enabled.names
@@ -142,7 +142,7 @@ locals {
   ]
 
   # increase quotas for aws services used in account factory
-  account_factory_increase_aws_service_quotas = {
+  increase_aws_service_quotas = {
     codebuild_concurrent_runs_arm_small = 20
   }
 
@@ -177,9 +177,9 @@ module "account_factory" {
   account_factory_bucket_name            = local.account_factory_bucket_name
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
   account_factory_notification_settings  = local.account_factory_notification_settings
-  account_lifecycle_customization_steps  = local.account_factory_lifecycle_customization_steps
-  account_baseline_scopes                = local.account_factory_account_baseline_scopes
-  increase_aws_service_quotas            = local.account_factory_increase_aws_service_quotas
+  account_lifecycle_customization_steps  = local.account_lifecycle_customization_steps
+  account_baseline_scopes                = local.account_baseline_scopes
+  increase_aws_service_quotas            = local.increase_aws_service_quotas
 
   providers = {
     aws           = aws.euc1
