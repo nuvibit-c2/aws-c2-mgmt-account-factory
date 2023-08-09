@@ -125,13 +125,13 @@ Lambda Step Function can be tested manually by executing with an example event.<
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_accounf_baseline_templates"></a> [accounf\_baseline\_templates](#module\_accounf\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | beta |
-| <a name="module_accounf_lifecycle_templates"></a> [accounf\_lifecycle\_templates](#module\_accounf\_lifecycle\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | beta |
+| <a name="module_account_baseline_templates"></a> [account\_baseline\_templates](#module\_account\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | 1.0.0 |
 | <a name="module_account_factory"></a> [account\_factory](#module\_account\_factory) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory | beta |
+| <a name="module_account_lifecycle_customization_templates"></a> [account\_lifecycle\_customization\_templates](#module\_account\_lifecycle\_customization\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | 1.0.0 |
 | <a name="module_identity_center"></a> [identity\_center](#module\_identity\_center) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-identity-center | beta |
-| <a name="module_ntc_parameters_bucket"></a> [ntc\_parameters\_bucket](#module\_ntc\_parameters\_bucket) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters | beta |
-| <a name="module_ntc_parameters_reader"></a> [ntc\_parameters\_reader](#module\_ntc\_parameters\_reader) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader | beta |
-| <a name="module_ntc_parameters_writer"></a> [ntc\_parameters\_writer](#module\_ntc\_parameters\_writer) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer | beta |
+| <a name="module_ntc_parameters_bucket"></a> [ntc\_parameters\_bucket](#module\_ntc\_parameters\_bucket) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters | 1.0.0 |
+| <a name="module_ntc_parameters_reader"></a> [ntc\_parameters\_reader](#module\_ntc\_parameters\_reader) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader | 1.0.0 |
+| <a name="module_ntc_parameters_writer"></a> [ntc\_parameters\_writer](#module\_ntc\_parameters\_writer) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer | 1.0.0 |
 
 ## Resources
 
