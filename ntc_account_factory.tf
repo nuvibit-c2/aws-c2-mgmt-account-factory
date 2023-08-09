@@ -15,7 +15,7 @@ locals {
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_lifecycle_customization_steps = [
     {
-      # organizations event (e.g. when a new AWS account is created) which should trigger a lambda step_sequence
+      # organizations event (e.g. when a new AWS account is created) that should trigger a lambda step_sequence
       organizations_event_trigger = "CreateAccountResult"
       # step sequence defines the order in which lambda steps are executed
       step_sequence = [
