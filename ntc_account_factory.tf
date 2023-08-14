@@ -30,7 +30,8 @@ locals {
         #   }
         # }
         local.generated_account_lifecycle_customization_steps["enable_opt_in_regions"],
-        local.generated_account_lifecycle_customization_steps["delete_default_vpc"]
+        local.generated_account_lifecycle_customization_steps["delete_default_vpc"],
+        local.generated_account_lifecycle_customization_steps["increase_service_quota"]
       ]
     },
     {
@@ -171,7 +172,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.1"
 
   account_factory_list                   = local.account_factory_list
   account_factory_bucket_name            = local.account_factory_bucket_name

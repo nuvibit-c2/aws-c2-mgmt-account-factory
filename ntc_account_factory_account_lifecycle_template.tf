@@ -17,6 +17,20 @@ locals {
       organizations_member_role   = "OrganizationAccountAccessRole"
     },
     {
+      template_name               = "increase_service_quota"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+      quota_increases = [
+        {
+          # global quotas are in us-east-1
+          region       = "us-east-1"
+          quota_name   = "Managed policies per role"
+          service_code = "iam"
+          value        = 20
+        }
+      ]
+    },
+    {
       template_name               = "move_to_suspended_ou"
       organizations_event_trigger = "CloseAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
@@ -29,7 +43,7 @@ locals {
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.1"
 
   account_lifecycle_customization_templates = local.account_lifecycle_customization_templates
 }
