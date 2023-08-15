@@ -172,7 +172,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.2"
 
   account_factory_list                   = local.account_factory_list
   account_factory_bucket_name            = local.account_factory_bucket_name
