@@ -116,7 +116,7 @@ locals {
 # ¦ NTC IDENTITY CENTER - SSO
 # ---------------------------------------------------------------------------------------------------------------------
 module "identity_center" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-identity-center?ref=beta"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-identity-center?ref=1.0.0"
 
   is_automatic_provisioning_enabled = false
   manual_provisioning_sso_users     = local.sso_users
