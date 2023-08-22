@@ -118,11 +118,11 @@ locals {
 module "identity_center" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-identity-center?ref=beta"
 
-  automatic_provisioning_disabled = true
-  manual_provisioning_users       = local.sso_users
-  manual_provisioning_groups      = local.sso_groups
-  permission_sets                 = local.sso_permission_sets
-  account_assignments             = local.sso_account_assignments
+  is_automatic_provisioning_enabled = false
+  manual_provisioning_sso_users     = local.sso_users
+  manual_provisioning_sso_groups    = local.sso_groups
+  permission_sets                   = local.sso_permission_sets
+  account_assignments               = local.sso_account_assignments
 
   providers = {
     aws = aws.euc1
