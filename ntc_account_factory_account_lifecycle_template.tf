@@ -43,7 +43,7 @@ locals {
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.2"
 
   account_lifecycle_customization_templates = local.account_lifecycle_customization_templates
 }

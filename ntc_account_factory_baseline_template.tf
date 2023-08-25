@@ -90,7 +90,7 @@ locals {
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.0.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.0.1"
 
   account_baseline_templates = local.account_baseline_templates
 }
