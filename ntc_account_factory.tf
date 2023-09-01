@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
   # this bucket stores required files for account factory
-  account_factory_bucket_name = "aws-c2-ntc-account-factory"
+  account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
 
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
@@ -44,6 +44,8 @@ locals {
 
   # notify on account lifecycle step functions or account baseline pipeline errors
   account_factory_notification_settings = {
+    # identify for which AWS Organization notifications are sent
+    org_identifier = "c2"
     # multiple subscriptions with different protocols is supported
     subscriptions = [
       {
@@ -83,11 +85,12 @@ locals {
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
       pipeline_delay_options = {
-        wait_for_seconds    = 120
-        wait_retry_count    = 5
-        wait_for_regions    = true
-        wait_for_aws_config = true
-        wait_for_guardduty  = true
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = true
+        wait_for_aws_config     = true
+        wait_for_guardduty      = true
       }
       # baseline terraform code will be provisioned in each specified region
       regions = ["us-east-1", "eu-central-1"]
@@ -147,8 +150,13 @@ locals {
     codebuild_concurrent_runs_arm_small = 20
   }
 
+  account_factory_naming_conventions = {
+    account_name_regex  = "^aws-c2-[a-z0-9-]+$"
+    account_email_regex = "@nuvibit.com$"
+  }
+
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
-  account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_manifest.json"))
+  account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_list.json"))
 
   # get values from module outputs
   # get account ids for all accounts and for core accounts
@@ -172,10 +180,12 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.6"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.6"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-qol-improvements"
 
   account_factory_list                   = local.account_factory_list
-  account_factory_bucket_name            = local.account_factory_bucket_name
+  account_factory_naming_conventions     = local.account_factory_naming_conventions
+  account_factory_baseline_bucket_name   = local.account_factory_baseline_bucket_name
   account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
   account_factory_notification_settings  = local.account_factory_notification_settings
   account_lifecycle_customization_steps  = local.account_lifecycle_customization_steps
