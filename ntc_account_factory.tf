@@ -64,11 +64,6 @@ locals {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
       aws_provider_version = "4.59.0"
-      # decomissioning of baseline terraform resources must be done before deleting the scope!
-      # decommission baseline terraform code for all accounts in scope
-      decommission_all = false
-      # (optional) decommission baseline terraform code for specific accounts in scope
-      decommission_account_names = []
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -93,27 +88,34 @@ locals {
         wait_for_guardduty      = true
       }
       # baseline terraform code will be provisioned in each specified region
-      regions = ["us-east-1", "eu-central-1"]
+      baseline_regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
-      main_region = "eu-central-1"
-      # at least one target must be defined but multiple targets can be combined
-      # (optional) add accounts to this baseline scope by exact ou_path
-      target_ou_paths = [
+      baseline_main_region = "eu-central-1"
+      # accounts which should be included in baseline scope
+      include_accounts_all = false
+      include_accounts_by_ou_paths = [
         "/root/workloads/prod",
-        "/root/workloads/dev"
       ]
-      # (optional) add accounts to this baseline scope by name
-      target_account_names = [
+      include_accounts_by_names = [
         # "aws-c2-0001",
         # "aws-c2-0002"
       ]
-      # (optional) add accounts to this baseline scope by tags
-      target_account_tags = [
+      include_accounts_by_tags = [
         # {
         #   key   = "AccountType"
         #   value = "workload"
         # }
       ]
+      # accounts which should be excluded in baseline scope
+      exclude_accounts_by_ou_paths = []
+      exclude_accounts_by_names    = []
+      exclude_accounts_by_tags     = []
+      # decomissioning of baseline terraform resources must be done before deleting the scope!
+      # decommission baseline terraform code for specific accounts in scope
+      decommission_accounts_all         = false
+      decommission_accounts_by_ou_paths = []
+      decommission_accounts_by_names    = []
+      decommission_accounts_by_tags     = []
     },
     {
       scope_name = "security-core"
@@ -127,21 +129,28 @@ locals {
         local.generated_account_baseline_terraform_files["security_core"]
       ]
       # apply security-core baseline in all enabled regions
-      regions     = data.aws_regions.enabled.names
-      main_region = "eu-central-1"
-      # security-core baseline should first be rolled out for org-management account
-      target_account_names = [
-        # "aws-c2-management",
-        # "aws-c2-security",
-        # "aws-c2-log-archive",
-        # "aws-c2-connectivity"
-      ]
-      target_account_tags = [
+      baseline_regions     = data.aws_regions.enabled.names
+      baseline_main_region = "eu-central-1"
+      # accounts which should be included in baseline scope
+      include_accounts_all         = false
+      include_accounts_by_ou_paths = []
+      include_accounts_by_names    = []
+      include_accounts_by_tags = [
         {
           key   = "AccountType"
           value = "core"
         }
       ]
+      # accounts which should be excluded in baseline scope
+      exclude_accounts_by_ou_paths = []
+      exclude_accounts_by_names    = []
+      exclude_accounts_by_tags     = []
+      # decomissioning of baseline terraform resources must be done before deleting the scope!
+      # decommission baseline terraform code for specific accounts in scope
+      decommission_accounts_all         = false
+      decommission_accounts_by_ou_paths = []
+      decommission_accounts_by_names    = []
+      decommission_accounts_by_tags     = []
     }
   ]
 
