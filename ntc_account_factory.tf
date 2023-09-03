@@ -98,7 +98,7 @@ locals {
       ]
       include_accounts_by_names = [
         # "aws-c2-0001",
-        # "aws-c2-0002"
+        "aws-c2-0002" # TODO: must be decommissioned - testing delete protection
       ]
       include_accounts_by_tags = [
         # {
