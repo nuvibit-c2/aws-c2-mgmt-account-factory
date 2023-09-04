@@ -84,7 +84,7 @@ locals {
         wait_retry_count        = 5
         wait_for_execution_role = true
         wait_for_regions        = true
-        wait_for_aws_config     = true
+        wait_for_securityhub    = true
         wait_for_guardduty      = true
       }
       # baseline terraform code will be provisioned in each specified region
@@ -97,8 +97,7 @@ locals {
         "/root/workloads/prod",
       ]
       include_accounts_by_names = [
-        # "aws-c2-0001",
-        "aws-c2-0002" # TODO: must be decommissioned - testing delete protection
+        "aws-c2-0002",
       ]
       include_accounts_by_tags = [
         # {
@@ -108,14 +107,16 @@ locals {
       ]
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
-      exclude_accounts_by_names    = []
+      exclude_accounts_by_names    = [
+        # "aws-c2-0002",
+      ]
       exclude_accounts_by_tags     = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names    = [
-        "aws-c2-0002"
+        # "aws-c2-0002",
       ]
       decommission_accounts_by_tags     = []
     },
