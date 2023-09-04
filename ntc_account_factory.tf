@@ -97,7 +97,7 @@ locals {
         "/root/workloads/prod",
       ]
       include_accounts_by_names = [
-        "aws-c2-0002",
+        # "aws-c2-0002",
       ]
       include_accounts_by_tags = [
         # {
@@ -108,7 +108,7 @@ locals {
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
       exclude_accounts_by_names    = [
-        "aws-c2-0002",
+        # "aws-c2-0002",
       ]
       exclude_accounts_by_tags     = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
@@ -116,7 +116,7 @@ locals {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names    = [
-        "aws-c2-0002",
+        # "aws-c2-0002",
       ]
       decommission_accounts_by_tags     = []
     },
@@ -162,6 +162,7 @@ locals {
     codebuild_concurrent_runs_arm_small = 20
   }
 
+  # account names and emails cannot be changed without manual intervention - set naming conventions to avoid mistakes
   account_factory_naming_conventions = {
     account_name_regex  = "^aws-c2-[a-z0-9-]+$"
     account_email_regex = "@nuvibit.com$"
