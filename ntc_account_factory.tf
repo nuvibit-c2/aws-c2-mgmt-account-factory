@@ -107,18 +107,18 @@ locals {
       ]
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
-      exclude_accounts_by_names    = [
+      exclude_accounts_by_names = [
         # "aws-c2-0002",
       ]
-      exclude_accounts_by_tags     = []
+      exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
-      decommission_accounts_by_names    = [
+      decommission_accounts_by_names = [
         # "aws-c2-0002",
       ]
-      decommission_accounts_by_tags     = []
+      decommission_accounts_by_tags = []
     },
     {
       scope_name = "security-core"
