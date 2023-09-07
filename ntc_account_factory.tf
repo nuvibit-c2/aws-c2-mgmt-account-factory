@@ -122,16 +122,31 @@ locals {
     },
     {
       scope_name = "security-core"
-      # reduce parallelism to avoid api rate limits when deploying to multiple regions
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism        = 2
       terraform_version            = "1.3.9"
       aws_provider_version         = "4.66.0"
+      # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 24
+      # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
+      baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         local.generated_account_baseline_terraform_files["security_core"]
       ]
+      # add delay to pipeline to avoid errors on first run
+      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+      pipeline_delay_options = {
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = true
+        wait_for_securityhub    = false
+        wait_for_guardduty      = false
+      }
       # apply security-core baseline in all enabled regions
       baseline_regions     = data.aws_regions.enabled.names
+      # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
       include_accounts_all         = false
@@ -192,8 +207,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.0.6"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-qol-improvements"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.1.1"
 
   account_factory_list                   = local.account_factory_list
   account_factory_naming_conventions     = local.account_factory_naming_conventions
