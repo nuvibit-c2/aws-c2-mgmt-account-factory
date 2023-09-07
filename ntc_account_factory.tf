@@ -123,9 +123,9 @@ locals {
     {
       scope_name = "security-core"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism        = 2
-      terraform_version            = "1.3.9"
-      aws_provider_version         = "4.66.0"
+      terraform_parallelism = 2
+      terraform_version     = "1.3.9"
+      aws_provider_version  = "4.66.0"
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 24
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -145,7 +145,7 @@ locals {
         wait_for_guardduty      = false
       }
       # apply security-core baseline in all enabled regions
-      baseline_regions     = data.aws_regions.enabled.names
+      baseline_regions = data.aws_regions.enabled.names
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
