@@ -106,10 +106,10 @@ locals {
       # decommission baseline terraform code for specific accounts in scope
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
-      decommission_accounts_by_names    = [
+      decommission_accounts_by_names = [
         "aws-c2-management"
       ]
-      decommission_accounts_by_tags     = []
+      decommission_accounts_by_tags = []
     },
     {
       scope_name           = "workloads-prod"
