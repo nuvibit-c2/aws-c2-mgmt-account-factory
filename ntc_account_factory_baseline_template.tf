@@ -9,14 +9,14 @@ locals {
       file_name     = "security_core"
       template_name = "security_core"
       security_core_inputs = {
-        org_management_account_id = data.aws_caller_identity.current.account_id
+        org_management_account_id = local.account_factory_core_account_ids["aws-c2-management"]
         security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
         # enable additional securityhub standards
-        securityhub_auto_enable_default_standards = false
+        securityhub_auto_enable_default_standards = true
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
         securityhub_enabled_standards = [
-          "aws-foundational-security-best-practices/v/1.0.0",
-          "cis-aws-foundations-benchmark/v/1.2.0",
+          # "aws-foundational-security-best-practices/v/1.0.0",
+          # "cis-aws-foundations-benchmark/v/1.2.0",
           "cis-aws-foundations-benchmark/v/1.4.0",
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
@@ -52,6 +52,14 @@ locals {
       file_name     = "security_member"
       template_name = "security_member"
       security_core_inputs = {
+        # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
+        securityhub_enabled_standards = [
+          # "aws-foundational-security-best-practices/v/1.0.0",
+          # "cis-aws-foundations-benchmark/v/1.2.0",
+          "cis-aws-foundations-benchmark/v/1.4.0",
+          # "nist-800-53/v/5.0.0",
+          # "pci-dss/v/3.2.1"
+        ]
         # s3 bucket and kms key arn is required if config is in list of service_principals
         config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
         config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
