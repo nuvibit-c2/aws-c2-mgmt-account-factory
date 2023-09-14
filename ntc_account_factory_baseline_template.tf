@@ -12,14 +12,17 @@ locals {
         org_management_account_id = data.aws_caller_identity.current.account_id
         security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
         # enable additional securityhub standards
+        securityhub_auto_enable_default_standards = false
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
         securityhub_enabled_standards = [
-          # "aws-foundational-security-best-practices/v/1.0.0",
-          # "cis-aws-foundations-benchmark/v/1.2.0",
-          # "cis-aws-foundations-benchmark/v/1.4.0",
+          "aws-foundational-security-best-practices/v/1.0.0",
+          "cis-aws-foundations-benchmark/v/1.2.0",
+          "cis-aws-foundations-benchmark/v/1.4.0",
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
         ]
+        # consolidate multiple finding controls into a single finding
+        securityhub_enable_consolidated_control_findings = true
         # new organizations accounts can be auto-enabled in security tooling
         securityhub_auto_enable_organization_members = "NEW"
         guardduty_auto_enable_organization_members   = "NEW"
@@ -90,7 +93,8 @@ locals {
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.0.1"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feat-consolidated-controls"
 
   account_baseline_templates = local.account_baseline_templates
 }
