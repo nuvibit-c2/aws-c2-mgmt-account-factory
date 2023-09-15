@@ -120,14 +120,11 @@ locals {
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         # {
-        #   file_name = "baseline_iam_roles"
-        #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
+        #   file_name                     = "baseline_iam_roles"
+        #   content                       = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
+        #   terraform_version_minimum     = "1.3.9"
+        #   aws_provider_version_minimum  = "4.59.0"
         # },
-        {
-          file_name                 = "testing"
-          content                   = "locals{}"
-          terraform_version_minimum = "1.5.0"
-        },
         local.generated_account_baseline_terraform_files["iam_role_admin"],
         local.generated_account_baseline_terraform_files["security_member"]
       ]
