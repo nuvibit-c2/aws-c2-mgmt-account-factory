@@ -63,7 +63,7 @@ locals {
     {
       scope_name           = "security-core"
       terraform_version    = "1.3.9"
-      aws_provider_version = "4.66.0"
+      aws_provider_version = "4.67.0"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 2
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -112,7 +112,7 @@ locals {
     {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
-      aws_provider_version = "4.59.0"
+      aws_provider_version = "4.67.0"
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
