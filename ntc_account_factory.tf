@@ -123,6 +123,11 @@ locals {
         #   file_name = "baseline_iam_roles"
         #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
         # },
+        {
+          file_name = "testing"
+          content   = "locals{}"
+          terraform_version_minimum = "1.5.0"
+        },
         local.generated_account_baseline_terraform_files["iam_role_admin"],
         local.generated_account_baseline_terraform_files["security_member"]
       ]
@@ -207,7 +212,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.1.1"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.1.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-version"
 
   account_factory_list                   = local.account_factory_list
   account_factory_naming_conventions     = local.account_factory_naming_conventions
