@@ -11,12 +11,12 @@ locals {
       security_core_inputs = {
         org_management_account_id = local.account_factory_core_account_ids["aws-c2-management"]
         security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
-        # enable additional securityhub standards
-        securityhub_auto_enable_default_standards = true
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
+        # for additional standards disable default standards and add required standards to 'securityhub_enabled_standards'
+        securityhub_auto_enable_default_standards = false
         securityhub_enabled_standards = [
-          # "aws-foundational-security-best-practices/v/1.0.0",
-          # "cis-aws-foundations-benchmark/v/1.2.0",
+          "aws-foundational-security-best-practices/v/1.0.0",
+          "cis-aws-foundations-benchmark/v/1.2.0",
           "cis-aws-foundations-benchmark/v/1.4.0",
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
@@ -54,8 +54,8 @@ locals {
       security_core_inputs = {
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
         securityhub_enabled_standards = [
-          # "aws-foundational-security-best-practices/v/1.0.0",
-          # "cis-aws-foundations-benchmark/v/1.2.0",
+          "aws-foundational-security-best-practices/v/1.0.0",
+          "cis-aws-foundations-benchmark/v/1.2.0",
           "cis-aws-foundations-benchmark/v/1.4.0",
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
