@@ -124,8 +124,8 @@ locals {
         #   content   = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
         # },
         {
-          file_name = "testing"
-          content   = "locals{}"
+          file_name                 = "testing"
+          content                   = "locals{}"
           terraform_version_minimum = "1.5.0"
         },
         local.generated_account_baseline_terraform_files["iam_role_admin"],
