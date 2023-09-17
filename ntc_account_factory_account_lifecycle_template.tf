@@ -17,6 +17,12 @@ locals {
       organizations_member_role   = "OrganizationAccountAccessRole"
     },
     {
+      template_name               = "invite_security_members"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+      security_regions            = data.aws_regions.enabled.names
+    },
+    {
       template_name               = "increase_service_quota"
       organizations_event_trigger = "CreateAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
@@ -43,7 +49,8 @@ locals {
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.2"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.0.2"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=feat-security-members"
 
   account_lifecycle_customization_templates = local.account_lifecycle_customization_templates
 }

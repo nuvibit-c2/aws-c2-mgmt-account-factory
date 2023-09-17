@@ -24,16 +24,12 @@ locals {
         # consolidate multiple finding controls into a single finding
         securityhub_enable_consolidated_control_findings = true
         # new organizations accounts can be auto-enabled in security tooling
+        # alternatively enable security members via account lifecycle template 'invite_security_members'
         securityhub_auto_enable_organization_members = "NEW"
         guardduty_auto_enable_organization_members   = "NEW"
         # pre-existing accounts can be individually added as members
-        enable_organization_members_by_acccount_ids = [
-          local.account_factory_core_account_ids["aws-c2-management"],
-          local.account_factory_core_account_ids["aws-c2-connectivity"],
-          local.account_factory_core_account_ids["aws-c2-log-archive"],
-          local.account_factory_all_account_ids["aws-c2-0001"],
-          local.account_factory_all_account_ids["aws-c2-0002"],
-        ]
+        # alternatively enable all existing accounts as security members via account lifecycle template 'invite_security_members'
+        enable_organization_members_by_acccount_ids = []
         # omit if you dont want to archive guardduty findings in s3
         guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
         guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
