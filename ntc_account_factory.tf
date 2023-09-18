@@ -64,7 +64,7 @@ locals {
     {
       scope_name           = "security-core"
       terraform_version    = "1.3.9"
-      aws_provider_version = "4.67.0"
+      aws_provider_version = "4.64.0"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -92,14 +92,23 @@ locals {
       # accounts which should be included in baseline scope
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
-      include_accounts_by_names    = [
-        "aws-c2-security"
+      /** security-core baseline has a specific rollout order
+      1. in 'security-core' baseline template set 'security_admin_account_initial_run' to 'true'
+      2. roll out 'security-core' baseline first exclusively to security admin account
+      3. add org-management account to baseline scope to delegate admin permission to security account
+      4. in baseline template set 'security_admin_account_initial_run' to 'false'
+      5. wait for security admin account and org-management account baseline to rerun successfully
+      6. add remaining core accounts to baseline scope
+      **/
+      include_accounts_by_names = [
+        # "aws-c2-security",
+        # "aws-c2-management"
       ]
       include_accounts_by_tags = [
-        # {
-        #   key   = "AccountType"
-        #   value = "core"
-        # }
+        {
+          key   = "AccountType"
+          value = "core"
+        }
       ]
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
@@ -115,7 +124,7 @@ locals {
     {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
-      aws_provider_version = "4.67.0"
+      aws_provider_version = "4.64.0"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -169,7 +178,7 @@ locals {
       exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
-      decommission_accounts_all         = true
+      decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
         # "aws-c2-0002",
