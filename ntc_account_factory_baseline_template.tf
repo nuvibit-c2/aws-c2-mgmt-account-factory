@@ -23,12 +23,12 @@ locals {
         ]
         # consolidate multiple finding controls into a single finding
         securityhub_enable_consolidated_control_findings = true
-        # new organizations accounts can be auto-enabled in security tooling
-        # alternatively enable security members via account lifecycle template 'invite_security_members'
-        securityhub_auto_enable_organization_members = "NEW"
-        guardduty_auto_enable_organization_members   = "NEW"
+        # new organizations accounts can be auto-enabled by AWS with a delay (set to "NEW")
+        # (optional) enable security members via account lifecycle template 'invite_security_members' instead
+        securityhub_auto_enable_organization_members = "NONE"
+        guardduty_auto_enable_organization_members   = "NONE"
         # pre-existing accounts can be individually added as members
-        # alternatively enable all existing accounts as security members via account lifecycle template 'invite_security_members'
+        # (optional) enable all existing accounts as security members via account lifecycle template 'invite_security_members' instead
         enable_organization_members_by_acccount_ids = []
         # omit if you dont want to archive guardduty findings in s3
         guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")

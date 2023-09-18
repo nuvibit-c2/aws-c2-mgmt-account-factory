@@ -66,7 +66,7 @@ locals {
       terraform_version    = "1.3.9"
       aws_provider_version = "4.67.0"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 2
+      terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 24
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -92,12 +92,14 @@ locals {
       # accounts which should be included in baseline scope
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
-      include_accounts_by_names    = []
+      include_accounts_by_names    = [
+        "aws-c2-security"
+      ]
       include_accounts_by_tags = [
-        {
-          key   = "AccountType"
-          value = "core"
-        }
+        # {
+        #   key   = "AccountType"
+        #   value = "core"
+        # }
       ]
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
@@ -114,6 +116,8 @@ locals {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
       aws_provider_version = "4.67.0"
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -165,7 +169,7 @@ locals {
       exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
-      decommission_accounts_all         = false
+      decommission_accounts_all         = true
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
         # "aws-c2-0002",
