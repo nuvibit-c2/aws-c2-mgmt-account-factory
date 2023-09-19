@@ -223,8 +223,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.1.1"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-version"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.2.0"
 
   account_factory_list                   = local.account_factory_list
   account_factory_naming_conventions     = local.account_factory_naming_conventions
