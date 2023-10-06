@@ -13,14 +13,19 @@ locals {
   # only the parameter node owner account is granted write access to his corresponding parameters
   ntc_parameter_nodes = [
     {
+      "node_name"                = "management",
+      "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
+      "node_owner_iam_user_name" = "aws-c2-management"
+    },
+    {
       "node_name"                = "account-factory",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
       "node_owner_iam_user_name" = "aws-c2-account-factory"
     },
     {
-      "node_name"                = "management",
+      "node_name"                = "identity-center",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
-      "node_owner_iam_user_name" = "aws-c2-management"
+      "node_owner_iam_user_name" = "aws-c2-identity-center"
     },
     {
       "node_name"             = "connectivity"
