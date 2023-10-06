@@ -199,7 +199,7 @@ locals {
   }
 
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
-  account_factory_list = jsondecode(file("${path.module}/ntc_account_factory_list.json"))
+  account_factory_list = jsondecode(file("${path.module}/account_map.json"))
 
   # get values from module outputs
   # get account ids for all accounts and for core accounts

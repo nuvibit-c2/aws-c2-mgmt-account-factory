@@ -2,17 +2,11 @@ locals {
   ntc_parameters_bucket_name = "aws-c2-ntc-parameters"
   ntc_parameters_writer_node = "account-factory"
 
-  # map of parameters merged from all parameter nodes
-  ntc_parameters = module.ntc_parameters_reader.all_parameters
-
   # parameters that are managed by org management account
   ntc_parameters_to_write = {
     # account_list : local.account_factory_list_enriched
     core_accounts = local.account_factory_core_account_ids
   }
-
-  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
-  ntc_parameters_replace = true
 
   # the ntc parameter bucket should ideally be created in same pipeline as account factory
   # all organization accounts are granted read permission for all parameters
@@ -42,8 +36,14 @@ locals {
     }
   ]
 
+  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
+  ntc_parameters_replace = true
+
   # parameters are shared with parameter node owners by default and with the entire organization if org_id is specified
   share_parameters_with_entire_org = false
+
+  # map of parameters merged from all parameter nodes
+  ntc_parameters = module.ntc_parameters_reader.all_parameters
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
