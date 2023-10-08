@@ -125,6 +125,12 @@ locals {
       scope_name           = "workloads-prod"
       terraform_version    = "1.3.9"
       aws_provider_version = "4.64.0"
+      # (optional) define provider default tags which will be applied to all baseline resources
+      provider_default_tags = {
+        ManagedBy       = "ntc-account-factory",
+        BaselineScope   = "workloads-prod",
+        BaselineVersion = "1.0"
+      }
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
@@ -223,7 +229,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.2.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.2.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-provider-tags"
 
   account_factory_list                   = local.account_factory_list
   account_factory_naming_conventions     = local.account_factory_naming_conventions
