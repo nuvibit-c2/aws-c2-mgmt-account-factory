@@ -11,6 +11,7 @@ locals {
   }
 
   # original account map enriched with additional values e.g. account id
+  account_factory_list = jsondecode(file("${path.module}/account_list.json"))
   account_factory_list_enriched = [
     for account in local.account_factory_list : merge(account,
       {
@@ -32,9 +33,6 @@ module "account_factory" {
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
-  # template module outputs customization steps grouped by template name
-  generated_account_lifecycle_customization_steps = module.account_lifecycle_customization_templates["account_lifecycle_customization_steps"]
-
   # provide lambda packages for additional account lifecycle customization e.g. delete default vpc
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_lifecycle_customization_steps = [
@@ -53,16 +51,16 @@ module "account_factory" {
         #     "DEFAULT_REGION" : "eu-central-1"
         #   }
         # }
-        local.generated_account_lifecycle_customization_steps["enable_opt_in_regions"],
-        local.generated_account_lifecycle_customization_steps["delete_default_vpc"],
-        local.generated_account_lifecycle_customization_steps["invite_security_members"],
-        local.generated_account_lifecycle_customization_steps["increase_service_quota"]
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_opt_in_regions"],
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["delete_default_vpc"],
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["invite_security_members"],
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["increase_service_quota"]
       ]
     },
     {
       organizations_event_trigger = "CloseAccountResult"
       step_sequence = [
-        local.generated_account_lifecycle_customization_steps["move_to_suspended_ou"]
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["move_to_suspended_ou"]
       ]
     }
   ]
@@ -79,9 +77,6 @@ module "account_factory" {
       }
     ]
   }
-
-  # template module outputs terraform baseline files grouped by template name
-  generated_account_baseline_terraform_files = module.account_baseline_templates["account_baseline_terraform_files"]
 
   # list of baseline definitions for accounts in a specific scope
   account_baseline_scopes = [
@@ -103,7 +98,7 @@ module "account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        local.generated_account_baseline_terraform_files["security_core"]
+        module.account_baseline_templates.account_baseline_terraform_files["security_core"]
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -175,8 +170,8 @@ module "account_factory" {
         #   terraform_version_minimum     = "1.3.9"
         #   aws_provider_version_minimum  = "4.59.0"
         # },
-        local.generated_account_baseline_terraform_files["iam_role_admin"],
-        local.generated_account_baseline_terraform_files["security_member"]
+        module.account_baseline_templates.account_baseline_terraform_files["iam_role_admin"],
+        module.account_baseline_templates.account_baseline_terraform_files["security_member"]
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -235,7 +230,7 @@ module "account_factory" {
   }
 
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
-  account_factory_list = jsondecode(file("${path.module}/account_list.json"))
+  account_factory_list = local.account_factory_list
 
   providers = {
     aws           = aws.euc1
