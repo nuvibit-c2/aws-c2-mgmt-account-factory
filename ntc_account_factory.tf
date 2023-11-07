@@ -2,6 +2,30 @@
 # ¦ LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
+  # get values from module outputs
+  # get account ids for all accounts and for core accounts
+  account_factory_all_account_ids = module.account_factory.account_factory_account_ids
+  account_factory_core_account_ids = {
+    for account in local.account_factory_list_enriched : account.account_name => account.account_id
+    if account.account_tags.AccountType == "core"
+  }
+
+  # original account map enriched with additional values e.g. account id
+  account_factory_list_enriched = [
+    for account in local.account_factory_list : merge(account,
+      {
+        account_id = local.account_factory_all_account_ids[account.account_name]
+      }
+    )
+  ]
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ NTC ACCOUNT FACTORY
+# ---------------------------------------------------------------------------------------------------------------------
+module "account_factory" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.3.0"
+
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
 
@@ -212,39 +236,6 @@ locals {
 
   # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
   account_factory_list = jsondecode(file("${path.module}/account_list.json"))
-
-  # get values from module outputs
-  # get account ids for all accounts and for core accounts
-  account_factory_all_account_ids = module.account_factory.account_factory_account_ids
-  account_factory_core_account_ids = {
-    for account in local.account_factory_list_enriched : account.account_name => account.account_id
-    if account.account_tags.AccountType == "core"
-  }
-
-  # original account map enriched with additional values e.g. account id
-  account_factory_list_enriched = [
-    for account in local.account_factory_list : merge(account,
-      {
-        account_id = local.account_factory_all_account_ids[account.account_name]
-      }
-    )
-  ]
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT FACTORY
-# ---------------------------------------------------------------------------------------------------------------------
-module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.3.0"
-
-  account_factory_list                   = local.account_factory_list
-  account_factory_naming_conventions     = local.account_factory_naming_conventions
-  account_factory_baseline_bucket_name   = local.account_factory_baseline_bucket_name
-  account_factory_cloudtrail_bucket_name = local.account_factory_cloudtrail_bucket_name
-  account_factory_notification_settings  = local.account_factory_notification_settings
-  account_lifecycle_customization_steps  = local.account_lifecycle_customization_steps
-  account_baseline_scopes                = local.account_baseline_scopes
-  increase_aws_service_quotas            = local.increase_aws_service_quotas
 
   providers = {
     aws           = aws.euc1

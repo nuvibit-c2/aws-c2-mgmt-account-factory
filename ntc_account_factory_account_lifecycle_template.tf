@@ -1,7 +1,9 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ LOCALS
+# ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
-locals {
+module "account_lifecycle_customization_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.1.0"
+
   # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
   account_lifecycle_customization_templates = [
@@ -43,13 +45,4 @@ locals {
       suspended_ou_id             = local.ntc_parameters["management"]["organization"]["ou_ids"]["/root/suspended"]
     }
   ]
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
-# ---------------------------------------------------------------------------------------------------------------------
-module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.1.0"
-
-  account_lifecycle_customization_templates = local.account_lifecycle_customization_templates
 }

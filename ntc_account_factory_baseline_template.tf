@@ -1,7 +1,9 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ LOCALS
+# ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
-locals {
+module "account_baseline_templates" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.0"
+
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
   account_baseline_templates = [
@@ -93,13 +95,4 @@ locals {
       }
     }
   ]
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT BASELINE TEMPLATES
-# ---------------------------------------------------------------------------------------------------------------------
-module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.0"
-
-  account_baseline_templates = local.account_baseline_templates
 }
