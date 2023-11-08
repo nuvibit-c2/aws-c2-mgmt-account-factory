@@ -26,9 +26,9 @@ locals {
 module "ntc_parameters_bucket" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=1.1.0"
 
-  force_destroy   = false
-  bucket_name     = local.ntc_parameters_bucket_name
-  org_id          = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
+  force_destroy = false
+  bucket_name   = local.ntc_parameters_bucket_name
+  org_id        = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
   # the ntc parameter bucket should ideally be created in same pipeline as account factory
   # all organization accounts are granted read permission for all parameters
   # only the parameter node owner account is granted write access to his corresponding parameters
@@ -87,9 +87,9 @@ module "ntc_parameters_reader" {
 module "ntc_parameters_writer" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.0"
 
-  bucket_name        = local.ntc_parameters_bucket_name
-  parameter_node     = local.ntc_parameters_writer_node
-  node_parameters    = local.ntc_parameters_to_write
+  bucket_name     = local.ntc_parameters_bucket_name
+  parameter_node  = local.ntc_parameters_writer_node
+  node_parameters = local.ntc_parameters_to_write
   # by default existing node parameters will be merged with new parameters to avoid deleting parameters
   replace_parameters = true
   # (optional) account factory can store an account map
