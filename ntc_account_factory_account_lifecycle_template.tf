@@ -23,6 +23,11 @@ module "account_lifecycle_customization_templates" {
       organizations_event_trigger = "CreateAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
       security_regions            = data.aws_regions.enabled.names
+      security_member_of = {
+        securityhub = true
+        guardduty   = true
+        inspector   = true
+      }
     },
     {
       template_name               = "increase_service_quota"

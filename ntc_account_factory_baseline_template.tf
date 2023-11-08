@@ -43,8 +43,9 @@ module "account_baseline_templates" {
         # admin delegations and regional settings will be provisioned for each service
         service_principals = [
           "config.amazonaws.com",
+          "securityhub.amazonaws.com",
           "guardduty.amazonaws.com",
-          "securityhub.amazonaws.com"
+          "inspector2.amazonaws.com"
         ]
       }
     },
@@ -66,8 +67,8 @@ module "account_baseline_templates" {
         # regional settings will be provisioned for each service
         service_principals = [
           "config.amazonaws.com",
+          "securityhub.amazonaws.com",
           # "guardduty.amazonaws.com",
-          "securityhub.amazonaws.com"
         ]
       }
     },
