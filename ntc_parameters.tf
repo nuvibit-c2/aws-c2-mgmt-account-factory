@@ -13,10 +13,26 @@ locals {
     for account in local.account_factory_list_enriched : account.account_id => account
   }
 
+  # parameters are shared with parameter node owners by default and with the entire organization if org_id is specified
+  share_parameters_with_entire_org = false
+
+  # map of parameters merged from all parameter nodes
+  ntc_parameters = module.ntc_parameters_reader.all_parameters
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ NTC PARAMETERS - BUCKET (DEPLOY FIRST)
+# ---------------------------------------------------------------------------------------------------------------------
+module "ntc_parameters_bucket" {
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=1.1.0"
+
+  force_destroy   = false
+  bucket_name     = local.ntc_parameters_bucket_name
+  org_id          = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
   # the ntc parameter bucket should ideally be created in same pipeline as account factory
   # all organization accounts are granted read permission for all parameters
   # only the parameter node owner account is granted write access to his corresponding parameters
-  ntc_parameter_nodes = [
+  parameter_nodes = [
     {
       "node_name"                = "management",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
@@ -47,27 +63,6 @@ locals {
     }
   ]
 
-  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
-  ntc_parameters_replace = true
-
-  # parameters are shared with parameter node owners by default and with the entire organization if org_id is specified
-  share_parameters_with_entire_org = false
-
-  # map of parameters merged from all parameter nodes
-  ntc_parameters = module.ntc_parameters_reader.all_parameters
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC PARAMETERS - BUCKET (DEPLOY FIRST)
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_bucket" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=1.1.0"
-
-  force_destroy   = false
-  bucket_name     = local.ntc_parameters_bucket_name
-  org_id          = local.share_parameters_with_entire_org ? data.aws_organizations_organization.current.id : ""
-  parameter_nodes = local.ntc_parameter_nodes
-
   providers = {
     aws = aws.euc1
   }
@@ -95,7 +90,8 @@ module "ntc_parameters_writer" {
   bucket_name        = local.ntc_parameters_bucket_name
   parameter_node     = local.ntc_parameters_writer_node
   node_parameters    = local.ntc_parameters_to_write
-  replace_parameters = local.ntc_parameters_replace
+  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
+  replace_parameters = true
   # (optional) account factory can store an account map
   store_account_map = local.ntc_store_account_map
   account_map       = local.ntc_account_map
