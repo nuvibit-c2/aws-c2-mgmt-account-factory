@@ -2,7 +2,8 @@
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.1"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=fix-inspector-admin"
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
@@ -40,6 +41,10 @@ module "account_baseline_templates" {
         # s3 bucket and kms key arn is required if config is in list of service_principals
         config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
         config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
+        # enable inspector scanning. requires inspector to be in list of service_principals
+        inspector_enable_ec2_scans    = true
+        inspector_enable_ecr_scans    = true
+        inspector_enable_lambda_scans = true
         # admin delegations and regional settings will be provisioned for each service
         service_principals = [
           "config.amazonaws.com",
