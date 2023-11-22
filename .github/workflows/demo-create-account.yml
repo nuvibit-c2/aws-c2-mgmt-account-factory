@@ -39,5 +39,4 @@ jobs:
             ]
         }
         EOF)
-
         echo $NEW_ACCOUNT
