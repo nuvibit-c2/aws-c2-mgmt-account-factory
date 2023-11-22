@@ -65,5 +65,4 @@ jobs:
           branch: demo-create-account
           branch-suffix: short-commit-hash
           delete-branch: true
-          reviewers: stefano-franco
           token: ${{ secrets.DEMO_GHE_API_TOKEN }}
