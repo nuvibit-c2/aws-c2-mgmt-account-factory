@@ -29,8 +29,8 @@ jobs:
         run: |
           account_list_path="account_list.json"
           account_list=$(cat account_list.json)
-          new_account=$(cat <<EOF
-          [{
+          new_account=$(cat <<EOF 
+          {
               "account_name": "$ACCOUNT_NAME",
               "account_email": "$ACCOUNT_EMAIL",
               "ou_path": "/root/solutions/$SDLC",
@@ -48,7 +48,7 @@ jobs:
                       "email_address": "$SECURITY_CONTACT_EMAIL"
                   }
               ]
-          }]
+          }
           EOF)
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
           echo "$new_account_list" > $account_list_path
@@ -56,13 +56,13 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "Demo: adding new aws account '${{fromJson(inputs.port_payload).payload.properties.account_name}}'"
+          commit-message: "adding new aws account '${{fromJson(inputs.port_payload).payload.properties.account_name}}'"
           committer: GitHub <noreply@github.com>
           author: ${{env.PORT_USER_FIRST_NAME}} ${{env.PORT_USER_LAST_NAME}} <${{env.PORT_USER_EMAIL}}>
-          delete-branch: true
-          title: "[DEMO] Create AWS Account '${{env.ACCOUNT_NAME}}'"
-          reviewers: stefano-franco
+          title: "port: create aws account '${{env.ACCOUNT_NAME}}'"
           labels: Demo
           add-paths: account_list.json
-          branch: demo-create-account/
+          branch: demo-create-account
           branch-suffix: short-commit-hash
+          delete-branch: true
+          reviewers: stefano-franco
