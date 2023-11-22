@@ -18,25 +18,25 @@ jobs:
 
       - name: Prepare Pull Request
         run: |
-        NEW_ACCOUNT=$(cat <<EOF
-        {
-            "account_name": ${{fromJson(inputs.port_payload).payload.properties.account_name}},
-            "account_email": ${{fromJson(inputs.port_payload).payload.properties.account_email}},
-            "ou_path": "/root/solutions/" + ${{fromJson(inputs.port_payload).payload.properties.workload_stage}},
-            "close_on_deletion": true,
-            "account_tags": {
-                "AccountOwner": ${{fromJson(inputs.port_payload).trigger.by.user.email}},
-                "AccountType": "workload",
-                "AccountDescription": "This is a demo account",
-                "CostCenter": ${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}
-            },
-            "alternate_contacts": [
-                {
-                    "type": "SECURITY",
-                    "name": "Security Contact",
-                    "email_address": ${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}
-                }
-            ]
-        }
-        EOF)
-        echo $NEW_ACCOUNT
+          NEW_ACCOUNT=$(cat <<EOF
+          {
+              "account_name": ${{fromJson(inputs.port_payload).payload.properties.account_name}},
+              "account_email": ${{fromJson(inputs.port_payload).payload.properties.account_email}},
+              "ou_path": "/root/solutions/" + ${{fromJson(inputs.port_payload).payload.properties.workload_stage}},
+              "close_on_deletion": true,
+              "account_tags": {
+                  "AccountOwner": ${{fromJson(inputs.port_payload).trigger.by.user.email}},
+                  "AccountType": "workload",
+                  "AccountDescription": "This is a demo account",
+                  "CostCenter": ${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}
+              },
+              "alternate_contacts": [
+                  {
+                      "type": "SECURITY",
+                      "name": "Security Contact",
+                      "email_address": ${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}
+                  }
+              ]
+          }
+          EOF)
+          echo $NEW_ACCOUNT
