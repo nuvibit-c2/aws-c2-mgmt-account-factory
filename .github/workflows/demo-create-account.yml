@@ -20,10 +20,21 @@ jobs:
       PORT_USER_EMAIL: ${{fromJson(inputs.port_payload).trigger.by.user.email}}
       PORT_USER_FIRST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.firstName}}
       PORT_USER_LAST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.lastName}}
+      PORT_RUN_ID: ${{fromJson(inputs.port_payload).context.runId}}
+      PORT_BLUEPRINT: ${{fromJson(inputs.port_payload).context.blueprint}}
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+      
+      - name: Update Run Logs
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.CLIENT_ID }}
+          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ env.PORT_RUN_ID }}
+          logMessage: "✍️ writing new pull request..."
 
       - name: Update Account List
         run: |
@@ -54,15 +65,54 @@ jobs:
           echo "$new_account_list" > $account_list_path
 
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "adding aws account '${{env.ACCOUNT_NAME}}'"
+          commit-message: "adding aws account '${{ env.ACCOUNT_NAME }}'"
           committer: GitHub <noreply@github.com>
-          author: ${{env.PORT_USER_FIRST_NAME}} ${{env.PORT_USER_LAST_NAME}} <${{env.PORT_USER_EMAIL}}>
-          title: "create aws account '${{env.ACCOUNT_NAME}}'"
+          author: ${{ env.PORT_USER_FIRST_NAME }} ${{ env.PORT_USER_LAST_NAME }} <${{ env.PORT_USER_EMAIL }}>
+          title: "create aws account '${{ env.ACCOUNT_NAME }}'"
           labels: Demo
           add-paths: account_list.json
           branch: demo-create-account
           branch-suffix: short-commit-hash
           delete-branch: true
           token: ${{ secrets.DEMO_GHE_API_TOKEN }}
+      
+      - name: Update Run Logs
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.CLIENT_ID }}
+          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ env.PORT_RUN_ID }}
+          logMessage: "🛠️ creating catalog entity..."
+
+      - name: Update Catalog
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: UPSERT
+          runId: ${{ env.PORT_RUN_ID }}
+          identifier: ${{ env.ACCOUNT_NAME }}
+          icon: Aws
+          blueprint: ${{ env.PORT_BLUEPRINT }}
+          properties: |
+            {
+              "pull_request": "${{ steps.cpr.outputs.pull-request-url }}",
+              "account_name": "${{ env.ACCOUNT_NAME }}",
+              "account_email": "${{ env.ACCOUNT_EMAIL }}",
+              "ou_path": "/root/workloads/${{ env.SDLC }}"
+              "account_tags": "AccountOwner=${{ env.PORT_USER_EMAIL }}; AccountType=workload; AccountDescription=This is a demo account; CostCenter=${{ env.COST_CENTER }}"
+              "alternate_contacts": "Security=${{ env.SECURITY_CONTACT_EMAIL }}"
+            }
+
+      - name: Update Run Logs
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.CLIENT_ID }}
+          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ env.PORT_RUN_ID }}
+          logMessage: "⏲️ waiting for pull request approval..."
