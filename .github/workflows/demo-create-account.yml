@@ -56,13 +56,14 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: "adding new aws account '${{fromJson(inputs.port_payload).payload.properties.account_name}}'"
+          commit-message: "adding aws account '${{env.ACCOUNT_NAME}}'"
           committer: GitHub <noreply@github.com>
           author: ${{env.PORT_USER_FIRST_NAME}} ${{env.PORT_USER_LAST_NAME}} <${{env.PORT_USER_EMAIL}}>
-          title: "port: create aws account '${{env.ACCOUNT_NAME}}'"
+          title: "create aws account '${{env.ACCOUNT_NAME}}'"
           labels: Demo
           add-paths: account_list.json
           branch: demo-create-account
           branch-suffix: short-commit-hash
           delete-branch: true
           reviewers: stefano-franco
+          token: ${{ secrets.GHE_API_TOKEN }}
