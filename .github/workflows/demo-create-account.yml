@@ -11,6 +11,15 @@ on:
 jobs:
   demo-create-account:
     runs-on: ubuntu-latest
+    env:
+      ACCOUNT_NAME: aws-c2-${{fromJson(inputs.port_payload).payload.properties.solution_name}}-${{fromJson(inputs.port_payload).payload.properties.sdlc}}
+      ACCOUNT_EMAIL: accounts+${{fromJson(inputs.port_payload).payload.properties.account_name}}@nuvibit.com
+      SDLC: ${{fromJson(inputs.port_payload).payload.properties.sdlc}}
+      COST_CENTER: ${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}
+      SECURITY_CONTACT_EMAIL: ${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}
+      PORT_USER_EMAIL: ${{fromJson(inputs.port_payload).trigger.by.user.email}}
+      PORT_USER_FIRST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.firstName}}
+      PORT_USER_LAST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.lastName}}
 
     steps:
       - name: Checkout Repo
@@ -22,21 +31,21 @@ jobs:
           account_list=$(cat account_list.json)
           new_account=$(cat <<EOF
           [{
-              "account_name": "${{fromJson(inputs.port_payload).payload.properties.account_name}}",
-              "account_email": "${{fromJson(inputs.port_payload).payload.properties.account_email}}",
-              "ou_path": "/root/solutions/${{fromJson(inputs.port_payload).payload.properties.workload_stage}}",
+              "account_name": "$ACCOUNT_NAME",
+              "account_email": "$ACCOUNT_EMAIL",
+              "ou_path": "/root/solutions/$SDLC",
               "close_on_deletion": true,
               "account_tags": {
-                  "AccountOwner": "${{fromJson(inputs.port_payload).trigger.by.user.email}}",
+                  "AccountOwner": "$PORT_USER_EMAIL",
                   "AccountType": "workload",
                   "AccountDescription": "This is a demo account",
-                  "CostCenter": "${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}"
+                  "CostCenter": "$COST_CENTER"
               },
               "alternate_contacts": [
                   {
                       "type": "SECURITY",
                       "name": "Security Contact",
-                      "email_address": "${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}"
+                      "email_address": "$SECURITY_CONTACT_EMAIL"
                   }
               ]
           }]
@@ -49,10 +58,11 @@ jobs:
         with:
           commit-message: "Demo: adding new aws account '${{fromJson(inputs.port_payload).payload.properties.account_name}}'"
           committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          author: ${{env.PORT_USER_FIRST_NAME}} ${{env.PORT_USER_LAST_NAME}} <${{env.PORT_USER_EMAIL}}>
           delete-branch: true
-          title: "[DEMO] Create AWS Account '${{fromJson(inputs.port_payload).payload.properties.account_name}}'"
+          title: "[DEMO] Create AWS Account '${{env.ACCOUNT_NAME}}'"
           reviewers: stefano-franco
           labels: Demo
-          branch: demo-${{fromJson(inputs.port_payload).context.runId}}
           add-paths: account_list.json
+          branch: demo-create-account/
+          branch-suffix: short-commit-hash
