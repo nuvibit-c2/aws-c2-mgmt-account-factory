@@ -103,8 +103,9 @@ jobs:
               "pull_request": "${{ steps.cpr.outputs.pull-request-url }}",
               "account_name": "${{ env.ACCOUNT_NAME }}",
               "account_email": "${{ env.ACCOUNT_EMAIL }}",
-              "ou_path": "/root/workloads/${{ env.SDLC }}"
-              "account_tags": "AccountOwner=${{ env.PORT_USER_EMAIL }}; AccountType=workload; AccountDescription=This is a demo account; CostCenter=${{ env.COST_CENTER }}"
+              "ou_path": "/root/workloads/${{ env.SDLC }}",
+              "account_owner": "${{ env.PORT_USER_EMAIL }}",
+              "cost_center": "${{ env.COST_CENTER }}",
               "alternate_contacts": "Security=${{ env.SECURITY_CONTACT_EMAIL }}"
             }
 
