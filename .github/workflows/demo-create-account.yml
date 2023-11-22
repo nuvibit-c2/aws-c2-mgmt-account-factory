@@ -66,4 +66,4 @@ jobs:
           branch-suffix: short-commit-hash
           delete-branch: true
           reviewers: stefano-franco
-          token: ${{ secrets.GHE_API_TOKEN }}
+          token: ${{ secrets.DEMO_GHE_API_TOKEN }}
