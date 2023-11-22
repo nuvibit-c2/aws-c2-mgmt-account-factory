@@ -136,5 +136,26 @@
       "sso_billing_groups": [],
       "sso_support_groups": []
     }
-  }
+  },
+  [
+    {
+      "account_name": "aws-c2-bravo-six-prod",
+      "account_email": "accounts+@nuvibit.com",
+      "ou_path": "/root/solutions/prod",
+      "close_on_deletion": true,
+      "account_tags": {
+        "AccountOwner": "hans.muster@nuvibit.com",
+        "AccountType": "workload",
+        "AccountDescription": "This is a demo account",
+        "CostCenter": "AL-1245"
+      },
+      "alternate_contacts": [
+        {
+          "type": "SECURITY",
+          "name": "Security Contact",
+          "email_address": "hans.muster@nuvibit.com"
+        }
+      ]
+    }
+  ]
 ]
