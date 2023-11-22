@@ -30,8 +30,8 @@ jobs:
       - name: Update Run Logs
         uses: port-labs/port-github-action@v1
         with:
-          clientId: ${{ secrets.CLIENT_ID }}
-          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "✍️ writing new pull request..."
@@ -82,8 +82,8 @@ jobs:
       - name: Update Run Logs
         uses: port-labs/port-github-action@v1
         with:
-          clientId: ${{ secrets.CLIENT_ID }}
-          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "🛠️ creating catalog entity..."
@@ -111,8 +111,8 @@ jobs:
       - name: Update Run Logs
         uses: port-labs/port-github-action@v1
         with:
-          clientId: ${{ secrets.CLIENT_ID }}
-          clientSecret: ${{ secrets.CLIENT_SECRET }}
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "⏲️ waiting for pull request approval..."
