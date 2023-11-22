@@ -33,7 +33,7 @@ jobs:
           {
               "account_name": "$ACCOUNT_NAME",
               "account_email": "$ACCOUNT_EMAIL",
-              "ou_path": "/root/solutions/$SDLC",
+              "ou_path": "/root/workloads/$SDLC",
               "close_on_deletion": true,
               "account_tags": {
                   "AccountOwner": "$PORT_USER_EMAIL",
