@@ -18,6 +18,7 @@ jobs:
 
       - name: Update Account List
         run: |
+          account_list_path="account_list.json"
           account_list=$(cat account_list.json)
           new_account=$(cat <<EOF
           [{
