@@ -257,16 +257,20 @@ jobs:
               "security_contact": "${{ env.SECURITY_CONTACT_EMAIL }}"
             }
 
+      - name: Account Creation Outcome
+        if: steps.wait-for-apply.outputs.conclusion != 'success'
+        run: exit 1
+
   workflow-summary:
     needs:
-      - port-entity
+      - demo-create-account
     runs-on: ubuntu-latest
     if: ${{ always() }}
 
     steps:
       # update run logs in getport.io - almost done
       - name: Update Run Logs - Almost Done
-        if: needs.port-entity.outcome == 'success'
+        if: needs.demo-create-account.result == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -277,7 +281,7 @@ jobs:
 
       # update run status in getport.io - success
       - name: Update Run Status - Success
-        if: needs.port-entity.outcome == 'success'
+        if: needs.port-entity.result == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -290,7 +294,7 @@ jobs:
 
       # update run logs in getport.io - something went wrong
       - name: Update Run Logs - Something Went Wrong
-        if: needs.port-entity.outcome != 'success'
+        if: needs.port-entity.result != 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -302,7 +306,7 @@ jobs:
       # update run status in getport.io - failure
       - name: Update Run Status - Failure
         uses: port-labs/port-github-action@v1
-        if: needs.port-entity.outcome != 'success'
+        if: needs.port-entity.result != 'success'
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
