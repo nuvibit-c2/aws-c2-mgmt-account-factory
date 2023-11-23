@@ -158,7 +158,7 @@ jobs:
         id: merge
         continue-on-error: true
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.DEMO_GHE_API_TOKEN }}
           number: ${{ steps.pull-request.outputs.pull-request-number }}
           method: squash
           repo: juliangruber/octokit-action
@@ -187,6 +187,7 @@ jobs:
 
       # update run logs in getport.io - wait for terraform apply
       - name: Update Run Logs
+        if: ${{ steps.merge.outcome == 'success' }}
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
