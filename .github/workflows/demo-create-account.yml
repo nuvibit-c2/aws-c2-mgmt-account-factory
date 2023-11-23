@@ -159,17 +159,17 @@ jobs:
       - name: Merge Pull Request
         if: steps.wait-for-checks.outputs.conclusion == 'success'
         uses: juliangruber/merge-pull-request-action@v1
-        id: merge
+        id: merge-pr
         continue-on-error: true
         with:
           github-token: ${{ secrets.DEMO_GHE_API_TOKEN }}
           number: ${{ steps.pull-request.outputs.pull-request-number }}
-          method: merge
+          method: squash
           repo: ${{ github.repository }}
 
       # update run logs in getport.io - pr merged
       - name: Update Run Logs - PR Merged
-        if: ${{ steps.merge.outcome == 'success' }}
+        if: ${{ steps.merge-pr.outcome == 'success' }}
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -180,7 +180,7 @@ jobs:
 
       # update run logs in getport.io - pr merge failed
       - name: Update Run Logs - PR Merge Failed
-        if: ${{ steps.merge.outcome == 'failure' || steps.apply.outputs.exitcode == '1' }}
+        if: ${{ steps.merge-pr.outcome == 'failure' || steps.apply.outputs.exitcode == '1' }}
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -191,7 +191,7 @@ jobs:
 
       # update run logs in getport.io - wait for account creation
       - name: Update Run Logs - Wait For Account Creation
-        if: ${{ steps.merge.outcome == 'success' }}
+        if: ${{ steps.merge-pr.outcome == 'success' }}
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -201,17 +201,17 @@ jobs:
           logMessage: "⏲️ waiting for creation of aws account '${{ env.ACCOUNT_NAME }}'..."
 
       # FIXME: DEBUG
-      - run: echo "${{ toJson(steps.merge) }}"
+      - run: echo "${{ toJson(steps.merge-pr) }}"
 
       # wait for pull request checks to succeed
       - name: Wait For Account Creation
-        if: ${{ steps.merge.outcome == 'success' }}
+        if: ${{ steps.merge-pr.outcome == 'success' }}
         uses: fountainhead/action-wait-for-check@v1.1.0
         id: wait-for-apply
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: terraform-workspace / workflow-summary
-          ref: ${{ steps.merge.outputs.commit }}
+          ref: ${{ steps.merge-pr.outputs.commit }}
           timeoutSeconds: 600
           intervalSeconds: 10
 
