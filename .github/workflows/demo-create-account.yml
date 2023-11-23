@@ -266,6 +266,9 @@ jobs:
       - demo-create-account
     runs-on: ubuntu-latest
     if: ${{ always() }}
+    env:
+      ACCOUNT_NAME: aws-c2-${{fromJson(inputs.port_payload).payload.properties.solution_name}}-${{fromJson(inputs.port_payload).payload.properties.account_environment}}
+      PORT_RUN_ID: ${{fromJson(inputs.port_payload).context.runId}}
 
     steps:
       # update run logs in getport.io - almost done
