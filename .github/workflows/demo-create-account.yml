@@ -201,7 +201,7 @@ jobs:
           logMessage: "⏲️ waiting for creation of aws account '${{ env.ACCOUNT_NAME }}'..."
 
       # FIXME: DEBUG
-      - run: echo "${{ toJson(steps.merge.outputs) }}"
+      - run: echo "${{ toJson(steps.merge) }}"
 
       # wait for pull request checks to succeed
       - name: Wait For Account Creation
