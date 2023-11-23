@@ -60,7 +60,8 @@ jobs:
                       "name": "Security Contact",
                       "email_address": "$SECURITY_CONTACT_EMAIL"
                   }
-              ]
+              ],
+              "customer_values": {}
           }
           EOF)
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
