@@ -158,7 +158,7 @@ jobs:
 
       - name: Merge Pull Request
         if: steps.wait-for-checks.outputs.conclusion == 'success'
-        uses: juliangruber/merge-pull-request-action@v1
+        uses: juliangruber/merge-pull-request-action@v1.2.0
         id: merge-pr
         continue-on-error: true
         with:
@@ -199,9 +199,6 @@ jobs:
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "⏲️ waiting for creation of aws account '${{ env.ACCOUNT_NAME }}'..."
-
-      # FIXME: DEBUG
-      - run: echo "${{ toJson(steps.merge-pr) }}"
 
       # wait for pull request checks to succeed
       - name: Wait For Account Creation
