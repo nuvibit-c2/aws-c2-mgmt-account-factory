@@ -64,9 +64,7 @@ jobs:
           }
           EOF)
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
-          # TODO: for testing purposes do not create new accounts
-          # echo "$new_account_list" > $account_list_path
-          echo "" >> $account_list_path
+          echo "$new_account_list" > $account_list_path
 
       # create pull request for new aws account
       - name: Create Pull Request
@@ -284,7 +282,7 @@ jobs:
 
       # update run status in getport.io - success
       - name: Update Run Status - Success
-        if: needs.port-entity.result == 'success'
+        if: needs.demo-create-account.result == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -297,7 +295,7 @@ jobs:
 
       # update run logs in getport.io - something went wrong
       - name: Update Run Logs - Something Went Wrong
-        if: needs.port-entity.result != 'success'
+        if: needs.demo-create-account.result != 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -309,7 +307,7 @@ jobs:
       # update run status in getport.io - failure
       - name: Update Run Status - Failure
         uses: port-labs/port-github-action@v1
-        if: needs.port-entity.result != 'success'
+        if: needs.demo-create-account.result != 'success'
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
