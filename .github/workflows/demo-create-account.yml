@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
       
       # update run logs in getport.io - write pr
-      - name: Update Run Logs
+      - name: Update Run Logs - Write PR
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -83,7 +83,7 @@ jobs:
           token: ${{ secrets.DEMO_GHE_API_TOKEN }}
 
       # update run logs in getport.io - wait for checks
-      - name: Update Run Logs
+      - name: Update Run Logs - Wait For Checks
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -93,7 +93,7 @@ jobs:
           logMessage: "⏲️ waiting for checks to pass..."
 
       # wait for pull request checks to succeed
-      - name: Wait For Checks
+      - name: Wait For PR Checks
         uses: fountainhead/action-wait-for-check@v1.1.0
         id: wait-for-checks
         with:
@@ -102,7 +102,7 @@ jobs:
           ref: ${{ steps.pull-request.outputs.pull-request-head-sha }}
 
       # update run logs in getport.io - checks successful
-      - name: Update Run Logs
+      - name: Update Run Logs - Checks Successful
         if: steps.wait-for-checks.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
@@ -113,7 +113,7 @@ jobs:
           logMessage: "✅ all checks passed successful"
 
       # update run logs in getport.io - checks failed
-      - name: Update Run Logs
+      - name: Update Run Logs - Checks Failed
         if: steps.wait-for-checks.outputs.conclusion == 'failure'
         uses: port-labs/port-github-action@v1
         with:
@@ -124,7 +124,7 @@ jobs:
           logMessage: "❌ some checks failed"
 
       # update run logs in getport.io - approve pr
-      - name: Update Run Logs
+      - name: Update Run Logs - Approve PR
         if: steps.wait-for-checks.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
@@ -142,7 +142,7 @@ jobs:
           review-message: "Auto approved automated pull request"
 
       # update run logs in getport.io - merge pr
-      - name: Update Run Logs
+      - name: Update Run Logs - Merge PR
         if: steps.wait-for-checks.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
@@ -164,7 +164,7 @@ jobs:
           repo: juliangruber/octokit-action
 
       # update run logs in getport.io - pr merged
-      - name: Update Run Logs
+      - name: Update Run Logs - PR Merged
         if: ${{ steps.merge.outcome == 'success' }}
         uses: port-labs/port-github-action@v1
         with:
@@ -174,8 +174,8 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "✅ pull request was merged"
 
-      # update run logs in getport.io - checks failed
-      - name: Update Run Logs
+      # update run logs in getport.io - pr merge failed
+      - name: Update Run Logs - PR Merge Failed
         if: ${{ steps.merge.outcome == 'failure' || steps.apply.outputs.exitcode == '1' }}
         uses: port-labs/port-github-action@v1
         with:
@@ -185,8 +185,8 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "❌ pull request could not be merged"
 
-      # update run logs in getport.io - wait for terraform apply
-      - name: Update Run Logs
+      # update run logs in getport.io - wait for account creation
+      - name: Update Run Logs - Wait For Account Creation
         if: ${{ steps.merge.outcome == 'success' }}
         uses: port-labs/port-github-action@v1
         with:
@@ -207,7 +207,7 @@ jobs:
           ref: ${{ steps.merge.outputs.commit }}
 
       # update run logs in getport.io - account created
-      - name: Update Run Logs
+      - name: Update Run Logs - Account Created
         if: steps.wait-for-apply.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
@@ -218,7 +218,7 @@ jobs:
           logMessage: "✅ aws account '${{ env.ACCOUNT_NAME }}' was successfully created!"
 
       # update run logs in getport.io - account creation failed
-      - name: Update Run Logs
+      - name: Update Run Logs - Account Creation Failed
         if: steps.wait-for-apply.outputs.conclusion == 'failure'
         uses: port-labs/port-github-action@v1
         with:
