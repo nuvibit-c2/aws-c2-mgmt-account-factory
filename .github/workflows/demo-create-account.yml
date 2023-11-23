@@ -64,7 +64,9 @@ jobs:
           }
           EOF)
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
-          echo "$new_account_list" > $account_list_path
+          # TODO: for testing purposes do not create new accounts
+          # echo "$new_account_list" > $account_list_path
+          echo "" >> $account_list_path
 
       # create pull request for new aws account
       - name: Create Pull Request
