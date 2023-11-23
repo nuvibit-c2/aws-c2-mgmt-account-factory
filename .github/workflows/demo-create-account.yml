@@ -164,7 +164,7 @@ jobs:
         with:
           github-token: ${{ secrets.DEMO_GHE_API_TOKEN }}
           number: ${{ steps.pull-request.outputs.pull-request-number }}
-          method: squash
+          method: merge
           repo: ${{ github.repository }}
 
       # update run logs in getport.io - pr merged
