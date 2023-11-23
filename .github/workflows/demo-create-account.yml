@@ -95,7 +95,7 @@ jobs:
           branch: demo-create-account
           branch-suffix: short-commit-hash
           delete-branch: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEMO_GHE_API_TOKEN }}
 
       # update run logs in getport.io - wait for checks
       - name: Update Run Logs - Wait For Checks
