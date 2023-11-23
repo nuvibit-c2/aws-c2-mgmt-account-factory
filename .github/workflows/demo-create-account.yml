@@ -8,21 +8,6 @@ on:
         description: Port's payload, including details for who triggered the action and general context (blueprint, run id, etc...)
         type: string
 
-permissions:
-  actions: read
-  checks: read
-  contents: write
-  deployments: none
-  id-token: none
-  issues: none
-  discussions: none
-  packages: none
-  pages: none
-  pull-requests: write
-  repository-projects: none
-  security-events: none
-  statuses: none
-
 jobs:
   demo-create-account:
     runs-on: ubuntu-latest
@@ -115,6 +100,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: terraform-workspace / workflow-summary
           ref: ${{ steps.pull-request.outputs.pull-request-head-sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 10
 
       # update run logs in getport.io - checks successful
       - name: Update Run Logs - Checks Successful
@@ -173,10 +160,10 @@ jobs:
         id: merge
         continue-on-error: true
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.DEMO_GHE_API_TOKEN }}
           number: ${{ steps.pull-request.outputs.pull-request-number }}
           method: squash
-          repo: juliangruber/octokit-action
+          repo: ${{ github.repository }}
 
       # update run logs in getport.io - pr merged
       - name: Update Run Logs - PR Merged
@@ -220,6 +207,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: terraform-workspace / workflow-summary
           ref: ${{ steps.merge.outputs.commit }}
+          timeoutSeconds: 600
+          intervalSeconds: 10
 
       # update run logs in getport.io - account created
       - name: Update Run Logs - Account Created
