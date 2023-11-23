@@ -145,7 +145,7 @@
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
-      "AccountDescription": "This is a demo account",
+      "AccountDescription": "This is a demo account2",
       "CostCenter": "test"
     },
     "alternate_contacts": [
