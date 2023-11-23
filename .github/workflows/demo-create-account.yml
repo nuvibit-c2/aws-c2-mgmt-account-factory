@@ -27,6 +27,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
       
+      # update run logs in getport.io - write pr
       - name: Update Run Logs
         uses: port-labs/port-github-action@v1
         with:
@@ -36,6 +37,7 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "✍️ writing new pull request..."
 
+      # update aws account list
       - name: Update Account List
         run: |
           account_list_path="account_list.json"
@@ -64,6 +66,7 @@ jobs:
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
           echo "$new_account_list" > $account_list_path
 
+      # create pull request for new aws account
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v5
@@ -78,7 +81,8 @@ jobs:
           branch-suffix: short-commit-hash
           delete-branch: true
           token: ${{ secrets.DEMO_GHE_API_TOKEN }}
-      
+
+      # update run logs in getport.io - wait for checks
       - name: Update Run Logs
         uses: port-labs/port-github-action@v1
         with:
@@ -86,34 +90,168 @@ jobs:
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "🛠️ creating catalog entity..."
+          logMessage: "⏲️ waiting for checks to pass..."
 
-      - name: Update Catalog
-        uses: port-labs/port-github-action@v1
+      # wait for pull request checks to succeed
+      - name: Wait For Checks
+        uses: fountainhead/action-wait-for-check@v1.1.0
+        id: wfc
         with:
-          clientId: ${{ secrets.PORT_CLIENT_ID }}
-          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
-          operation: UPSERT
-          runId: ${{ env.PORT_RUN_ID }}
-          identifier: ${{ env.ACCOUNT_NAME }}
-          icon: Aws
-          blueprint: ${{ env.PORT_BLUEPRINT }}
-          properties: |
-            {
-              "pull_request": "${{ steps.cpr.outputs.pull-request-url }}",
-              "account_name": "${{ env.ACCOUNT_NAME }}",
-              "account_email": "${{ env.ACCOUNT_EMAIL }}",
-              "ou_path": "/root/workloads/${{ env.SDLC }}",
-              "account_owner": "${{ env.PORT_USER_EMAIL }}",
-              "cost_center": "${{ env.COST_CENTER }}",
-              "alternate_contacts": "Security=${{ env.SECURITY_CONTACT_EMAIL }}"
-            }
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: terraform-workspace / workflow-summary
+          ref: ${{ steps.cpr.outputs.pull-request-head-sha }}
 
+      # update run logs in getport.io - checks successful
       - name: Update Run Logs
+        if: steps.wfc.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "⏲️ waiting for pull request approval..."
+          logMessage: "✅ all checks successful!"
+
+      # update run logs in getport.io - checks failed
+      - name: Update Run Logs
+        if: steps.wfc.outputs.conclusion == 'failure'
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ env.PORT_RUN_ID }}
+          logMessage: "❌ some checks failed."
+
+      # update run logs in getport.io - approve pr
+      - name: Update Run Logs
+        if: steps.wfc.outputs.conclusion == 'success'
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ env.PORT_RUN_ID }}
+          logMessage: "👍 approving pull request..."
+    
+      - name: Approve Pull Request
+        if: steps.wfc.outputs.conclusion == 'success'
+        uses: hmarr/auto-approve-action@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          review-message: "Auto approved automated pull request"
+
+
+  #     # TODO: update if conditions
+  #     # insert tf apply checker
+
+  #     # update run logs in getport.io - account created
+  #     - name: Update Run Logs
+  #       if: steps.wfc.outputs.conclusion == 'success'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         logMessage: "✅ aws account '${{ env.ACCOUNT_NAME }}' was successfully created!"
+
+  #     # update run logs in getport.io - account creation failed
+  #     - name: Update Run Logs
+  #       if: steps.wfc.outputs.conclusion == 'failure'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         logMessage: "❌ aws account '${{ env.ACCOUNT_NAME }}' failed to create."
+
+  #     # update run logs in getport.io - update catalog
+  #     - name: Update Run Logs
+  #       if: steps.wfc.outputs.conclusion == 'success'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         logMessage: "🛠️ adding aws account '${{ env.ACCOUNT_NAME }}' to catalog..."
+
+  #     # update getport.io catalog
+  #     - name: Update Catalog
+  #       if: steps.wfc.outputs.conclusion == 'success'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: UPSERT
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         identifier: ${{ env.ACCOUNT_NAME }}
+  #         icon: Aws
+  #         blueprint: ${{ env.PORT_BLUEPRINT }}
+  #         properties: |
+  #           {
+  #             "pull_request": "${{ steps.cpr.outputs.pull-request-url }}",
+  #             "account_name": "${{ env.ACCOUNT_NAME }}",
+  #             "account_email": "${{ env.ACCOUNT_EMAIL }}",
+  #             "ou_path": "/root/workloads/${{ env.SDLC }}",
+  #             "account_owner": "${{ env.PORT_USER_EMAIL }}",
+  #             "cost_center": "${{ env.COST_CENTER }}",
+  #             "alternate_contacts": "Security=${{ env.SECURITY_CONTACT_EMAIL }}"
+  #           }
+
+  # workflow-summary:
+  #   needs:
+  #     - wfc
+  #   runs-on: ubuntu-latest
+  #   if: ${{ always() }}
+
+  #   steps:
+  #     # update run logs in getport.io - almost done
+  #     - name: Update Run Logs
+  #       if: needs.wfc.outputs.conclusion == 'success'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         logMessage: "🏁 you are almost at the finish line - follow this guide for the next steps:"
+
+  #     # update run status in getport.io - success
+  #     - name: Update Run Status
+  #       if: needs.wfc.outputs.conclusion == 'success'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         status: "SUCCESS"
+  #         logMessage: "🌐 https://important-wiki/aws-account-next-steps"
+  #         summary: "AWS Account '${{ env.ACCOUNT_NAME }}' successfully created"
+
+  #     # update run logs in getport.io - something went wrong
+  #     - name: Update Run Logs
+  #       if: needs.wfc.outputs.conclusion == 'failure'
+  #       uses: port-labs/port-github-action@v1
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         logMessage: "🧯 something went wrong - follow this guide to troubleshoot:"
+
+  #     # update run status in getport.io - failure
+  #     - name: Update Run Status
+  #       uses: port-labs/port-github-action@v1
+  #       if: needs.wfc.outputs.conclusion == 'failure'
+  #       with:
+  #         clientId: ${{ secrets.PORT_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+  #         operation: PATCH_RUN
+  #         runId: ${{ env.PORT_RUN_ID }}
+  #         status: "SUCCESS"
+  #         logMessage: "🌐 https://important-wiki/aws-account-troubleshooting"
+  #         summary: "AWS Account '${{ env.ACCOUNT_NAME }}' failed to created"
