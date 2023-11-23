@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACCOUNT_NAME: aws-c2-${{fromJson(inputs.port_payload).payload.properties.solution_name}}-${{fromJson(inputs.port_payload).payload.properties.account_environment}}
-      ACCOUNT_EMAIL: accounts+${{fromJson(inputs.port_payload).payload.properties.account_name}}@nuvibit.com
+      ACCOUNT_EMAIL: accounts+aws-c2-${{fromJson(inputs.port_payload).payload.properties.solution_name}}-${{fromJson(inputs.port_payload).payload.properties.account_environment}}@nuvibit.com
       ACCOUNT_ENVIRONMENT: ${{fromJson(inputs.port_payload).payload.properties.account_environment}}
       COST_CENTER: ${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}
       SECURITY_CONTACT_EMAIL: ${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}
@@ -95,17 +95,17 @@ jobs:
       # wait for pull request checks to succeed
       - name: Wait For PR Checks
         uses: fountainhead/action-wait-for-check@v1.1.0
-        id: wait-for-checks
+        id: wait-for-plan
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: terraform-workspace / workflow-summary
+          checkName: terraform-workspace / workflow-run
           ref: ${{ steps.pull-request.outputs.pull-request-head-sha }}
           timeoutSeconds: 600
           intervalSeconds: 10
 
       # update run logs in getport.io - checks successful
       - name: Update Run Logs - Checks Successful
-        if: steps.wait-for-checks.outputs.conclusion == 'success'
+        if: steps.wait-for-plan.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -116,7 +116,7 @@ jobs:
 
       # update run logs in getport.io - checks failed
       - name: Update Run Logs - Checks Failed
-        if: steps.wait-for-checks.outputs.conclusion != 'success'
+        if: steps.wait-for-plan.outputs.conclusion != 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -127,7 +127,7 @@ jobs:
 
       # update run logs in getport.io - approve pr
       - name: Update Run Logs - Approve PR
-        if: steps.wait-for-checks.outputs.conclusion == 'success'
+        if: steps.wait-for-plan.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -137,7 +137,7 @@ jobs:
           logMessage: "👍 approving pull request..."
     
       - name: Approve Pull Request
-        if: steps.wait-for-checks.outputs.conclusion == 'success'
+        if: steps.wait-for-plan.outputs.conclusion == 'success'
         uses: hmarr/auto-approve-action@v3
         with:
           pull-request-number: ${{ steps.pull-request.outputs.pull-request-number }}
@@ -145,7 +145,7 @@ jobs:
 
       # update run logs in getport.io - merge pr
       - name: Update Run Logs - Merge PR
-        if: steps.wait-for-checks.outputs.conclusion == 'success'
+        if: steps.wait-for-plan.outputs.conclusion == 'success'
         uses: port-labs/port-github-action@v1
         with:
           clientId: ${{ secrets.PORT_CLIENT_ID }}
@@ -155,7 +155,7 @@ jobs:
           logMessage: "⛙ merging pull request..."
 
       - name: Merge Pull Request
-        if: steps.wait-for-checks.outputs.conclusion == 'success'
+        if: steps.wait-for-plan.outputs.conclusion == 'success'
         uses: juliangruber/merge-pull-request-action@v1.2.0
         id: merge-pr
         continue-on-error: true
@@ -205,7 +205,7 @@ jobs:
         id: wait-for-apply
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: terraform-workspace / workflow-summary
+          checkName: terraform-workspace / workflow-run
           ref: ${{ steps.merge-pr.outputs.commit }}
           timeoutSeconds: 600
           intervalSeconds: 10
