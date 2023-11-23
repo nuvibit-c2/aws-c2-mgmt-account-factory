@@ -198,6 +198,9 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "⏲️ waiting for creation of aws account '${{ env.ACCOUNT_NAME }}'..."
 
+      # FIXME: DEBUG
+      - run: echo "${{ steps.merge.outputs.commit }}"
+
       # wait for pull request checks to succeed
       - name: Wait For Account Creation
         if: ${{ steps.merge.outcome == 'success' }}
