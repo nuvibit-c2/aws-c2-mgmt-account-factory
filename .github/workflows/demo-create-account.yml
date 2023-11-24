@@ -314,6 +314,6 @@ jobs:
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
-          status: "SUCCESS"
+          status: "FAILURE"
           logMessage: "🌐 https://wiki.example/aws-account-troubleshooting"
           summary: "AWS Account '${{ env.ACCOUNT_NAME }}' failed to created"
