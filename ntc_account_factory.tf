@@ -82,8 +82,8 @@ module "account_factory" {
   account_baseline_scopes = [
     {
       scope_name           = "security-core"
-      terraform_version    = "1.3.9"
-      aws_provider_version = "4.64.0"
+      terraform_version    = "1.6.5"
+      aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
@@ -148,8 +148,8 @@ module "account_factory" {
     },
     {
       scope_name           = "workloads-prod"
-      terraform_version    = "1.3.9"
-      aws_provider_version = "4.64.0"
+      terraform_version    = "1.6.5"
+      aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
