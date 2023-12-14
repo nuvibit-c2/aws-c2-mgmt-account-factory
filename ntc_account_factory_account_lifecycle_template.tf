@@ -2,7 +2,8 @@
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.1.2"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.1.2"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=feat-shared-tags"
 
   # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
@@ -42,6 +43,12 @@ module "account_lifecycle_customization_templates" {
           value        = 20
         }
       ]
+    },
+    {
+      template_name               = "tag_shared_resources"
+      organizations_event_trigger = "CreateAccountResult"
+      organizations_member_role   = "OrganizationAccountAccessRole"
+      shared_resources_regions    = ["eu-central-1", "eu-central-2"]
     },
     {
       template_name               = "move_to_suspended_ou"
