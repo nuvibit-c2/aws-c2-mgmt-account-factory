@@ -101,7 +101,7 @@ module "account_baseline_templates" {
       }
     },
     {
-      file_name = "oidc_spacelift"
+      file_name     = "oidc_spacelift"
       template_name = "openid_connect"
       openid_connect_inputs = {
         provider = "nuvibit.app.spacelift.io"
@@ -123,11 +123,11 @@ module "account_baseline_templates" {
         # gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
         # github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
         # jenkins         = "job:JOB_NAME/master"
-        role_name = "ntc-oidc-spacelift-role"
-        role_path = "/"
+        role_name                 = "ntc-oidc-spacelift-role"
+        role_path                 = "/"
         role_max_session_in_hours = 1
-        permission_boundary_arn = ""
-        permission_policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+        permission_boundary_arn   = ""
+        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
       }
     }
   ]

@@ -124,20 +124,20 @@ module "account_factory" {
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
-      include_accounts_all = true
+      include_accounts_all         = true
       include_accounts_by_ou_paths = []
-      include_accounts_by_names = []
-      include_accounts_by_tags = []
+      include_accounts_by_names    = []
+      include_accounts_by_tags     = []
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
-      exclude_accounts_by_names = []
-      exclude_accounts_by_tags = []
+      exclude_accounts_by_names    = []
+      exclude_accounts_by_tags     = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
-      decommission_accounts_by_names = []
-      decommission_accounts_by_tags = []
+      decommission_accounts_by_names    = []
+      decommission_accounts_by_tags     = []
     },
     {
       scope_name           = "security-core"
