@@ -107,14 +107,16 @@ module "account_baseline_templates" {
         provider = "nuvibit.app.spacelift.io"
         audience = "nuvibit.app.spacelift.io"
         # subject_list = ["space:ntc:stack:$${var.current_account_name}:*"]
-        subject_list_encoded = "flatten([
+        subject_list_encoded = <<EOT
+        flatten([
           [
             \"space:ntc:stack:$${var.current_account_name}:*\"
           ],
           [
             for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : \"space:ntc:stack:$${subject}:*\"
           ]
-        ])"
+        ])
+        EOT
         # examples for common oidc subjects
         # terraform_cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
         # spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
