@@ -121,14 +121,14 @@ module "account_baseline_templates" {
           github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
           jenkins         = "job:JOB_NAME/master"
         */
-        # subject_list = ["space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${var.current_account_name}:*"]
+        # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
         subject_list_encoded = <<EOT
 flatten([
   [
-    "space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${var.current_account_name}:*"
+    "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"
   ],
   [
-    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${subject}:*"
+    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${subject}:*"
   ]
 ])
 EOT
