@@ -16,7 +16,12 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [
+        "aws-c2-account-factory",
+        "aws-c2-identity-center"
+      ]
+    }
   },
   {
     "account_name": "aws-c2-connectivity",
