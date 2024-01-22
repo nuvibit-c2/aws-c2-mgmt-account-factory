@@ -96,7 +96,7 @@ jobs:
         id: wait-for-plan
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: terraform-workspace / workflow-run
+          checkName: spacelift/aws-c2-account-factory
           ref: ${{ steps.pull-request.outputs.pull-request-head-sha }}
           timeoutSeconds: 600
           intervalSeconds: 10
@@ -203,7 +203,7 @@ jobs:
         id: wait-for-apply
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: terraform-workspace / workflow-run
+          checkName: spacelift/aws-c2-account-factory
           ref: ${{ steps.merge-pr.outputs.commit }}
           timeoutSeconds: 600
           intervalSeconds: 10
