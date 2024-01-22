@@ -111,14 +111,14 @@ module "account_baseline_templates" {
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
         permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
-        # subject_list = ["space:ntc:stack:$${var.current_account_name}:*"]
+        # subject_list = ["space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${var.current_account_name}:*"]
         subject_list_encoded = <<EOT
 flatten([
   [
-    "space:ntc:stack:$${var.current_account_name}:*"
+    "space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${var.current_account_name}:*"
   ],
   [
-    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:ntc:stack:$${subject}:*"
+    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:ntc-01HMBDRE2V1MPDEK878HKHMRDY:stack:$${subject}:*"
   ]
 ])
 EOT
