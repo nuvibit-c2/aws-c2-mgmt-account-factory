@@ -2,7 +2,8 @@
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.3"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.1.3"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feat-oidc"
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
@@ -97,6 +98,36 @@ module "account_baseline_templates" {
         role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
         role_principal_identifiers = [data.aws_caller_identity.current.account_id]
+      }
+    },
+    {
+      file_name     = "oidc_spacelift"
+      template_name = "openid_connect"
+      openid_connect_inputs = {
+        provider = "nuvibit.app.spacelift.io"
+        audience = "nuvibit.app.spacelift.io"
+        # subject_list = ["space:ntc:stack:$${var.current_account_name}:*"]
+        subject_list_encoded = <<EOT
+        flatten([
+          [
+            \"space:ntc:stack:$${var.current_account_name}:*\"
+          ],
+          [
+            for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : \"space:ntc:stack:$${subject}:*\"
+          ]
+        ])
+        EOT
+        # examples for common oidc subjects
+        # terraform_cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
+        # spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
+        # gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
+        # github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+        # jenkins         = "job:JOB_NAME/master"
+        role_name                 = "ntc-oidc-spacelift-role"
+        role_path                 = "/"
+        role_max_session_in_hours = 1
+        permission_boundary_arn   = ""
+        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
       }
     }
   ]

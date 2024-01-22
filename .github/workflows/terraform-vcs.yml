@@ -9,7 +9,7 @@ on:
   #     - main
 
 jobs:
-  terraform-workspace:
+  terraform-vcs:
     # uses: nuvibit/github-terraform-workflows/.github/workflows/terraform-workspace.yml@v1
     uses: nuvibit/github-terraform-workflows/.github/workflows/terraform-vcs.yml@feat-vcs
     with:

@@ -25,7 +25,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.3.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.3.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-account-context"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -81,6 +82,63 @@ module "account_factory" {
 
   # list of baseline definitions for accounts in a specific scope
   account_baseline_scopes = [
+    {
+      scope_name           = "global"
+      terraform_version    = "1.6.5"
+      aws_provider_version = "5.26.0"
+      # (optional) define provider default tags which will be applied to all baseline resources
+      provider_default_tags = {
+        ManagedBy       = "ntc-account-factory",
+        BaselineScope   = "global",
+        BaselineVersion = "1.0"
+      }
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 10
+      # (optional) schedule baseline pipelines to rerun every x hours
+      schedule_rerun_every_x_hours = 0
+      # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
+      baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # add terraform code to baseline from static files or dynamic templates
+      baseline_terraform_files = [
+        # {
+        #   file_name                     = "baseline_openid_connect"
+        #   content                       = templatefile("${path.module}/files/baseline_openid_connect.tftpl", { role_name = "example-role" })
+        #   terraform_version_minimum     = "1.3.9"
+        #   aws_provider_version_minimum  = "4.59.0"
+        # },
+        module.account_baseline_templates.account_baseline_terraform_files["iam_role_admin"],
+        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"]
+      ]
+      # add delay to pipeline to avoid errors on first run
+      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+      pipeline_delay_options = {
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = true
+        wait_for_securityhub    = true
+        wait_for_guardduty      = true
+      }
+      # baseline terraform code will be provisioned in each specified region
+      baseline_regions = ["eu-central-1"]
+      # baseline terraform code which can be provisioned in a single region (e.g. IAM)
+      baseline_main_region = "eu-central-1"
+      # accounts which should be included in baseline scope
+      include_accounts_all         = true
+      include_accounts_by_ou_paths = []
+      include_accounts_by_names    = []
+      include_accounts_by_tags     = []
+      # accounts which should be excluded in baseline scope
+      exclude_accounts_by_ou_paths = []
+      exclude_accounts_by_names    = []
+      exclude_accounts_by_tags     = []
+      # decomissioning of baseline terraform resources must be done before deleting the scope!
+      # decommission baseline terraform code for specific accounts in scope
+      decommission_accounts_all         = false
+      decommission_accounts_by_ou_paths = []
+      decommission_accounts_by_names    = []
+      decommission_accounts_by_tags     = []
+    },
     {
       scope_name           = "security-core"
       terraform_version    = "1.6.5"
@@ -165,13 +223,6 @@ module "account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name                     = "baseline_iam_roles"
-        #   content                       = templatefile("${path.module}/files/baseline_iam_roles.tftpl", { role_name = "example-role" })
-        #   terraform_version_minimum     = "1.3.9"
-        #   aws_provider_version_minimum  = "4.59.0"
-        # },
-        module.account_baseline_templates.account_baseline_terraform_files["iam_role_admin"],
         module.account_baseline_templates.account_baseline_terraform_files["security_member"]
       ]
       # add delay to pipeline to avoid errors on first run
