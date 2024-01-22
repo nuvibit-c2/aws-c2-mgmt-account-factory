@@ -104,8 +104,8 @@ module "account_baseline_templates" {
       file_name     = "oidc_spacelift"
       template_name = "openid_connect"
       openid_connect_inputs = {
-        provider = "nuvibit.app.spacelift.io"
-        audience = "nuvibit.app.spacelift.io"
+        provider                  = "nuvibit.app.spacelift.io"
+        audience                  = "nuvibit.app.spacelift.io"
         role_name                 = "ntc-oidc-spacelift-role"
         role_path                 = "/"
         role_max_session_in_hours = 1
