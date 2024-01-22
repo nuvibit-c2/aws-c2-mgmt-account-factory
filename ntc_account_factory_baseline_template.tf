@@ -106,29 +106,30 @@ module "account_baseline_templates" {
       openid_connect_inputs = {
         provider = "nuvibit.app.spacelift.io"
         audience = "nuvibit.app.spacelift.io"
-        # subject_list = ["space:ntc:stack:$${var.current_account_name}:*"]
-        subject_list_encoded = <<EOT
-        flatten([
-          [
-            \"space:ntc:stack:$${var.current_account_name}:*\"
-          ],
-          [
-            for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : \"space:ntc:stack:$${subject}:*\"
-          ]
-        ])
-        EOT
-        # examples for common oidc subjects
-        # terraform_cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
-        # spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
-        # gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
-        # github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
-        # jenkins         = "job:JOB_NAME/master"
         role_name                 = "ntc-oidc-spacelift-role"
         role_path                 = "/"
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
         permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        # subject_list = ["space:ntc:stack:$${var.current_account_name}:*"]
+        subject_list_encoded = <<EOT
+flatten([
+  [
+    "space:ntc:stack:$${var.current_account_name}:*"
+  ],
+  [
+    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:ntc:stack:$${subject}:*"
+  ]
+])
+EOT
       }
     }
   ]
 }
+
+### examples for common openid_connect subjects
+# terraform_cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
+# spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
+# gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
+# github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+# jenkins         = "job:JOB_NAME/master"
