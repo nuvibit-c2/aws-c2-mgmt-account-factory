@@ -2,12 +2,12 @@
 # ¦ BACKEND
 # ---------------------------------------------------------------------------------------------------------------------
 terraform {
-  cloud {
-    organization = "nuvibit-c2"
-    hostname     = "app.terraform.io"
+  backend "remote" {
+    hostname     = "spacelift.io" 
+    organization = "nuvibit"    
 
     workspaces {
-      name = "aws-c2-account-factory"
+      name = "aws-c2-account-factory" 
     }
   }
 }
