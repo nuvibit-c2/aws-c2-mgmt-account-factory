@@ -5,7 +5,8 @@ registries:
   github-ntc:
     type: git
     url: https://github.com
-    token: ${{ secrets.GHE_API_TOKEN }}
+    username: dependabot
+    password: ${{ secrets.GHE_API_TOKEN }}
 
 updates:
   - package-ecosystem: "github-actions"
