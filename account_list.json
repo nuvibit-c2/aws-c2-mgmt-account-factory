@@ -14,6 +14,11 @@
         "type": "SECURITY",
         "name": "Security Operation Center",
         "email_address": "security@nuvibit.com"
+      },
+      {
+        "type": "BILLING",
+        "name": "Backoffice",
+        "email_address": "backoffice@nuvibit.com"
       }
     ],
     "customer_values": {
