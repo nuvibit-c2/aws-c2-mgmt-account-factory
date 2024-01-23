@@ -3,11 +3,11 @@
 # ---------------------------------------------------------------------------------------------------------------------
 terraform {
   backend "remote" {
-    hostname     = "spacelift.io" 
-    organization = "nuvibit"    
+    hostname     = "spacelift.io"
+    organization = "nuvibit"
 
     workspaces {
-      name = "aws-c2-account-factory" 
+      name = "aws-c2-account-factory"
     }
   }
 }
