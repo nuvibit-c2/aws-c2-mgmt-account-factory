@@ -7,6 +7,9 @@ locals {
     core_accounts = local.account_factory_core_account_ids
   }
 
+  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
+  ntc_replace_parameters = true
+
   # node owner that is also the account factory can optionally store an account map
   ntc_store_account_map = true
   ntc_account_map = {
@@ -87,14 +90,12 @@ module "ntc_parameters_reader" {
 module "ntc_parameters_writer" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.0"
 
-  bucket_name     = local.ntc_parameters_bucket_name
-  parameter_node  = local.ntc_parameters_writer_node
-  node_parameters = local.ntc_parameters_to_write
-  # by default existing node parameters will be merged with new parameters to avoid deleting parameters
-  replace_parameters = true
-  # (optional) account factory can store an account map
-  store_account_map = local.ntc_store_account_map
-  account_map       = local.ntc_account_map
+  bucket_name        = local.ntc_parameters_bucket_name
+  parameter_node     = local.ntc_parameters_writer_node
+  node_parameters    = local.ntc_parameters_to_write
+  store_account_map  = local.ntc_store_account_map
+  account_map        = local.ntc_account_map
+  replace_parameters = local.ntc_replace_parameters
 
   providers = {
     aws = aws.euc1
