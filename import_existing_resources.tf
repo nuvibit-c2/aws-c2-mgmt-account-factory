@@ -2,7 +2,7 @@
 # import blocks are only available in Terraform v1.5.0 and later
 
 import {
-  # the org management account must be initially created manually and needs to be imported
+  # the org management account must be initially created manually and needs to be imported 
   to = module.account_factory.aws_organizations_account.ntc_factory_account["aws-c2-management"]
   id = "228120440352"
 }
