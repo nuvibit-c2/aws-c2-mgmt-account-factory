@@ -25,8 +25,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.3.0"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-account-context"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.4.0"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
