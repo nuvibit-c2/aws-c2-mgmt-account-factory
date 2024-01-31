@@ -45,7 +45,7 @@ resource "aws_iam_role" "ntc_trivy_role" {
 
 resource "aws_iam_role_policy" "ntc_trivy_role" {
   name = "trivy_test"
-  role = aws_iam_role.test_role.id
+  role = aws_iam_role.ntc_trivy_role.id
 
   policy = data.aws_iam_policy_document.ntc_trivy_policy.json
 }
