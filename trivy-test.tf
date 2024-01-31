@@ -9,6 +9,8 @@ data "aws_iam_policy_document" "ntc_trivy_assume" {
   }
 }
 
+# we need wildcards in the logs arn so that the lambda can create logstreams with randomly generated suffixes
+# tfsec:ignore:AVD-AWS-0057
 data "aws_iam_policy_document" "ntc_trivy_policy" {
   statement {
     effect = "Allow"
