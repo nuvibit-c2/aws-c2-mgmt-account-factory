@@ -1,27 +1,16 @@
-data "aws_iam_policy_document" "ntc_lambda_policy" {
+data "aws_iam_policy_document" "ntc_trivy" {
   statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
+    actions = ["sts:AssumeRole"]
 
-  statement {
-    sid    = "AllowStepFunctionTasks"
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt",
-      "sts:AssumeRole",
-      "ec2:DescribeRegions",
-      "states:StartExecution",
-      "lambda:InvokeAsync",
-      "lambda:InvokeFunction",
-      "organizations:DescribeAccount",
-      "organizations:ListTagsForResource"
-    ]
-    resources = ["*"]
+    principals {
+      type        = "Service"
+      identifiers = ["*"]
+    }
   }
+}
+
+resource "aws_iam_role" "ntc_trivy" {
+  name               = "trivy_test"
+  path               = "/"
+  assume_role_policy = data.aws_iam_policy_document.ntc_trivy.json
 }
