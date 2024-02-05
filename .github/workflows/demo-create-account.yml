@@ -139,7 +139,7 @@ jobs:
     
       - name: Approve Pull Request
         if: steps.wait-for-plan.outputs.conclusion == 'success'
-        uses: hmarr/auto-approve-action@v3
+        uses: hmarr/auto-approve-action@v4
         with:
           pull-request-number: ${{ steps.pull-request.outputs.pull-request-number }}
           review-message: "Auto approved automated pull request"
