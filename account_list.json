@@ -23,8 +23,9 @@
     ],
     "customer_values": {
       "additional_oidc_subjects" : [
-        "aws-c2-account-factory",
-        "aws-c2-identity-center"
+        "aws-c2-mgmt-organizations",
+        "aws-c2-mgmt-account-factory",
+        "aws-c2-mgmt-identity-center"
       ]
     }
   },
