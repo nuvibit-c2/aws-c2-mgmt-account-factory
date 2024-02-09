@@ -10,14 +10,50 @@ import {
 */
 
 import {
-  to = module.account_factory.aws_codebuild_project.ntc_baseline_project["security-core"]
-  id = "ntc-af__security-core"
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["workloads-prod/aws-c2-0001"]
+  id = "ntc-af_workloads-prod_aws-c2-0001"
 }
 import {
-  to = module.account_factory.aws_codebuild_project.ntc_baseline_project["global"]
-  id = "ntc-af__global"
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-0002"]
+  id = "ntc-af_global_aws-c2-0002"
 }
 import {
-  to = module.account_factory.aws_codebuild_project.ntc_baseline_project["workloads-prod"]
-  id = "ntc-af__workloads-prod"
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-management"]
+  id = "ntc-af_security-core_aws-c2-management"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-log-archive"]
+  id = "ntc-af_global_aws-c2-log-archive"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-connectivity"]
+  id = "ntc-af_security-core_aws-c2-connectivity"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-management"]
+  id = "ntc-af_global_aws-c2-management"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-0001"]
+  id = "ntc-af_global_aws-c2-0001"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-security"]
+  id = "ntc-af_global_aws-c2-security"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-connectivity"]
+  id = "ntc-af_global_aws-c2-connectivity"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-security"]
+  id = "ntc-af_security-core_aws-c2-security"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-log-archive"]
+  id = "ntc-af_security-core_aws-c2-log-archive"
+}
+import {
+  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-playground-test"]
+  id = "ntc-af_global_aws-c2-playground-test"
 }
