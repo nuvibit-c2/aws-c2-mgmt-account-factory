@@ -10,50 +10,50 @@ import {
 */
 
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["workloads-prod/aws-c2-0001"]
-  id = "ntc-af_workloads-prod_aws-c2-0001"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-0002"]
+  id = "baseline_scope__global__aws-c2-0002__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-0002"]
-  id = "ntc-af_global_aws-c2-0002"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-playground-test"]
+  id = "baseline_scope__global__aws-c2-playground-test__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-management"]
-  id = "ntc-af_security-core_aws-c2-management"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-connectivity"]
+  id = "baseline_scope__global__aws-c2-connectivity__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-log-archive"]
-  id = "ntc-af_global_aws-c2-log-archive"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["security-core/aws-c2-log-archive"]
+  id = "baseline_scope__security-core__aws-c2-log-archive__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-connectivity"]
-  id = "ntc-af_security-core_aws-c2-connectivity"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-log-archive"]
+  id = "baseline_scope__global__aws-c2-log-archive__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-management"]
-  id = "ntc-af_global_aws-c2-management"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-management"]
+  id = "baseline_scope__global__aws-c2-management__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-0001"]
-  id = "ntc-af_global_aws-c2-0001"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["workloads-prod/aws-c2-0001"]
+  id = "baseline_scope__workloads-prod__aws-c2-0001__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-security"]
-  id = "ntc-af_global_aws-c2-security"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["security-core/aws-c2-connectivity"]
+  id = "baseline_scope__security-core__aws-c2-connectivity__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-connectivity"]
-  id = "ntc-af_global_aws-c2-connectivity"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-security"]
+  id = "baseline_scope__global__aws-c2-security__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-security"]
-  id = "ntc-af_security-core_aws-c2-security"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["security-core/aws-c2-management"]
+  id = "baseline_scope__security-core__aws-c2-management__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["security-core/aws-c2-log-archive"]
-  id = "ntc-af_security-core_aws-c2-log-archive"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["global/aws-c2-0001"]
+  id = "baseline_scope__global__aws-c2-0001__baseline.lock"
 }
 import {
-  to = module.account_factory.aws_codepipeline.ntc_baseline_pipeline["global/aws-c2-playground-test"]
-  id = "ntc-af_global_aws-c2-playground-test"
+  to = module.account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["security-core/aws-c2-security"]
+  id = "baseline_scope__security-core__aws-c2-security__baseline.lock"
 }
