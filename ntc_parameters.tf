@@ -20,7 +20,7 @@ locals {
   share_parameters_with_entire_org = false
 
   # map of parameters merged from all parameter nodes
-  ntc_parameters = module.ntc_parameters_reader.all_parameters
+  ntc_parameters = {} # module.ntc_parameters_reader.all_parameters
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -71,33 +71,33 @@ module "ntc_parameters_bucket" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC PARAMETERS - READER
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_reader" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.0"
+# # ---------------------------------------------------------------------------------------------------------------------
+# # ¦ NTC PARAMETERS - READER
+# # ---------------------------------------------------------------------------------------------------------------------
+# module "ntc_parameters_reader" {
+#   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.0"
 
-  bucket_name = local.ntc_parameters_bucket_name
+#   bucket_name = local.ntc_parameters_bucket_name
 
-  providers = {
-    aws = aws.euc1
-  }
-}
+#   providers = {
+#     aws = aws.euc1
+#   }
+# }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC PARAMETERS - WRITER
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_writer" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.0"
+# # ---------------------------------------------------------------------------------------------------------------------
+# # ¦ NTC PARAMETERS - WRITER
+# # ---------------------------------------------------------------------------------------------------------------------
+# module "ntc_parameters_writer" {
+#   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.0"
 
-  bucket_name        = local.ntc_parameters_bucket_name
-  parameter_node     = local.ntc_parameters_writer_node
-  node_parameters    = local.ntc_parameters_to_write
-  store_account_map  = local.ntc_store_account_map
-  account_map        = local.ntc_account_map
-  replace_parameters = local.ntc_replace_parameters
+#   bucket_name        = local.ntc_parameters_bucket_name
+#   parameter_node     = local.ntc_parameters_writer_node
+#   node_parameters    = local.ntc_parameters_to_write
+#   store_account_map  = local.ntc_store_account_map
+#   account_map        = local.ntc_account_map
+#   replace_parameters = local.ntc_replace_parameters
 
-  providers = {
-    aws = aws.euc1
-  }
-}
+#   providers = {
+#     aws = aws.euc1
+#   }
+# }
