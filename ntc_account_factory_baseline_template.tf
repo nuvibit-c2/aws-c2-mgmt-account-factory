@@ -11,8 +11,8 @@ module "account_baseline_templates" {
       file_name     = "security_core"
       template_name = "security_core"
       security_core_inputs = {
-        org_management_account_id = local.account_factory_core_account_ids["aws-c2-management"]
-        security_admin_account_id = local.account_factory_core_account_ids["aws-c2-security"]
+        org_management_account_id = try(local.account_factory_core_account_ids["aws-c2-management"], "")
+        security_admin_account_id = try(local.account_factory_core_account_ids["aws-c2-security"], "")
         # security-core baseline needs to be rolled out first to security admin account and in a second step to org-management account.
         security_admin_account_initial_run = false
         # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
