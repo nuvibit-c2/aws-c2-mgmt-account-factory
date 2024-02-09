@@ -1,6 +1,6 @@
 locals {
   ntc_parameters_bucket_name = "aws-c2-ntc-parameters"
-  ntc_parameters_writer_node = "account-factory"
+  ntc_parameters_writer_node = "mgmt-account-factory"
 
   # parameters that are managed by org management account
   ntc_parameters_to_write = {
@@ -37,20 +37,20 @@ module "ntc_parameters_bucket" {
   # only the parameter node owner account is granted write access to his corresponding parameters
   parameter_nodes = [
     {
-      "node_name"                = "management",
+      "node_name"                = "mgmt-organizations",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
-      "node_owner_iam_user_name" = "aws-c2-management"
+      "node_owner_iam_role_name" = "ntc-oidc-spacelift-role"
     },
     {
-      "node_name"                     = "account-factory",
+      "node_name"                     = "mgmt-account-factory",
       "node_owner_account_id"         = local.account_factory_core_account_ids["aws-c2-management"]
-      "node_owner_iam_user_name"      = "aws-c2-account-factory"
+      "node_owner_iam_role_name"      = "ntc-oidc-spacelift-role"
       "node_owner_is_account_factory" = true
     },
     {
-      "node_name"                = "identity-center",
+      "node_name"                = "mgmt-identity-center",
       "node_owner_account_id"    = local.account_factory_core_account_ids["aws-c2-management"]
-      "node_owner_iam_user_name" = "aws-c2-identity-center"
+      "node_owner_iam_role_name" = "ntc-oidc-spacelift-role"
     },
     {
       "node_name"             = "connectivity"
