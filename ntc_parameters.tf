@@ -21,7 +21,7 @@ locals {
 
   # map of parameters merged from all parameter nodes
   ntc_parameters = {
-    "account-factory": {
+    "mgmt-account-factory": {
       "core_accounts": {
         "aws-c2-connectivity": "944538260333",
         "aws-c2-log-archive": "872327204802",
@@ -55,7 +55,7 @@ locals {
         }
       }
     },
-    "identity-center": {},
+    "mgmt-identity-center": {},
     "log-archive": {
       "log_bucket_arns": {
         "aws_config": "arn:aws:s3:::aws-c2-config-archive",
@@ -81,7 +81,7 @@ locals {
         "vpc_flow_logs": "arn:aws:kms:eu-central-1:872327204802:key/2783eea5-e29b-49c7-909b-27bcef89f94a"
       }
     },
-    "management": {
+    "mgmt-organizations": {
       "global": {
         "core_regions": [
           "eu-central-1",
