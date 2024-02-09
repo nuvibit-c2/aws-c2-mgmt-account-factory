@@ -53,7 +53,7 @@ module "account_lifecycle_customization_templates" {
       template_name               = "move_to_suspended_ou"
       organizations_event_trigger = "CloseAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
-      suspended_ou_id             = try(local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"], "")
+      suspended_ou_id             = "ou-6gf5-hyl8xkvz" # try(local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"], "")
     }
   ]
 }
