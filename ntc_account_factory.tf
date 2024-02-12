@@ -25,7 +25,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.4.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.5.0"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -33,6 +33,36 @@ module "account_factory" {
   # this bucket stores required cloudtrail logs for account factory
   account_factory_cloudtrail_bucket_name = "aws-c2-ntc-af-cloudtrail"
 
+  # increase quotas for aws services used in account factory
+  increase_aws_service_quotas = {
+    codebuild_concurrent_runs_arm_small = 20
+  }
+
+  # account names and emails cannot be changed without manual intervention - set naming conventions to avoid mistakes
+  account_factory_naming_conventions = {
+    account_name_regex  = "^aws-c2-[a-z0-9-]+$"
+    account_email_regex = "@nuvibit.com$"
+  }
+
+  # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
+  account_factory_list = local.account_factory_list
+
+  # notify on account lifecycle step functions or account baseline pipeline errors
+  account_factory_notification_settings = {
+    # identify for which AWS Organization notifications are sent
+    org_identifier = "c2"
+    # multiple subscriptions with different protocols is supported
+    subscriptions = [
+      {
+        protocol  = "email"
+        endpoints = ["stefano.franco@nuvibit.com"]
+      }
+    ]
+  }
+
+  # -------------------------------------------------------------------------------------------------------------------
+  # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
+  # -------------------------------------------------------------------------------------------------------------------
   # provide lambda packages for additional account lifecycle customization e.g. delete default vpc
   # trigger for the lambda step functions are cloudtrail events with event source 'organizations.amazonaws.com'
   account_lifecycle_customization_steps = [
@@ -66,19 +96,9 @@ module "account_factory" {
     }
   ]
 
-  # notify on account lifecycle step functions or account baseline pipeline errors
-  account_factory_notification_settings = {
-    # identify for which AWS Organization notifications are sent
-    org_identifier = "c2"
-    # multiple subscriptions with different protocols is supported
-    subscriptions = [
-      {
-        protocol  = "email"
-        endpoints = ["stefano.franco@nuvibit.com"]
-      }
-    ]
-  }
-
+  # -------------------------------------------------------------------------------------------------------------------
+  # ¦ ACCOUNT BASELINE
+  # -------------------------------------------------------------------------------------------------------------------
   # list of baseline definitions for accounts in a specific scope
   account_baseline_scopes = [
     {
@@ -268,20 +288,6 @@ module "account_factory" {
       decommission_accounts_by_tags = []
     }
   ]
-
-  # increase quotas for aws services used in account factory
-  increase_aws_service_quotas = {
-    codebuild_concurrent_runs_arm_small = 20
-  }
-
-  # account names and emails cannot be changed without manual intervention - set naming conventions to avoid mistakes
-  account_factory_naming_conventions = {
-    account_name_regex  = "^aws-c2-[a-z0-9-]+$"
-    account_email_regex = "@nuvibit.com$"
-  }
-
-  # can be stored as HCL or alternatively as JSON for easy integration e.g. self service portal integration via git
-  account_factory_list = local.account_factory_list
 
   providers = {
     aws           = aws.euc1
