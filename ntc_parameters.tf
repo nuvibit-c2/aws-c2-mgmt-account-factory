@@ -27,7 +27,7 @@ locals {
 # ¦ NTC PARAMETERS - BUCKET (DEPLOY FIRST)
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_bucket" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=1.1.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters?ref=1.1.1"
 
   force_destroy = false
   bucket_name   = local.ntc_parameters_bucket_name
