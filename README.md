@@ -130,7 +130,7 @@ Lambda Step Function can be tested manually by executing with an example event.<
 | <a name="module_account_lifecycle_customization_templates"></a> [account\_lifecycle\_customization\_templates](#module\_account\_lifecycle\_customization\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | 1.2.0 |
 | <a name="module_ntc_parameters_bucket"></a> [ntc\_parameters\_bucket](#module\_ntc\_parameters\_bucket) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters | 1.1.0 |
 | <a name="module_ntc_parameters_reader"></a> [ntc\_parameters\_reader](#module\_ntc\_parameters\_reader) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader | 1.1.1 |
-| <a name="module_ntc_parameters_writer"></a> [ntc\_parameters\_writer](#module\_ntc\_parameters\_writer) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer | 1.1.0 |
+| <a name="module_ntc_parameters_writer"></a> [ntc\_parameters\_writer](#module\_ntc\_parameters\_writer) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer | 1.1.1 |
 
 ## Resources
 
