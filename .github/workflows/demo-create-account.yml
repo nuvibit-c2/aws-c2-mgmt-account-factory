@@ -157,7 +157,7 @@ jobs:
 
       - name: Merge Pull Request
         if: steps.wait-for-plan.outputs.conclusion == 'success'
-        uses: juliangruber/merge-pull-request-action@v1.2.0
+        uses: juliangruber/merge-pull-request-action@v1.3.0
         id: merge-pr
         continue-on-error: true
         with:
