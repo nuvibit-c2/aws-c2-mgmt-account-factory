@@ -26,7 +26,7 @@ module "account_baseline_templates" {
           # "nist-800-53/v/5.0.0",
           # "pci-dss/v/3.2.1"
         ]
-        # disable individual securityhub control either for all accounts ("*") or for specific accounts.
+        # disable individual securityhub control either for any account in baseline scope ("*") or for specific accounts in baseline scope.
         securityhub_controls_to_disable = jsondecode(file("${path.module}/disable_securityhub_controls.json"))
         # consolidate multiple finding controls into a single finding
         securityhub_enable_consolidated_control_findings = true
