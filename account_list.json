@@ -139,28 +139,5 @@
       "additional_oidc_subjects" : [],
       "create_terraform_pipeline": false
     }
-  },
-  {
-    "account_name": "aws-c2-playground-test",
-    "account_email": "accounts+aws-c2-playground-test@nuvibit.com",
-    "ou_path": "/root/workloads/test",
-    "close_on_deletion": true,
-    "account_tags": {
-      "AccountOwner": "stefano.franco@nuvibit.com",
-      "AccountType": "workload",
-      "AccountDescription": "This is a demo account",
-      "CostCenter": "test"
-    },
-    "alternate_contacts": [
-      {
-        "type": "SECURITY",
-        "name": "Security Contact",
-        "email_address": "security@nuvibit.com"
-      }
-    ],
-    "customer_values": {
-      "additional_oidc_subjects" : [],
-      "create_terraform_pipeline": false
-    }
   }
 ]
