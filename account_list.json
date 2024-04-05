@@ -22,7 +22,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects" : [
+      "additional_oidc_subjects": [
         "aws-c2-mgmt-organizations",
         "aws-c2-mgmt-account-factory",
         "aws-c2-mgmt-identity-center"
@@ -143,5 +143,27 @@
       }
     ],
     "customer_values": {}
+  },
+  {
+    "account_name": "aws-c2-demo51-prod",
+    "account_email": "accounts+aws-c2-demo51-prod@nuvibit.com",
+    "ou_path": "/root/workloads/prod",
+    "close_on_deletion": true,
+    "account_tags": {
+      "AccountOwner": "stefano.franco@nuvibit.com",
+      "AccountType": "workload",
+      "AccountDescription": "This is a demo account",
+      "CostCenter": "123"
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Contact",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "create_terraform_pipeline": true
+    }
   }
 ]
