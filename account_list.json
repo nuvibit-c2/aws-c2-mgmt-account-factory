@@ -163,7 +163,7 @@
       }
     ],
     "customer_values": {
-      "create_terraform_pipeline": true
+      "create_terraform_pipeline": "true"
     }
   }
 ]
