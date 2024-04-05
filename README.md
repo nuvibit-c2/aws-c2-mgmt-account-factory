@@ -150,6 +150,7 @@ No inputs.
 | Name | Description |
 |------|-------------|
 | <a name="output_account_id"></a> [account\_id](#output\_account\_id) | The current account id |
+| <a name="output_accounts_with_terraform_pipeline"></a> [accounts\_with\_terraform\_pipeline](#output\_accounts\_with\_terraform\_pipeline) | List of accounts which require a terraform pipeline |
 | <a name="output_default_region"></a> [default\_region](#output\_default\_region) | The default region name |
 | <a name="output_ntc_parameters"></a> [ntc\_parameters](#output\_ntc\_parameters) | Map of all ntc parameters |
 <!-- END_TF_DOCS -->
