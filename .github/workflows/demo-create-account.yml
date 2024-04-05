@@ -53,7 +53,8 @@ jobs:
                   "AccountOwner": "$PORT_USER_EMAIL",
                   "AccountType": "workload",
                   "AccountDescription": "This is a demo account",
-                  "CostCenter": "$COST_CENTER"
+                  "AccountDecommission": false,
+                  "CostCenter": "$COST_CENTER",
               },
               "alternate_contacts": [
                   {

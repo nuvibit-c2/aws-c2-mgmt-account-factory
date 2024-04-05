@@ -155,8 +155,8 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
-      "CostCenter": "test",
-      "AccountDecommission": true
+      "AccountDecommission": true,
+      "CostCenter": "test"
     },
     "alternate_contacts": [
       {
