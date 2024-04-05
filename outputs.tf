@@ -12,3 +12,11 @@ output "ntc_parameters" {
   description = "Map of all ntc parameters"
   value       = local.ntc_parameters
 }
+
+output "accounts_with_terraform_pipeline" {
+  description = "List of accounts which require a terraform pipeline"
+  value = [
+    for account in local.account_factory_list_enriched : account
+    if try(account.customer_values.create_terraform_pipeline, false)
+  ]
+}
