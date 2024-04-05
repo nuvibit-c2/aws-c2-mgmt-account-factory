@@ -98,7 +98,7 @@ jobs:
 
       # wait for pull request checks to succeed
       - name: Wait For PR Checks
-        uses: fountainhead/action-wait-for-check@v1.1.0
+        uses: fountainhead/action-wait-for-check@v1.2.0
         id: wait-for-plan
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -205,7 +205,7 @@ jobs:
       # wait for pull request checks to succeed
       - name: Wait For Account Creation
         if: ${{ steps.merge-pr.outcome == 'success' }}
-        uses: fountainhead/action-wait-for-check@v1.1.0
+        uses: fountainhead/action-wait-for-check@v1.2.0
         id: wait-for-apply
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
