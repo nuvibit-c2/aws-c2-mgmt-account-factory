@@ -125,7 +125,7 @@ Lambda Step Function can be tested manually by executing with an example event.<
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_account_baseline_templates"></a> [account\_baseline\_templates](#module\_account\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | 1.2.1 |
+| <a name="module_account_baseline_templates"></a> [account\_baseline\_templates](#module\_account\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | feat-sechub-cleanup |
 | <a name="module_account_factory"></a> [account\_factory](#module\_account\_factory) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory | 1.5.0 |
 | <a name="module_account_lifecycle_customization_templates"></a> [account\_lifecycle\_customization\_templates](#module\_account\_lifecycle\_customization\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | 1.2.1 |
 | <a name="module_ntc_parameters_bucket"></a> [ntc\_parameters\_bucket](#module\_ntc\_parameters\_bucket) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters | 1.1.2 |

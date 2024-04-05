@@ -2,7 +2,8 @@
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.2.1"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.2.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feat-sechub-cleanup"
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
@@ -15,22 +16,12 @@ module "account_baseline_templates" {
         security_admin_account_id = try(local.account_factory_core_account_ids["aws-c2-security"], "")
         # security-core baseline needs to be rolled out first to security admin account and in a second step to org-management account.
         security_admin_account_initial_run = false
-        # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
-        # for additional standards disable default standards and add required standards to 'securityhub_enabled_standards'
-        securityhub_auto_enable_default_standards = false
-        securityhub_enabled_standards = [
-          "aws-foundational-security-best-practices/v/1.0.0",
-          "cis-aws-foundations-benchmark/v/1.2.0",
-          "cis-aws-foundations-benchmark/v/1.4.0",
-          # "nist-800-53/v/5.0.0",
-          # "pci-dss/v/3.2.1"
-        ]
         # consolidate multiple finding controls into a single finding
+        # https://docs.aws.amazon.com/securityhub/latest/userguide/controls-findings-create-update.html#consolidated-control-findings
         securityhub_enable_consolidated_control_findings = true
         # new organizations accounts can be auto-enabled by AWS with a delay (set to "NEW")
         # (optional) enable security members via account lifecycle template 'invite_security_members' instead
-        securityhub_auto_enable_organization_members = "NONE"
-        guardduty_auto_enable_organization_members   = "NONE"
+        guardduty_auto_enable_organization_members = "NONE"
         # pre-existing accounts can be individually added as members
         # (optional) enable all existing accounts as security members via account lifecycle template 'invite_security_members' instead
         enable_organization_members_by_acccount_ids = []
@@ -57,14 +48,6 @@ module "account_baseline_templates" {
       file_name     = "security_member"
       template_name = "security_member"
       security_core_inputs = {
-        # security hub enables by default 'aws-foundational-security-best-practices' & 'cis-aws-foundations-benchmark'
-        securityhub_enabled_standards = [
-          "aws-foundational-security-best-practices/v/1.0.0",
-          "cis-aws-foundations-benchmark/v/1.2.0",
-          "cis-aws-foundations-benchmark/v/1.4.0",
-          # "nist-800-53/v/5.0.0",
-          # "pci-dss/v/3.2.1"
-        ]
         # s3 bucket and kms key arn is required if config is in list of service_principals
         config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
         config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")

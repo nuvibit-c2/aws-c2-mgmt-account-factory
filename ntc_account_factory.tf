@@ -196,6 +196,9 @@ module "account_factory" {
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
       /** security-core baseline has a specific rollout order
+      WARNING: inspector2 has a bug with regions which don't support LAMBDA_CODE
+      https://github.com/hashicorp/terraform-provider-aws/issues/34039#issuecomment-1974906732
+
       1. in 'security-core' baseline template set 'security_admin_account_initial_run' to 'true'
       2. roll out 'security-core' baseline first exclusively to security admin account
       3. add org-management account to baseline scope to delegate admin permission to security account
