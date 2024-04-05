@@ -26,7 +26,8 @@
         "aws-c2-mgmt-organizations",
         "aws-c2-mgmt-account-factory",
         "aws-c2-mgmt-identity-center"
-      ]
+      ],
+      "create_terraform_pipeline": false
     }
   },
   {
@@ -46,7 +47,10 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   },
   {
     "account_name": "aws-c2-security",
@@ -65,7 +69,10 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   },
   {
     "account_name": "aws-c2-log-archive",
@@ -84,7 +91,10 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   },
   {
     "account_name": "aws-c2-0001",
@@ -103,7 +113,10 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   },
   {
     "account_name": "aws-c2-0002",
@@ -122,7 +135,10 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   },
   {
     "account_name": "aws-c2-playground-test",
@@ -142,6 +158,9 @@
         "email_address": "security@nuvibit.com"
       }
     ],
-    "customer_values": {}
+    "customer_values": {
+      "additional_oidc_subjects" : [],
+      "create_terraform_pipeline": false
+    }
   }
 ]

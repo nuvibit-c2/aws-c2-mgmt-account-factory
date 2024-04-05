@@ -63,6 +63,7 @@ jobs:
                   }
               ],
               "customer_values": {
+                "additional_oidc_subjects": [],
                 "create_terraform_pipeline": $CREATE_TERRAFORM_PIPELINE
               }
           }
