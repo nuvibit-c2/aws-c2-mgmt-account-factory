@@ -156,7 +156,12 @@ module "account_factory" {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names    = []
-      decommission_accounts_by_tags     = []
+      decommission_accounts_by_tags = [
+        {
+          key   = "AccountDecommission"
+          value = true
+        }
+      ]
     },
     {
       scope_name           = "security-core"
@@ -225,7 +230,12 @@ module "account_factory" {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names    = []
-      decommission_accounts_by_tags     = []
+      decommission_accounts_by_tags = [
+        {
+          key   = "AccountDecommission"
+          value = true
+        }
+      ]
     },
     {
       scope_name           = "workloads-prod"
@@ -288,7 +298,12 @@ module "account_factory" {
       decommission_accounts_by_names = [
         # "aws-c2-0002",
       ]
-      decommission_accounts_by_tags = []
+      decommission_accounts_by_tags = [
+        {
+          key   = "AccountDecommission"
+          value = true
+        }
+      ]
     }
   ]
 
