@@ -12,6 +12,7 @@ jobs:
   demo-decommission-account:
     runs-on: ubuntu-latest
     env:
+      STACK_NAME: spacelift/${{fromJson(inputs.port_payload).payload.action.invocationMethod.repo}}
       ACCOUNT_NAME: ${{fromJson(inputs.port_payload).payload.entity}}
       PORT_USER_EMAIL: ${{fromJson(inputs.port_payload).trigger.by.user.email}}
       PORT_USER_FIRST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.firstName}}
@@ -72,7 +73,7 @@ jobs:
         id: wait-for-plan
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: spacelift/aws-c2-account-factory
+          checkName: ${{ env.STACK_NAME }}
           ref: ${{ steps.pull-request.outputs.pull-request-head-sha }}
           timeoutSeconds: 600
           intervalSeconds: 10
@@ -179,7 +180,7 @@ jobs:
         id: wait-for-apply
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: spacelift/aws-c2-account-factory
+          checkName: ${{ env.STACK_NAME }}
           ref: ${{ steps.merge-pr.outputs.commit }}
           timeoutSeconds: 600
           intervalSeconds: 10
