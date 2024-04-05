@@ -173,13 +173,13 @@
   {
     "account_name": "aws-c2-portus-test",
     "account_email": "accounts+aws-c2-portus-test@nuvibit.com",
-    "ou_path": "/root/workloads/test",
+    "ou_path": "/root/decommission",
     "close_on_deletion": true,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123"
     },
     "alternate_contacts": [
@@ -197,13 +197,13 @@
   {
     "account_name": "aws-c2-potus-dev",
     "account_email": "accounts+aws-c2-potus-dev@nuvibit.com",
-    "ou_path": "/root/workloads/dev",
+    "ou_path": "/root/decommission",
     "close_on_deletion": true,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123"
     },
     "alternate_contacts": [
