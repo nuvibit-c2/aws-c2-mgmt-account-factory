@@ -54,7 +54,7 @@ jobs:
                   "AccountType": "workload",
                   "AccountDescription": "This is a demo account",
                   "AccountDecommission": false,
-                  "CostCenter": "$COST_CENTER",
+                  "CostCenter": "$COST_CENTER"
               },
               "alternate_contacts": [
                   {
