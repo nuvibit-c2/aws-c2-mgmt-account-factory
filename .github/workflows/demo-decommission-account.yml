@@ -1,4 +1,4 @@
-name: DEMO CREATE ACCOUNT
+name: DEMO DECOMMISSION ACCOUNT
 
 on: 
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  demo-delete-account:
+  demo-decommission-account:
     runs-on: ubuntu-latest
     env:
       ACCOUNT_NAME: ${{fromJson(inputs.port_payload).payload.entity}}
@@ -33,35 +33,11 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "✍️ writing new pull request..."
 
-      # TODO: remove account from account list
-      # update aws account list
-      - name: Update Account List
+      - name: Update Account List - Decommission existing account
         run: |
           account_list_path="account_list.json"
           account_list=$(cat account_list.json)
-          new_account=$(cat <<EOF 
-          {
-              "account_name": "$ACCOUNT_NAME",
-              "account_email": "$ACCOUNT_EMAIL",
-              "ou_path": "/root/workloads/$ACCOUNT_ENVIRONMENT",
-              "close_on_deletion": true,
-              "account_tags": {
-                  "AccountOwner": "$PORT_USER_EMAIL",
-                  "AccountType": "workload",
-                  "AccountDescription": "This is a demo account",
-                  "CostCenter": "$COST_CENTER"
-              },
-              "alternate_contacts": [
-                  {
-                      "type": "SECURITY",
-                      "name": "Security Contact",
-                      "email_address": "$SECURITY_CONTACT_EMAIL"
-                  }
-              ],
-              "customer_values": {}
-          }
-          EOF)
-          new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
+          new_account_list=$(echo "$account_list" | jq '.[] | select(.account_name=="${{ env.ACCOUNT_NAME }}").account_tags["AccountDecommission"] = true')
           echo "$new_account_list" > $account_list_path
 
       # create pull request for new aws account

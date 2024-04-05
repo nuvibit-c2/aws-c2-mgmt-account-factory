@@ -39,7 +39,7 @@ jobs:
           logMessage: "✍️ writing new pull request..."
 
       # update aws account list
-      - name: Update Account List
+      - name: Update Account List - Add new account
         run: |
           account_list_path="account_list.json"
           account_list=$(cat account_list.json)
