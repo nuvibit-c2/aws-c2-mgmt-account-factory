@@ -17,6 +17,7 @@ jobs:
       ACCOUNT_ENVIRONMENT: ${{fromJson(inputs.port_payload).payload.properties.account_environment}}
       COST_CENTER: ${{fromJson(inputs.port_payload).payload.properties.cost_center_id}}
       SECURITY_CONTACT_EMAIL: ${{fromJson(inputs.port_payload).payload.properties.security_contact_email}}
+      CREATE_TERRAFORM_PIPELINE: ${{fromJson(inputs.port_payload).payload.properties.create_terraform_pipeline}}
       PORT_USER_EMAIL: ${{fromJson(inputs.port_payload).trigger.by.user.email}}
       PORT_USER_FIRST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.firstName}}
       PORT_USER_LAST_NAME: ${{fromJson(inputs.port_payload).trigger.by.user.lastName}}
@@ -61,7 +62,9 @@ jobs:
                       "email_address": "$SECURITY_CONTACT_EMAIL"
                   }
               ],
-              "customer_values": {}
+              "customer_values": {
+                "create_terraform_pipeline": $CREATE_TERRAFORM_PIPELINE
+              }
           }
           EOF)
           new_account_list=$(echo "$account_list" | jq --argjson newAcc "$new_account" '. += [$newAcc]')
