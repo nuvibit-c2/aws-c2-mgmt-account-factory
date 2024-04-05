@@ -205,17 +205,18 @@ jobs:
           runId: ${{ env.PORT_RUN_ID }}
           logMessage: "⏲️ waiting for creation of aws account '${{ env.ACCOUNT_NAME }}'..."
 
-      # wait for pull request checks to succeed
-      - name: Wait For Account Creation
-        if: ${{ steps.merge-pr.outcome == 'success' }}
-        uses: fountainhead/action-wait-for-check@v1.2.0
-        id: wait-for-apply
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: ${{ env.STACK_NAME }}
-          ref: ${{ steps.merge-pr.outputs.commit }}
-          timeoutSeconds: 600
-          intervalSeconds: 10
+      # TODO: spacelift doesn't inject github check outside of pull requests
+      # # wait for pull request checks to succeed
+      # - name: Wait For Account Creation
+      #   if: ${{ steps.merge-pr.outcome == 'success' }}
+      #   uses: fountainhead/action-wait-for-check@v1.2.0
+      #   id: wait-for-apply
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     checkName: ${{ env.STACK_NAME }}
+      #     ref: ${{ steps.merge-pr.outputs.commit }}
+      #     timeoutSeconds: 600
+      #     intervalSeconds: 10
 
       # update run logs in getport.io - account created
       - name: Update Run Logs - Account Created
