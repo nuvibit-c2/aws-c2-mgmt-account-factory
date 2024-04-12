@@ -104,7 +104,7 @@ module "account_factory" {
   account_baseline_scopes = [
     {
       scope_name           = "global"
-      terraform_version    = "1.6.5"
+      terraform_version    = "1.6.2"
       aws_provider_version = "5.26.0"
       # set to true to use opentofu instead of terraform for account baseline pipelines
       use_opentofu = true
