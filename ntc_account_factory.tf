@@ -25,7 +25,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.5.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.5.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=fix-baseline-delay"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -105,6 +106,8 @@ module "account_factory" {
       scope_name           = "global"
       terraform_version    = "1.6.5"
       aws_provider_version = "5.26.0"
+      # set to true to use opentofu instead of terraform for account baseline pipelines
+      use_opentofu = true
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
