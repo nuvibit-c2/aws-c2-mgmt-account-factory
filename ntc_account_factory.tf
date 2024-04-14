@@ -61,8 +61,10 @@ module "account_factory" {
     ]
   }
 
-  account_baseline_github_access_token = "test3"
-  account_baseline_git_ssh_key = "test3"
+  # (optional) credentials if you want to reference Terraform modules in your account baseline
+  account_baseline_git_ssh_key              = "test4"
+  account_baseline_github_access_token      = "test4"
+  account_baseline_terraform_registry_token = "test4"
 
   # -------------------------------------------------------------------------------------------------------------------
   # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
