@@ -61,8 +61,8 @@ module "account_factory" {
     ]
   }
 
-  account_baseline_github_access_token = "test2"
-  account_baseline_git_ssh_key = "test2"
+  account_baseline_github_access_token = "test3"
+  account_baseline_git_ssh_key = "test3"
 
   # -------------------------------------------------------------------------------------------------------------------
   # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
