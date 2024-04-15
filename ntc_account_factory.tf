@@ -62,9 +62,12 @@ module "account_factory" {
   }
 
   # (optional) credentials if you want to reference Terraform modules in your account baseline
-  account_baseline_git_ssh_key              = "test4"
-  account_baseline_github_access_token      = "test4"
-  account_baseline_terraform_registry_token = "test4"
+  # https://developer.hashicorp.com/terraform/language/modules/sources
+  # WARNING: do not store credentials in clear text in git - reference from a vault or from environment variable
+  account_baseline_git_ssh_key              = "credential_1"
+  account_baseline_github_access_token      = "credential_2"
+  account_baseline_terraform_registry_token = "credential_3"
+  account_baseline_terraform_registry_host  = "app.terraform.io"
 
   # -------------------------------------------------------------------------------------------------------------------
   # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
