@@ -114,19 +114,21 @@ module "account_factory" {
     # ¦ GLOBAL BASELINE - ALL ACCOUNTS
     # -----------------------------------------------------------------------------------------------------------------
     {
-      scope_name           = "global"
+      scope_name = "global"
+      # you can use the opentofu binary instead of terraform for account baseline pipelines
+      terraform_binary = "opentofu"
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 10
+      # https://github.com/hashicorp/terraform/releases
+      # https://github.com/opentofu/opentofu/releases
       terraform_version    = "1.6.2"
       aws_provider_version = "5.26.0"
-      # set to true to use opentofu instead of terraform for account baseline pipelines
-      use_opentofu = true
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
         BaselineScope   = "global",
         BaselineVersion = "1.0"
       }
-      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -181,7 +183,13 @@ module "account_factory" {
     # ¦ SECURITY BASELINE - CORE ACCOUNTS
     # -----------------------------------------------------------------------------------------------------------------
     {
-      scope_name           = "security-core"
+      scope_name = "security-core"
+      # you can use the opentofu binary instead of terraform for account baseline pipelines
+      terraform_binary = "terraform"
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 10
+      # https://github.com/hashicorp/terraform/releases
+      # https://github.com/opentofu/opentofu/releases
       terraform_version    = "1.6.5"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
@@ -190,8 +198,6 @@ module "account_factory" {
         BaselineScope   = "security-core",
         BaselineVersion = "1.0"
       }
-      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 24
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
@@ -258,7 +264,13 @@ module "account_factory" {
     # ¦ ACCOUNT BASELINE - WORKLOAD ACCOUNTS - PROD
     # -----------------------------------------------------------------------------------------------------------------
     {
-      scope_name           = "workloads-prod"
+      scope_name = "workloads-prod"
+      # you can use the opentofu binary instead of terraform for account baseline pipelines
+      terraform_binary = "terraform"
+      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+      terraform_parallelism = 10
+      # https://github.com/hashicorp/terraform/releases
+      # https://github.com/opentofu/opentofu/releases
       terraform_version    = "1.6.5"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
@@ -267,8 +279,6 @@ module "account_factory" {
         BaselineScope   = "workloads-prod",
         BaselineVersion = "1.0"
       }
-      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 10
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
