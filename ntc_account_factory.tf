@@ -150,9 +150,9 @@ module "account_factory" {
         wait_for_seconds        = 120
         wait_retry_count        = 5
         wait_for_execution_role = true
-        wait_for_regions        = true
-        wait_for_securityhub    = true
-        wait_for_guardduty      = true
+        wait_for_regions        = false
+        wait_for_securityhub    = false
+        wait_for_guardduty      = false
       }
       # baseline terraform code will be provisioned in each specified region
       baseline_regions = ["eu-central-1"]

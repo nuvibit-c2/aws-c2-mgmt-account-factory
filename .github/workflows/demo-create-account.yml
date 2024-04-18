@@ -227,18 +227,18 @@ jobs:
           clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
           operation: PATCH_RUN
           runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "✅ aws account '${{ env.ACCOUNT_NAME }}' was successfully created!"
+          logMessage: "✅ aws account '${{ env.ACCOUNT_NAME }}' is currently beeing created!"
 
       # update run logs in getport.io - account creation failed
-      - name: Update Run Logs - Account Creation Failed
-        # if: steps.wait-for-apply.outputs.conclusion != 'success'
-        uses: port-labs/port-github-action@v1
-        with:
-          clientId: ${{ secrets.PORT_CLIENT_ID }}
-          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
-          operation: PATCH_RUN
-          runId: ${{ env.PORT_RUN_ID }}
-          logMessage: "❌ aws account '${{ env.ACCOUNT_NAME }}' failed to create."
+      # - name: Update Run Logs - Account Creation Failed
+      #   # if: steps.wait-for-apply.outputs.conclusion != 'success'
+      #   uses: port-labs/port-github-action@v1
+      #   with:
+      #     clientId: ${{ secrets.PORT_CLIENT_ID }}
+      #     clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+      #     operation: PATCH_RUN
+      #     runId: ${{ env.PORT_RUN_ID }}
+      #     logMessage: "❌ aws account '${{ env.ACCOUNT_NAME }}' failed to create."
 
       # update getport.io catalog
       - name: Update Catalog
