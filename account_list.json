@@ -40,7 +40,8 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "core",
       "AccountDescription": "This account manages centralized connectivity",
-      "AccountDecommission": false
+      "AccountDecommission": false,
+      "AccountDNSZoneName": "nuvibit.dev"
     },
     "alternate_contacts": [
       {
@@ -156,7 +157,8 @@
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
       "AccountDecommission": false,
-      "CostCenter": "123"
+      "CostCenter": "123",
+      "AccountDNSZoneName": "ares-dev.nuvibit.dev"
     },
     "alternate_contacts": [
       {
@@ -180,7 +182,8 @@
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
       "AccountDecommission": false,
-      "CostCenter": "123"
+      "CostCenter": "123",
+      "AccountDNSZoneName": "portus-dev.nuvibit.dev"
     },
     "alternate_contacts": [
       {
