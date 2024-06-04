@@ -36,8 +36,8 @@ jobs:
 
       - name: Update Account List - Decommission existing account
         run: |
-          account_list_path="account_list.json"
-          account_list=$(cat account_list.json)
+          account_list_path="account_list_workloads.json"
+          account_list=$(cat account_list_workloads.json)
           new_account_list=$(echo "$account_list" | jq '.[] | select(.account_name=="${{ env.ACCOUNT_NAME }}").account_tags["AccountDecommission"] = true')
           echo "$new_account_list" > $account_list_path
 
@@ -51,7 +51,7 @@ jobs:
           author: ${{ env.PORT_USER_FIRST_NAME }} ${{ env.PORT_USER_LAST_NAME }} <${{ env.PORT_USER_EMAIL }}>
           title: "delete aws account '${{ env.ACCOUNT_NAME }}'"
           labels: Demo
-          add-paths: account_list.json
+          add-paths: account_list_workloads.json
           branch: demo-delete-account
           branch-suffix: short-commit-hash
           delete-branch: true

@@ -11,7 +11,10 @@ locals {
   }
 
   # original account map enriched with additional values e.g. account id
-  account_factory_list = jsondecode(file("${path.module}/account_list.json"))
+  account_factory_list = concat(
+    jsondecode(file("${path.module}/account_list_core.json")),
+    jsondecode(file("${path.module}/account_list_workloads.json")),
+  )
   account_factory_list_enriched = [
     for account in local.account_factory_list : merge(account,
       {
