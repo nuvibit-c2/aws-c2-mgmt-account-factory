@@ -17,7 +17,7 @@ locals {
   }
 
   # parameters are shared with parameter node owners by default and with the entire organization if org_id is specified
-  share_parameters_with_entire_org = false
+  share_parameters_with_entire_org = true
 
   # map of parameters merged from all parameter nodes
   ntc_parameters = module.ntc_parameters_reader.all_parameters
