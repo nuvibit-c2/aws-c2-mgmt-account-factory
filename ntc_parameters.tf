@@ -57,7 +57,7 @@ module "ntc_parameters_bucket" {
       "node_owner_account_id" = local.account_factory_core_account_ids["aws-c2-connectivity"]
     },
     {
-      "node_name"             = "security"
+      "node_name"             = "security-tooling"
       "node_owner_account_id" = local.account_factory_core_account_ids["aws-c2-security"]
     },
     {
