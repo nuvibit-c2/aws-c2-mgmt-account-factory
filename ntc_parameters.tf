@@ -2,9 +2,9 @@ locals {
   ntc_parameters_bucket_name = "aws-c2-ntc-parameters"
   ntc_parameters_writer_node = "mgmt-account-factory"
 
-  # parameters that are managed by org management account
+  # parameters that are managed by account factory pipeline
   ntc_parameters_to_write = {
-    core_accounts = local.account_factory_core_account_ids
+    "core_accounts" = local.account_factory_core_account_ids
   }
 
   # by default existing node parameters will be merged with new parameters to avoid deleting parameters
