@@ -192,7 +192,7 @@ module "account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.5"
+      terraform_version    = "1.6.2"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
@@ -273,7 +273,7 @@ module "account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.5"
+      terraform_version    = "1.6.2"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
@@ -336,6 +336,49 @@ module "account_factory" {
           value = true
         }
       ]
+    },
+    # -----------------------------------------------------------------------------------------------------------------
+    # ¦ ACCOUNT BASELINE - TEST CREDENTIALS
+    # -----------------------------------------------------------------------------------------------------------------
+    {
+      scope_name                   = "test-credentials"
+      terraform_binary             = "terraform"
+      terraform_version            = "1.6.5"
+      aws_provider_version         = "5.26.0"
+      baseline_execution_role_name = "OrganizationAccountAccessRole"
+      baseline_terraform_files = [
+        {
+          file_name                    = "test_credentials"
+          content                      = templatefile("${path.module}/files/account_baseline_example.tf", {})
+          # terraform_version_minimum    = "1.3.9"
+          # aws_provider_version_minimum = "4.59.0"
+        }
+      ]
+      pipeline_delay_options = {
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = false
+        wait_for_securityhub    = false
+        wait_for_guardduty      = false
+      }
+      baseline_regions             = ["eu-central-1"]
+      baseline_main_region         = "eu-central-1"
+      include_accounts_all         = false
+      include_accounts_by_ou_paths = []
+      include_accounts_by_names = [
+        "aws-c2-0001",
+      ]
+      include_accounts_by_tags          = []
+      exclude_accounts_by_ou_paths      = []
+      exclude_accounts_by_names         = []
+      exclude_accounts_by_tags          = []
+      decommission_accounts_all         = false
+      decommission_accounts_by_ou_paths = []
+      decommission_accounts_by_names = [
+        # "aws-c2-0001",
+      ]
+      decommission_accounts_by_tags = []
     }
   ]
 
