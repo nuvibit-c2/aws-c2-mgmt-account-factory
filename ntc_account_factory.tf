@@ -192,7 +192,7 @@ module "account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.2"
+      terraform_version    = "1.6.5"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
@@ -273,7 +273,7 @@ module "account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.2"
+      terraform_version    = "1.6.5"
       aws_provider_version = "5.26.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
@@ -342,8 +342,8 @@ module "account_factory" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       scope_name                   = "test-credentials"
-      terraform_binary             = "terraform"
-      terraform_version            = "1.6.5"
+      terraform_binary             = "opentofu"
+      terraform_version            = "1.6.2"
       aws_provider_version         = "5.26.0"
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       baseline_terraform_files = [
