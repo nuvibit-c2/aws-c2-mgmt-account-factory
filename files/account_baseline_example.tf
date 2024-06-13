@@ -55,3 +55,37 @@ module "ntc_parameters_reader_registry" {
 
   bucket_name = "nivel-ntc-parameters"
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ IAM ROLE
+# ---------------------------------------------------------------------------------------------------------------------
+# WARNING: IAM is a global service and can only be created once in a single region
+# ntc account baseline is intended to provision resources in multiple accounts and multiple regions
+resource "aws_iam_role" "ntc_example_iam" {
+  # this condition allows certain resources or modules to be only provisioned once
+  count = var.is_current_region_main_region == true ? 1 : 0
+
+  name               = "ntc_example_iam_role"
+  path               = "/"
+  assume_role_policy = data.aws_iam_policy_document.ntc_example_iam[0].json
+}
+
+data "aws_iam_policy_document" "ntc_example_iam" {
+  count = var.is_current_region_main_region == true ? 1 : 0
+
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.current_account_id]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ntc_example_iam" {
+  count = var.is_current_region_main_region == true ? 1 : 0
+
+  role       = aws_iam_role.ntc_example_iam[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}

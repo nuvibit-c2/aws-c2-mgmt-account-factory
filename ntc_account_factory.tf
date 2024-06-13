@@ -69,7 +69,7 @@ module "account_factory" {
   account_baseline_git_ssh_key              = "credential_1"
   account_baseline_github_access_token      = "credential_2"
   account_baseline_terraform_registry_token = "credential_3"
-  account_baseline_terraform_registry_host  = "app.terraform.io"
+  account_baseline_terraform_registry_host  = "spacelift.io"
 
   # -------------------------------------------------------------------------------------------------------------------
   # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
@@ -348,8 +348,8 @@ module "account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       baseline_terraform_files = [
         {
-          file_name                    = "test_credentials"
-          content                      = templatefile("${path.module}/files/account_baseline_example.tf", {})
+          file_name = "test_credentials"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
           # terraform_version_minimum    = "1.3.9"
           # aws_provider_version_minimum = "4.59.0"
         }
