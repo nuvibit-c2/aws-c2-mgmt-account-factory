@@ -69,7 +69,7 @@ module "account_factory" {
   account_baseline_git_ssh_key              = "credential_1"
   account_baseline_github_access_token      = "credential_2"
   account_baseline_terraform_registry_token = "credential_3"
-  account_baseline_terraform_registry_host  = "spacelift.io"
+  account_baseline_terraform_registry_host  = "nuvibit.spacelift.io"
 
   # -------------------------------------------------------------------------------------------------------------------
   # ¦ ACCOUNT LIFECYCLE CUSTOMIZATION
