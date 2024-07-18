@@ -13,13 +13,10 @@ output "ntc_parameters" {
   value       = local.ntc_parameters
 }
 
-output "accounts_with_terraform_pipeline" {
-  description = "List of accounts which require a terraform pipeline"
+output "ntc_account_factory_list" {
+  description = "Account Factory account list"
   value = [
     for account in local.account_factory_list_enriched : account
-    if alltrue([
-      account.customer_values.create_terraform_pipeline,
-      account.account_tags["AccountDecommission"] == false,
-    ])
+    if try(account.account_tags["AccountDecommission"], false) == false
   ]
 }
