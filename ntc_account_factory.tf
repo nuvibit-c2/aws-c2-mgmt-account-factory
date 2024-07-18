@@ -143,8 +143,8 @@ module "ntc_account_factory" {
         #   terraform_version_minimum     = "1.3.9"
         #   aws_provider_version_minimum  = "4.59.0"
         # },
-        module.account_baseline_templates.account_baseline_terraform_files["iam_role_admin"],
-        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"]
+        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -182,31 +182,32 @@ module "ntc_account_factory" {
       ]
     },
     # -----------------------------------------------------------------------------------------------------------------
-    # ¦ SECURITY BASELINE - CORE ACCOUNTS
+    # ¦ ACCOUNT BASELINE - CORE ACCOUNTS
     # -----------------------------------------------------------------------------------------------------------------
     {
-      scope_name = "security-core"
+      scope_name = "core-accounts"
       # you can use the opentofu binary instead of terraform for account baseline pipelines
-      terraform_binary = "terraform"
+      terraform_binary = "opentofu"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.5"
-      aws_provider_version = "5.26.0"
+      terraform_version    = "1.7.3"
+      aws_provider_version = "5.58.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
-        BaselineScope   = "security-core",
+        BaselineScope   = "core-accounts",
         BaselineVersion = "1.0"
       }
       # (optional) schedule baseline pipelines to rerun every x hours
-      schedule_rerun_every_x_hours = 24
+      schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["security_core"]
+        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -214,32 +215,18 @@ module "ntc_account_factory" {
         wait_for_seconds        = 120
         wait_retry_count        = 5
         wait_for_execution_role = true
-        wait_for_regions        = true
+        wait_for_regions        = false
         wait_for_securityhub    = false
         wait_for_guardduty      = false
       }
-      # apply security-core baseline in all enabled regions
-      baseline_regions = data.aws_regions.enabled.names
+      # baseline terraform code will be provisioned in each specified region
+      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"] # data.aws_regions.enabled.names
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
-      /** security-core baseline has a specific rollout order
-      WARNING: inspector2 has a bug with regions which don't support LAMBDA_CODE
-      https://github.com/hashicorp/terraform-provider-aws/issues/34039#issuecomment-1974906732
-
-      1. in 'security-core' baseline template set 'security_admin_account_initial_run' to 'true'
-      2. roll out 'security-core' baseline first exclusively to security admin account
-      3. add org-management account to baseline scope to delegate admin permission to security account
-      4. in baseline template set 'security_admin_account_initial_run' to 'false'
-      5. wait for security admin account and org-management account baseline to rerun successfully
-      6. add remaining core accounts to baseline scope
-      **/
-      include_accounts_by_names = [
-        # "aws-c2-security",
-        # "aws-c2-management"
-      ]
+      include_accounts_by_names    = []
       include_accounts_by_tags = [
         {
           key   = "AccountType"
@@ -287,7 +274,8 @@ module "ntc_account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["security_member"]
+        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -295,12 +283,12 @@ module "ntc_account_factory" {
         wait_for_seconds        = 120
         wait_retry_count        = 5
         wait_for_execution_role = true
-        wait_for_regions        = true
-        wait_for_securityhub    = true
-        wait_for_guardduty      = true
+        wait_for_regions        = false
+        wait_for_securityhub    = false
+        wait_for_guardduty      = false
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1"]
+      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
@@ -343,8 +331,8 @@ module "ntc_account_factory" {
     {
       scope_name                   = "test-credentials"
       terraform_binary             = "opentofu"
-      terraform_version            = "1.6.2"
-      aws_provider_version         = "5.26.0"
+      terraform_version            = "1.7.3"
+      aws_provider_version         = "5.58.0"
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       baseline_terraform_files = [
         {

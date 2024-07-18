@@ -11,5 +11,5 @@ import {
 
 moved {
   from = module.account_factory
-  to = module.ntc_account_factory
+  to   = module.ntc_account_factory
 } 

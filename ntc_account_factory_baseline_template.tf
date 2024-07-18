@@ -1,4 +1,83 @@
 # ---------------------------------------------------------------------------------------------------------------------
+# ¦ DATA
+# ---------------------------------------------------------------------------------------------------------------------
+data "aws_iam_policy_document" "grafana_reader" {
+  statement {
+    sid    = "CloudWatchReadOnlyAccessPermissions"
+    effect = "Allow"
+    actions = [
+      "application-autoscaling:DescribeScalingPolicies",
+      "application-signals:BatchGet*",
+      "application-signals:Get*",
+      "application-signals:List*",
+      "autoscaling:Describe*",
+      "cloudwatch:BatchGet*",
+      "cloudwatch:Describe*",
+      "cloudwatch:GenerateQuery",
+      "cloudwatch:Get*",
+      "cloudwatch:List*",
+      "logs:Get*",
+      "logs:List*",
+      "logs:StartQuery",
+      "logs:StopQuery",
+      "logs:Describe*",
+      "logs:TestMetricFilter",
+      "logs:FilterLogEvents",
+      "logs:StartLiveTail",
+      "logs:StopLiveTail",
+      "oam:ListSinks",
+      "sns:Get*",
+      "sns:List*",
+      "rum:BatchGet*",
+      "rum:Get*",
+      "rum:List*",
+      "synthetics:Describe*",
+      "synthetics:Get*",
+      "synthetics:List*",
+      "xray:BatchGet*",
+      "xray:Get*"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AWSXrayReadOnlyAccess"
+    effect = "Allow"
+    actions = [
+      "xray:GetSamplingRules",
+      "xray:GetSamplingTargets",
+      "xray:GetSamplingStatisticSummaries",
+      "xray:BatchGetTraces",
+      "xray:BatchGetTraceSummaryById",
+      "xray:GetDistinctTraceGraphs",
+      "xray:GetServiceGraph",
+      "xray:GetTraceGraph",
+      "xray:GetTraceSummaries",
+      "xray:GetGroups",
+      "xray:GetGroup",
+      "xray:ListTagsForResource",
+      "xray:ListResourcePolicies",
+      "xray:GetTimeSeriesServiceStatistics",
+      "xray:GetInsightSummaries",
+      "xray:GetInsight",
+      "xray:GetInsightEvents",
+      "xray:GetInsightImpactGraph"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AmazonEC2ReadOnlyAccess"
+    effect = "Allow"
+    actions = [
+      "ec2:Describe*",
+      "elasticloadbalancing:Describe*",
+    ]
+    resources = ["*"]
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
@@ -9,77 +88,15 @@ module "account_baseline_templates" {
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
   account_baseline_templates = [
     {
-      file_name     = "security_core"
-      template_name = "security_core"
-      security_core_inputs = {
-        org_management_account_id = try(local.account_factory_core_account_ids["aws-c2-management"], "")
-        security_admin_account_id = try(local.account_factory_core_account_ids["aws-c2-security"], "")
-        # security-core baseline needs to be rolled out first to security admin account and in a second step to org-management account.
-        security_admin_account_initial_run = false
-        # consolidate multiple finding controls into a single finding
-        # https://docs.aws.amazon.com/securityhub/latest/userguide/controls-findings-create-update.html#consolidated-control-findings
-        securityhub_enable_consolidated_control_findings = true
-        # new organizations accounts can be auto-enabled by AWS with a delay (set to "NEW")
-        # (optional) enable security members via account lifecycle template 'invite_security_members' instead
-        guardduty_auto_enable_organization_members = "NONE"
-        # pre-existing accounts can be individually added as members
-        # (optional) enable all existing accounts as security members via account lifecycle template 'invite_security_members' instead
-        enable_organization_members_by_acccount_ids = []
-        # omit if you dont want to archive guardduty findings in s3
-        guardduty_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["guardduty"], "")
-        guardduty_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["guardduty"], "")
-        # s3 bucket and kms key arn is required if config is in list of service_principals
-        config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
-        config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
-        # enable inspector scanning. requires inspector to be in list of service_principals
-        inspector_enable_ec2_scans    = true
-        inspector_enable_ecr_scans    = true
-        inspector_enable_lambda_scans = true
-        # admin delegations and regional settings will be provisioned for each service
-        service_principals = [
-          "config.amazonaws.com",
-          "securityhub.amazonaws.com",
-          "guardduty.amazonaws.com",
-          "inspector2.amazonaws.com"
-        ]
-      }
-    },
-    {
-      file_name     = "security_member"
-      template_name = "security_member"
-      security_core_inputs = {
-        # s3 bucket and kms key arn is required if config is in list of service_principals
-        config_log_archive_bucket_arn  = try(local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"], "")
-        config_log_archive_kms_key_arn = try(local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"], "")
-        # regional settings will be provisioned for each service
-        service_principals = [
-          "config.amazonaws.com",
-          "securityhub.amazonaws.com",
-          # "guardduty.amazonaws.com",
-        ]
-      }
-    },
-    {
-      file_name     = "iam_role_admin"
+      file_name     = "iam_grafana_reader"
       template_name = "iam_role"
       iam_role_inputs = {
-        role_name = "baseline_execution_role_admin"
+        role_name = "CloudWatch-CrossAccountSharingRole"
         # policy can be submitted directly as JSON or via data source aws_iam_policy_document
-        policy_json = jsonencode(
-          {
-            "Version" : "2012-10-17",
-            "Statement" : [
-              {
-                "Effect" : "Allow",
-                "Action" : "*",
-                "Resource" : "*"
-              }
-            ]
-          }
-        )
+        policy_json         = data.aws_iam_policy_document.grafana_reader.json
         role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
-        role_principal_identifiers = [data.aws_caller_identity.current.account_id]
+        role_principal_identifiers = [local.account_factory_core_account_ids["aws-c2-management"]] # replace with monitoring account
       }
     },
     {
