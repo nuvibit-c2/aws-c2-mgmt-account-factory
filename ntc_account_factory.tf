@@ -94,7 +94,7 @@ module "ntc_account_factory" {
         # }
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_opt_in_regions"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["delete_default_vpc"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["invite_security_members"],
+        # module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["invite_security_members"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["increase_service_quota"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["tag_shared_resources"]
       ]
@@ -148,7 +148,7 @@ module "ntc_account_factory" {
         wait_for_guardduty      = false
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"] # data.aws_regions.enabled.names
+      baseline_regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
@@ -216,7 +216,7 @@ module "ntc_account_factory" {
         wait_for_guardduty      = false
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"]
+      baseline_regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
       # accounts which should be included in baseline scope
