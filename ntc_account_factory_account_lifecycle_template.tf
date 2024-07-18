@@ -19,17 +19,6 @@ module "account_lifecycle_customization_templates" {
       organizations_member_role   = "OrganizationAccountAccessRole"
     },
     {
-      template_name               = "invite_security_members"
-      organizations_event_trigger = "CreateAccountResult"
-      organizations_member_role   = "OrganizationAccountAccessRole"
-      security_regions            = data.aws_regions.enabled.names
-      security_member_of = {
-        securityhub = true
-        guardduty   = true
-        inspector   = true
-      }
-    },
-    {
       template_name               = "increase_service_quota"
       organizations_event_trigger = "CreateAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
@@ -54,6 +43,17 @@ module "account_lifecycle_customization_templates" {
       organizations_event_trigger = "CloseAccountResult"
       organizations_member_role   = "OrganizationAccountAccessRole"
       suspended_ou_id             = try(local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"], "")
-    }
+    },
+    # {
+    #   template_name               = "invite_security_members"
+    #   organizations_event_trigger = "CreateAccountResult"
+    #   organizations_member_role   = "OrganizationAccountAccessRole"
+    #   security_regions            = local.all_enabled_regions
+    #   security_member_of = {
+    #     securityhub = true
+    #     guardduty   = true
+    #     inspector   = true
+    #   }
+    # },
   ]
 }
