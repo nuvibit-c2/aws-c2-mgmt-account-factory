@@ -4,7 +4,7 @@
 locals {
   # get values from module outputs
   # get account ids for all accounts and for core accounts
-  account_factory_all_account_ids = module.account_factory.account_factory_account_ids
+  account_factory_all_account_ids = module.ntc_account_factory.account_factory_account_ids
   account_factory_core_account_ids = {
     for account in local.account_factory_list_enriched : account.account_name => account.account_id
     if account.account_tags.AccountType == "core"
@@ -27,7 +27,7 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
-module "account_factory" {
+module "ntc_account_factory" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.6.0"
 
   # this bucket stores required files for account factory
@@ -252,7 +252,7 @@ module "account_factory" {
       exclude_accounts_by_tags     = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
-      decommission_accounts_all         = false
+      decommission_accounts_all         = true
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names    = []
       decommission_accounts_by_tags = [
