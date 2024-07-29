@@ -18,8 +18,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": false
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -41,8 +40,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": false
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -66,8 +64,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": true
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -91,8 +88,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": true
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -115,8 +111,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": true
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -139,8 +134,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": true
+      "additional_oidc_subjects": []
     }
   }
 ]
