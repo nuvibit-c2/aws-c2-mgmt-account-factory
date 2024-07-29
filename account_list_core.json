@@ -27,8 +27,7 @@
         "aws-c2-mgmt-organizations",
         "aws-c2-mgmt-account-factory",
         "aws-c2-mgmt-identity-center"
-      ],
-      "create_terraform_pipeline": false
+      ]
     }
   },
   {
@@ -51,8 +50,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": false
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -74,8 +72,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": false
+      "additional_oidc_subjects": []
     }
   },
   {
@@ -97,8 +94,7 @@
       }
     ],
     "customer_values": {
-      "additional_oidc_subjects": [],
-      "create_terraform_pipeline": false
+      "additional_oidc_subjects": []
     }
   }
 ]
