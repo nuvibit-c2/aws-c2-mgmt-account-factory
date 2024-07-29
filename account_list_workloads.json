@@ -142,5 +142,28 @@
       "additional_oidc_subjects": [],
       "create_terraform_pipeline": true
     }
+  },
+  {
+    "account_name": "aws-c2-herakles-prod",
+    "account_email": "accounts+aws-c2-herakles-prod@nuvibit.com",
+    "ou_path": "/root/workloads/prod",
+    "close_on_deletion": true,
+    "account_tags": {
+      "AccountOwner": "stefano.franco@nuvibit.com",
+      "AccountType": "workload",
+      "AccountDescription": "This is a demo account",
+      "AccountDecommission": false,
+      "CostCenter": "123"
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Contact",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "additional_oidc_subjects": []
+    }
   }
 ]
