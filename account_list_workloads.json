@@ -8,7 +8,7 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This account manages workload in prod stage",
-      "AccountDecommission": false
+      "AccountDecommission": true
     },
     "alternate_contacts": [
       {
@@ -30,7 +30,7 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This account manages application XY in dev stage",
-      "AccountDecommission": false
+      "AccountDecommission": true
     },
     "alternate_contacts": [
       {
