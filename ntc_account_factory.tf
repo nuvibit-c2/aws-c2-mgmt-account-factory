@@ -180,81 +180,81 @@ module "ntc_account_factory" {
     # -----------------------------------------------------------------------------------------------------------------
     # ¦ ACCOUNT BASELINE - WORKLOAD ACCOUNTS
     # -----------------------------------------------------------------------------------------------------------------
-    {
-      scope_name = "workloads-prod"
-      # you can use the opentofu binary instead of terraform for account baseline pipelines
-      terraform_binary = "terraform"
-      # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
-      terraform_parallelism = 10
-      # https://github.com/hashicorp/terraform/releases
-      # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.6.5"
-      aws_provider_version = "5.26.0"
-      # (optional) define provider default tags which will be applied to all baseline resources
-      provider_default_tags = {
-        ManagedBy       = "ntc-account-factory",
-        BaselineScope   = "workloads-prod",
-        BaselineVersion = "1.0"
-      }
-      # (optional) schedule baseline pipelines to rerun every x hours
-      schedule_rerun_every_x_hours = 0
-      # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
-      baseline_execution_role_name = "OrganizationAccountAccessRole"
-      # add terraform code to baseline from static files or dynamic templates
-      baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
-        module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
-      ]
-      # add delay to pipeline to avoid errors on first run
-      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
-      pipeline_delay_options = {
-        wait_for_seconds        = 120
-        wait_retry_count        = 5
-        wait_for_execution_role = true
-        wait_for_regions        = false
-        wait_for_securityhub    = false
-        wait_for_guardduty      = false
-      }
-      # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1"]
-      # baseline terraform code which can be provisioned in a single region (e.g. IAM)
-      baseline_main_region = "eu-central-1"
-      # accounts which should be included in baseline scope
-      include_accounts_all = false
-      include_accounts_by_ou_paths = [
-        "/root/workloads/prod",
-        # "/root/workloads/dev",
-        # "/root/workloads/test",
-      ]
-      include_accounts_by_names = [
-        # "aws-c2-0002",
-      ]
-      include_accounts_by_tags = [
-        # {
-        #   key   = "AccountType"
-        #   value = "workload"
-        # }
-      ]
-      # accounts which should be excluded in baseline scope
-      exclude_accounts_by_ou_paths = []
-      exclude_accounts_by_names = [
-        # "aws-c2-0002",
-      ]
-      exclude_accounts_by_tags = []
-      # decomissioning of baseline terraform resources must be done before deleting the scope!
-      # decommission baseline terraform code for specific accounts in scope
-      decommission_accounts_all         = true
-      decommission_accounts_by_ou_paths = []
-      decommission_accounts_by_names = [
-        # "aws-c2-0002",
-      ]
-      decommission_accounts_by_tags = [
-        {
-          key   = "AccountDecommission"
-          value = true
-        }
-      ]
-    },
+    # {
+    #   scope_name = "workloads"
+    #   # you can use the opentofu binary instead of terraform for account baseline pipelines
+    #   terraform_binary = "terraform"
+    #   # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
+    #   terraform_parallelism = 10
+    #   # https://github.com/hashicorp/terraform/releases
+    #   # https://github.com/opentofu/opentofu/releases
+    #   terraform_version    = "1.7.3"
+    #   aws_provider_version = "5.58.0"
+    #   # (optional) define provider default tags which will be applied to all baseline resources
+    #   provider_default_tags = {
+    #     ManagedBy       = "ntc-account-factory",
+    #     BaselineScope   = "workloads",
+    #     BaselineVersion = "1.0"
+    #   }
+    #   # (optional) schedule baseline pipelines to rerun every x hours
+    #   schedule_rerun_every_x_hours = 0
+    #   # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
+    #   baseline_execution_role_name = "OrganizationAccountAccessRole"
+    #   # add terraform code to baseline from static files or dynamic templates
+    #   baseline_terraform_files = [
+    #     module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+    #     module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+    #   ]
+    #   # add delay to pipeline to avoid errors on first run
+    #   # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+    #   pipeline_delay_options = {
+    #     wait_for_seconds        = 120
+    #     wait_retry_count        = 5
+    #     wait_for_execution_role = true
+    #     wait_for_regions        = false
+    #     wait_for_securityhub    = false
+    #     wait_for_guardduty      = false
+    #   }
+    #   # baseline terraform code will be provisioned in each specified region
+    #   baseline_regions = ["us-east-1", "eu-central-1"]
+    #   # baseline terraform code which can be provisioned in a single region (e.g. IAM)
+    #   baseline_main_region = "eu-central-1"
+    #   # accounts which should be included in baseline scope
+    #   include_accounts_all = false
+    #   include_accounts_by_ou_paths = [
+    #     "/root/workloads/prod",
+    #     "/root/workloads/dev",
+    #     "/root/workloads/test",
+    #   ]
+    #   include_accounts_by_names = [
+    #     # "aws-c2-0002",
+    #   ]
+    #   include_accounts_by_tags = [
+    #     # {
+    #     #   key   = "AccountType"
+    #     #   value = "workload"
+    #     # }
+    #   ]
+    #   # accounts which should be excluded in baseline scope
+    #   exclude_accounts_by_ou_paths = []
+    #   exclude_accounts_by_names = [
+    #     # "aws-c2-0002",
+    #   ]
+    #   exclude_accounts_by_tags = []
+    #   # decomissioning of baseline terraform resources must be done before deleting the scope!
+    #   # decommission baseline terraform code for specific accounts in scope
+    #   decommission_accounts_all         = true
+    #   decommission_accounts_by_ou_paths = []
+    #   decommission_accounts_by_names = [
+    #     # "aws-c2-0002",
+    #   ]
+    #   decommission_accounts_by_tags = [
+    #     {
+    #       key   = "AccountDecommission"
+    #       value = true
+    #     }
+    #   ]
+    # },
     # -----------------------------------------------------------------------------------------------------------------
     # ¦ ACCOUNT BASELINE - TEST CREDENTIALS
     # -----------------------------------------------------------------------------------------------------------------
