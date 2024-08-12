@@ -178,7 +178,7 @@ module "ntc_account_factory" {
       ]
     },
     # -----------------------------------------------------------------------------------------------------------------
-    # ¦ ACCOUNT BASELINE - WORKLOAD ACCOUNTS - PROD
+    # ¦ ACCOUNT BASELINE - WORKLOAD ACCOUNTS
     # -----------------------------------------------------------------------------------------------------------------
     {
       scope_name = "workloads-prod"
@@ -223,6 +223,8 @@ module "ntc_account_factory" {
       include_accounts_all = false
       include_accounts_by_ou_paths = [
         "/root/workloads/prod",
+        # "/root/workloads/dev",
+        # "/root/workloads/test",
       ]
       include_accounts_by_names = [
         # "aws-c2-0002",
@@ -241,7 +243,7 @@ module "ntc_account_factory" {
       exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
       # decommission baseline terraform code for specific accounts in scope
-      decommission_accounts_all         = false
+      decommission_accounts_all         = true
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
         # "aws-c2-0002",
