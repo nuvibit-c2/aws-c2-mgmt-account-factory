@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "grafana_reader" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
   # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.2.1"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feat-sechub-cleanup"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feat%2Fcis-aws-foundation-benchmark-3"
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
