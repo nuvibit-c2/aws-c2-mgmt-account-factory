@@ -125,8 +125,8 @@ Lambda Step Function can be tested manually by executing with an example event.<
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_account_baseline_templates"></a> [account\_baseline\_templates](#module\_account\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | feat-sechub-cleanup |
-| <a name="module_account_lifecycle_customization_templates"></a> [account\_lifecycle\_customization\_templates](#module\_account\_lifecycle\_customization\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | 1.2.1 |
+| <a name="module_account_baseline_templates"></a> [account\_baseline\_templates](#module\_account\_baseline\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates | feat%2Fcis-aws-foundation-benchmark-3 |
+| <a name="module_account_lifecycle_customization_templates"></a> [account\_lifecycle\_customization\_templates](#module\_account\_lifecycle\_customization\_templates) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates | 1.2.2 |
 | <a name="module_ntc_account_factory"></a> [ntc\_account\_factory](#module\_ntc\_account\_factory) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory | 1.6.0 |
 | <a name="module_ntc_parameters_bucket"></a> [ntc\_parameters\_bucket](#module\_ntc\_parameters\_bucket) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters | 1.1.2 |
 | <a name="module_ntc_parameters_reader"></a> [ntc\_parameters\_reader](#module\_ntc\_parameters\_reader) | github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader | 1.1.2 |
@@ -140,7 +140,6 @@ Lambda Step Function can be tested manually by executing with an example event.<
 | [aws_iam_policy_document.grafana_reader](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_organizations_organization.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/organizations_organization) | data source |
 | [aws_region.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
-| [aws_regions.enabled](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/regions) | data source |
 
 ## Inputs
 
@@ -151,8 +150,8 @@ No inputs.
 | Name | Description |
 |------|-------------|
 | <a name="output_account_id"></a> [account\_id](#output\_account\_id) | The current account id |
-| <a name="output_accounts_with_terraform_pipeline"></a> [accounts\_with\_terraform\_pipeline](#output\_accounts\_with\_terraform\_pipeline) | List of accounts which require a terraform pipeline |
 | <a name="output_default_region"></a> [default\_region](#output\_default\_region) | The default region name |
+| <a name="output_ntc_account_factory_list"></a> [ntc\_account\_factory\_list](#output\_ntc\_account\_factory\_list) | Account Factory account list |
 | <a name="output_ntc_parameters"></a> [ntc\_parameters](#output\_ntc\_parameters) | Map of all ntc parameters |
 <!-- END_TF_DOCS -->
 
