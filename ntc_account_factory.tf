@@ -228,7 +228,7 @@ module "ntc_account_factory" {
         "/root/workloads/test",
       ]
       include_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       include_accounts_by_tags = [
         # {
@@ -239,7 +239,7 @@ module "ntc_account_factory" {
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
       exclude_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
@@ -247,7 +247,7 @@ module "ntc_account_factory" {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       decommission_accounts_by_tags = [
         {
@@ -286,7 +286,7 @@ module "ntc_account_factory" {
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
       include_accounts_by_names = [
-        "aws-c2-0001",
+        "aws-c2-ares-dev",
       ]
       include_accounts_by_tags          = []
       exclude_accounts_by_ou_paths      = []
@@ -295,7 +295,7 @@ module "ntc_account_factory" {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
-        # "aws-c2-0001",
+        # "aws-c2-ares-dev",
       ]
       decommission_accounts_by_tags = []
     }
