@@ -1,4 +1,4 @@
-# credentials sourced from stack environment variables starting with 'TF_VAR_'
+# credentials should be referenced from a secrets manager (aws secrets manager, hashicorp vault) or like in this case from environment variables starting with 'TF_VAR_'
 variable "account_baseline_git_ssh_key" {
   description = "private key used in account baseline to copy modules with ssh"
   type        = string
