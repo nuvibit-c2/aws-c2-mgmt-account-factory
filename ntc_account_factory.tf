@@ -67,7 +67,7 @@ module "ntc_account_factory" {
   # (optional) credentials if you want to reference Terraform modules in your account baseline
   # https://developer.hashicorp.com/terraform/language/modules/sources
   # WARNING: do not store credentials in clear text in git - reference from a vault or from environment variable
-  account_baseline_git_ssh_key              = var.account_baseline_git_ssh_key
+  account_baseline_git_ssh_key              = replace(var.account_baseline_git_ssh_key, "\n", "\\n")
   account_baseline_github_access_token      = var.account_baseline_github_access_token
   account_baseline_terraform_registry_token = var.account_baseline_terraform_registry_token
   account_baseline_terraform_registry_host  = "spacelift.io"
