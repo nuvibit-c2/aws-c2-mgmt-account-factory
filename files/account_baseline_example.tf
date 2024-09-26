@@ -50,7 +50,7 @@ module "ntc_parameters_reader_ssh" {
 # § Private Module from Terraform Registry - requires 'account_baseline_terraform_registry_token' & 'account_baseline_terraform_registry_host'
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_reader_registry" {
-  source  = "spacelift.io/nuvibit/ntc-parameters/aws"
+  source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
   version = "1.1.2"
 
   bucket_name = "nivel-ntc-parameters"
