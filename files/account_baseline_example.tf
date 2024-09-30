@@ -23,9 +23,9 @@ Instead the IAM role should only be created in the main region and in every othe
 # § LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
-  ntc_parameters_github   = module.ntc_parameters_reader_github.all_parameters
-  ntc_parameters_ssh      = module.ntc_parameters_reader_ssh.all_parameters
-  ntc_parameters_registry = module.ntc_parameters_reader_registry.all_parameters
+  ntc_parameters_github   = try(module.ntc_parameters_reader_github.all_parameters, {})
+  ntc_parameters_ssh      = try(module.ntc_parameters_reader_ssh.all_parameters, {})
+  ntc_parameters_registry = try(module.ntc_parameters_reader_registry.all_parameters, {})
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ locals {
 module "ntc_parameters_reader_github" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = "nivel-ntc-parameters"
+  bucket_name = "aws-c2-ntc-parameters"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -43,17 +43,17 @@ module "ntc_parameters_reader_github" {
 module "ntc_parameters_reader_ssh" {
   source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = "nivel-ntc-parameters"
+  bucket_name = "aws-c2-ntc-parameters"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # § Private Module from Terraform Registry - requires 'account_baseline_terraform_registry_token' & 'account_baseline_terraform_registry_host'
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_reader_registry" {
-  source  = "spacelift.io/nuvibit/ntc-parameters/aws"
+  source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
   version = "1.1.2"
 
-  bucket_name = "nivel-ntc-parameters"
+  bucket_name = "aws-c2-ntc-parameters"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -71,6 +71,7 @@ resource "aws_iam_role" "ntc_example_iam" {
 }
 
 data "aws_iam_policy_document" "ntc_example_iam" {
+  # this condition allows certain resources or modules to be only provisioned once
   count = var.is_current_region_main_region == true ? 1 : 0
 
   statement {
@@ -84,6 +85,7 @@ data "aws_iam_policy_document" "ntc_example_iam" {
 }
 
 resource "aws_iam_role_policy_attachment" "ntc_example_iam" {
+  # this condition allows certain resources or modules to be only provisioned once
   count = var.is_current_region_main_region == true ? 1 : 0
 
   role       = aws_iam_role.ntc_example_iam[0].name

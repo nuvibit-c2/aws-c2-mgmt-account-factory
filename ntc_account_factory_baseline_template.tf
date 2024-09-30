@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ DATA
 # ---------------------------------------------------------------------------------------------------------------------
-data "aws_iam_policy_document" "grafana_reader" {
+data "aws_iam_policy_document" "monitoring_reader" {
   statement {
     sid    = "CloudWatchReadOnlyAccessPermissions"
     effect = "Allow"
@@ -77,6 +77,10 @@ data "aws_iam_policy_document" "grafana_reader" {
   }
 }
 
+data "aws_iam_policy" "instance_profile" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
@@ -88,15 +92,27 @@ module "account_baseline_templates" {
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
   account_baseline_templates = [
     {
-      file_name     = "iam_grafana_reader"
+      file_name     = "iam_monitoring_reader"
       template_name = "iam_role"
       iam_role_inputs = {
         role_name = "CloudWatch-CrossAccountSharingRole"
         # policy can be submitted directly as JSON or via data source aws_iam_policy_document
-        policy_json         = data.aws_iam_policy_document.grafana_reader.json
+        policy_json         = data.aws_iam_policy_document.monitoring_reader.json
         role_principal_type = "AWS"
         # grant account (org management) permission to assume role in member account
         role_principal_identifiers = [local.account_factory_core_account_ids["aws-c2-management"]] # replace with monitoring account
+      }
+    },
+    {
+      file_name     = "iam_instance_profile"
+      template_name = "iam_role"
+      iam_role_inputs = {
+        role_name = "ntc-instance-profile"
+        # policy can be submitted directly as JSON or via data source aws_iam_policy_document
+        policy_json         = data.aws_iam_policy.instance_profile.policy
+        role_principal_type = "Service"
+        # grant account (org management) permission to assume role in member account
+        role_principal_identifiers = ["ec2.amazonaws.com"]
       }
     },
     {

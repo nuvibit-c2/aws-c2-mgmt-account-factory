@@ -28,7 +28,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.6.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.6.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=fix-codebuild-credentials"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -66,9 +67,9 @@ module "ntc_account_factory" {
   # (optional) credentials if you want to reference Terraform modules in your account baseline
   # https://developer.hashicorp.com/terraform/language/modules/sources
   # WARNING: do not store credentials in clear text in git - reference from a vault or from environment variable
-  account_baseline_git_ssh_key              = "credential_1"
-  account_baseline_github_access_token      = "credential_2"
-  account_baseline_terraform_registry_token = "credential_3"
+  account_baseline_git_ssh_key              = var.account_baseline_git_ssh_key
+  account_baseline_github_access_token      = var.account_baseline_github_access_token
+  account_baseline_terraform_registry_token = var.account_baseline_terraform_registry_token
   account_baseline_terraform_registry_host  = "spacelift.io"
 
   # -------------------------------------------------------------------------------------------------------------------
@@ -134,7 +135,8 @@ module "ntc_account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -202,7 +204,8 @@ module "ntc_account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -227,7 +230,7 @@ module "ntc_account_factory" {
         "/root/workloads/test",
       ]
       include_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       include_accounts_by_tags = [
         # {
@@ -238,7 +241,7 @@ module "ntc_account_factory" {
       # accounts which should be excluded in baseline scope
       exclude_accounts_by_ou_paths = []
       exclude_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       exclude_accounts_by_tags = []
       # decomissioning of baseline terraform resources must be done before deleting the scope!
@@ -246,7 +249,7 @@ module "ntc_account_factory" {
       decommission_accounts_all         = false
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
-        # "aws-c2-0002",
+        # "aws-c2-ares-dev",
       ]
       decommission_accounts_by_tags = [
         {
@@ -285,16 +288,16 @@ module "ntc_account_factory" {
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
       include_accounts_by_names = [
-        "aws-c2-0001",
+        "aws-c2-ares-dev",
       ]
       include_accounts_by_tags          = []
       exclude_accounts_by_ou_paths      = []
       exclude_accounts_by_names         = []
       exclude_accounts_by_tags          = []
-      decommission_accounts_all         = false
+      decommission_accounts_all         = true
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
-        # "aws-c2-0001",
+        # "aws-c2-ares-dev",
       ]
       decommission_accounts_by_tags = []
     }
