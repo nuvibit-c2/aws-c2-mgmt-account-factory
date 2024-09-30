@@ -77,10 +77,6 @@ data "aws_iam_policy_document" "monitoring_reader" {
   }
 }
 
-data "aws_iam_policy" "instance_profile" {
-  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
@@ -107,12 +103,14 @@ module "account_baseline_templates" {
       file_name     = "iam_instance_profile"
       template_name = "iam_role"
       iam_role_inputs = {
-        role_name = "ntc-instance-profile"
-        # policy can be submitted directly as JSON or via data source aws_iam_policy_document
-        policy_json         = data.aws_iam_policy.instance_profile.policy
+        role_name = "ntc-ssm-instance-profile"
+        # use 'policy_arn' to reference an aws managed policy
+        policy_arn          = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
         role_principal_type = "Service"
         # grant account (org management) permission to assume role in member account
         role_principal_identifiers = ["ec2.amazonaws.com"]
+        # (optional) set to true to create an instance profile
+        role_is_instance_profile = true
       }
     },
     {
