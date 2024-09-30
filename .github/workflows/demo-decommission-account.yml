@@ -44,7 +44,7 @@ jobs:
       # create pull request for new aws account
       - name: Create Pull Request
         id: pull-request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "adding aws account '${{ env.ACCOUNT_NAME }}'"
           committer: GitHub <noreply@github.com>
