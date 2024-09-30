@@ -135,7 +135,8 @@ module "ntc_account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -203,7 +204,8 @@ module "ntc_account_factory" {
       baseline_execution_role_name = "OrganizationAccountAccessRole"
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        module.account_baseline_templates.account_baseline_terraform_files["iam_grafana_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -292,7 +294,7 @@ module "ntc_account_factory" {
       exclude_accounts_by_ou_paths      = []
       exclude_accounts_by_names         = []
       exclude_accounts_by_tags          = []
-      decommission_accounts_all         = false
+      decommission_accounts_all         = true
       decommission_accounts_by_ou_paths = []
       decommission_accounts_by_names = [
         # "aws-c2-ares-dev",
