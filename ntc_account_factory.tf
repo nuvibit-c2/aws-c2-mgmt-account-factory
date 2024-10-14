@@ -137,6 +137,7 @@ module "ntc_account_factory" {
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+        module.account_baseline_templates.account_baseline_terraform_files["aws_config"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -206,6 +207,7 @@ module "ntc_account_factory" {
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+        module.account_baseline_templates.account_baseline_terraform_files["aws_config"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -257,49 +259,6 @@ module "ntc_account_factory" {
         }
       ]
     },
-    # -----------------------------------------------------------------------------------------------------------------
-    # ¦ ACCOUNT BASELINE - TEST CREDENTIALS
-    # -----------------------------------------------------------------------------------------------------------------
-    {
-      scope_name                   = "test-credentials"
-      terraform_binary             = "opentofu"
-      terraform_version            = "1.7.3"
-      aws_provider_version         = "5.58.0"
-      baseline_execution_role_name = "OrganizationAccountAccessRole"
-      baseline_terraform_files = [
-        {
-          file_name = "test_credentials"
-          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-          # terraform_version_minimum    = "1.3.9"
-          # aws_provider_version_minimum = "4.59.0"
-        }
-      ]
-      pipeline_delay_options = {
-        wait_for_seconds        = 120
-        wait_retry_count        = 5
-        wait_for_execution_role = true
-        wait_for_regions        = false
-        wait_for_securityhub    = false
-        wait_for_guardduty      = false
-      }
-      baseline_regions             = ["eu-central-1"]
-      baseline_main_region         = "eu-central-1"
-      include_accounts_all         = false
-      include_accounts_by_ou_paths = []
-      include_accounts_by_names = [
-        "aws-c2-ares-dev",
-      ]
-      include_accounts_by_tags          = []
-      exclude_accounts_by_ou_paths      = []
-      exclude_accounts_by_names         = []
-      exclude_accounts_by_tags          = []
-      decommission_accounts_all         = true
-      decommission_accounts_by_ou_paths = []
-      decommission_accounts_by_names = [
-        # "aws-c2-ares-dev",
-      ]
-      decommission_accounts_by_tags = []
-    }
   ]
 
   providers = {

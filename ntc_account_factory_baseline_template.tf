@@ -146,6 +146,14 @@ flatten([
 ])
 EOT
       }
-    }
+    },
+    {
+      file_name     = "aws_config"
+      template_name = "aws_config"
+      aws_config_inputs = {
+        config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
+        config_log_archive_kms_key_arn = local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"]
+      }
+    },
   ]
 }
