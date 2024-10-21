@@ -153,11 +153,11 @@ EOT
         config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
         config_log_archive_kms_key_arn = local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"]
         # optional inputs
-        config_recorder_name           = "ntc-config-recorder"
-        config_delivery_channel_name   = "ntc-config-delivery"
-        config_iam_role_name           = "ntc-config-role"
-        config_iam_path                = "/"
-        config_delivery_frequency      = "One_Hour"
+        config_recorder_name         = "ntc-config-recorder"
+        config_delivery_channel_name = "ntc-config-delivery"
+        config_iam_role_name         = "ntc-config-role"
+        config_iam_path              = "/"
+        config_delivery_frequency    = "One_Hour"
       }
     },
   ]

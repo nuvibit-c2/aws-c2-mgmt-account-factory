@@ -28,7 +28,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.6.1"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.6.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-conf-aliases"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -132,6 +133,17 @@ module "ntc_account_factory" {
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
       baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # (optional) session name used by baseline pipeline in member accounts
+      baseline_execution_session_name = "ntc-account-factory"
+      # (optional) additional providers which assume a specific account role for cross account orchestration
+      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      baseline_assume_role_providers = [
+        # {
+        #   configuration_alias = "example"
+        #   role_arn            = "arn:aws:iam::111111111111:role/example-role"
+        #   session_name        = "ntc-account-factory"
+        # }
+      ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
@@ -202,6 +214,17 @@ module "ntc_account_factory" {
       schedule_rerun_every_x_hours = 0
       # (optional) IAM role which exists in member accounts and can be assumed by baseline pipeline
       baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # (optional) session name used by baseline pipeline in member accounts
+      baseline_execution_session_name = "ntc-account-factory"
+      # (optional) additional providers which assume a specific account role for cross account orchestration
+      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      baseline_assume_role_providers = [
+        {
+          configuration_alias = "connectivity"
+          role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
+          session_name        = "ntc-account-factory"
+        }
+      ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],

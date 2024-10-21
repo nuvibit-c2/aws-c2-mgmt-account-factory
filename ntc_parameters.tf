@@ -4,7 +4,8 @@ locals {
 
   # parameters that are managed by account factory pipeline
   ntc_parameters_to_write = {
-    "core_accounts" = local.account_factory_core_account_ids
+    "core_accounts"      = local.account_factory_core_account_ids
+    "baseline_role_arns" = module.ntc_account_factory.account_factory_baseline_iam_role_arns
   }
 
   # by default existing node parameters will be merged with new parameters to avoid deleting parameters
