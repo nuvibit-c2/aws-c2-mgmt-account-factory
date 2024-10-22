@@ -40,33 +40,26 @@ module "ntc_parameters_reader" {
 # § SUBDOMAIN DELEGATION - ASSUME ROLE - CONNECTIVITY ACCOUNT
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_r53_records" {
-  source  = "spacelift.io/nuvibit/ntc-route53/aws//modules/records"
-  version = "1.1.2"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-route53//modules/records?ref=feat-update-records"
+  # source  = "spacelift.io/nuvibit/ntc-route53/aws//modules/records"
+  # version = "1.1.2"
 
   # apply this module only for account 'aws-c2-ares-dev'
   count = var.current_account_name == "aws-c2-ares-dev" ? 1 : 0
 
   zone_name = "nuvibit.dev"
   zone_type = "public"
-  dns_records = [
+  zone_delegation_list = [
     {
-      name = "ares-dev"
-      type = "NS"
-      ttl  = 30
-      values = [
+      subdomain_zone_name = "ares-dev"
+      subdomain_nameserver_list = [
         "ns-1124.awsdns-12.org.",
         "ns-1854.awsdns-39.co.uk.",
         "ns-807.awsdns-36.net.",
         "ns-476.awsdns-59.com.",
       ]
-    },
-    {
-      name = "ares-dev"
-      type = "DS"
-      ttl  = 300
-      values = [
-        "26175 13 2 447B4A317DAEC3A213AB156BE09A25E363DDE10903B666B3A2301ECFB3C5C931"
-      ]
+      dnssec_enabled   = true
+      dnssec_ds_record = "26175 13 2 447B4A317DAEC3A213AB156BE09A25E363DDE10903B666B3A2301ECFB3C5C931"
     }
   ]
 
