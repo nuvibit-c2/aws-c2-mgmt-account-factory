@@ -33,6 +33,8 @@ module "ntc_parameters_reader" {
   source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
   version = "1.1.2"
 
+  count = var.is_current_region_main_region ? 1 : 0
+
   bucket_name = "aws-c2-ntc-parameters"
 }
 
@@ -45,7 +47,10 @@ module "ntc_parameters_reader" {
 #   # version = "1.1.2"
 
 #   # apply this module only for account 'aws-c2-ares-dev'
-#   count = var.current_account_name == "aws-c2-ares-dev" ? 1 : 0
+#   count = alltrue([
+#     var.current_account_name == "aws-c2-ares-dev",
+#     var.is_current_region_main_region
+#   ]) ? 1 : 0
 
 #   zone_name = "nuvibit.dev"
 #   zone_type = "public"
