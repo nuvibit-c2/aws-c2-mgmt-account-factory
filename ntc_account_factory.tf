@@ -239,7 +239,7 @@ module "ntc_account_factory" {
         module.account_baseline_templates.account_baseline_terraform_files["aws_config"],
         {
           file_name = "poc_assume_role"
-          content   = templatefile("${path.module}/files/account_baseline_poc.tf")
+          content   = templatefile("${path.module}/files/account_baseline_poc.tf", {})
         },
       ]
       # add delay to pipeline to avoid errors on first run
