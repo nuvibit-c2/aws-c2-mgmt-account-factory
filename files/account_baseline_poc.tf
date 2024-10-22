@@ -71,7 +71,7 @@ module "ntc_r53_records" {
   ]
 
   # this configuration_alias was dynamically generated with 'baseline_assume_role_providers'
-  providers = {
+  providers {
     aws.connectivity
   }
 }
