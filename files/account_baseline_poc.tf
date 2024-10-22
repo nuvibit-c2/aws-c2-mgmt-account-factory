@@ -23,7 +23,7 @@ Instead the IAM role should only be created in the main region and in every othe
 # § LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
-  ntc_parameters = module.ntc_parameters_reader.all_parameters
+  ntc_parameters = try(module.ntc_parameters_reader.all_parameters[0], {})
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
