@@ -115,7 +115,7 @@ module "ntc_account_factory" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       scope_name = "core-accounts"
-      # you can use the opentofu binary instead of terraform for account baseline pipelines
+      # you can use the terraform or opentofu binary for account baseline pipelines
       terraform_binary = "opentofu"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
@@ -202,8 +202,8 @@ module "ntc_account_factory" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       scope_name = "workloads"
-      # you can use the opentofu binary instead of terraform for account baseline pipelines
-      terraform_binary = "terraform"
+      # you can use the terraform or opentofu binary for account baseline pipelines
+      terraform_binary = "opentofu"
       # (optional) reduce parallelism to avoid api rate limits when deploying to multiple regions
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
