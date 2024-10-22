@@ -146,6 +146,12 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
+        # {
+        #   file_name                     = "baseline_openid_connect"
+        #   content                       = templatefile("${path.module}/files/baseline_openid_connect.tftpl", { role_name = "example-role" })
+        #   terraform_version_minimum     = "1.3.9"
+        #   aws_provider_version_minimum  = "4.59.0"
+        # },
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -231,6 +237,12 @@ module "ntc_account_factory" {
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
         module.account_baseline_templates.account_baseline_terraform_files["aws_config"],
+        {
+          file_name                     = "poc_assume_role"
+          content                       = templatefile("${path.module}/files/baseline_openid_connect.tftpl", { role_name = "example-role" })
+          terraform_version_minimum     = "1.3.9"
+          aws_provider_version_minimum  = "4.59.0"
+        },
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
