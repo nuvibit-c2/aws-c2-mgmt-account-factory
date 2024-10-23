@@ -42,9 +42,8 @@ module "ntc_parameters_reader" {
 # § SUBDOMAIN DELEGATION - ASSUME ROLE - CONNECTIVITY ACCOUNT
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_r53_records" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-route53//modules/records?ref=feat-update-records"
-  # source  = "spacelift.io/nuvibit/ntc-route53/aws//modules/records"
-  # version = "1.1.2"
+  source  = "spacelift.io/nuvibit/ntc-route53/aws//modules/records"
+  version = "1.3.0"
 
   # apply this module only for account 'aws-c2-ares-dev'
   count = alltrue([
