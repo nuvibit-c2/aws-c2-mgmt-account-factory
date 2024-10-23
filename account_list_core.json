@@ -96,5 +96,27 @@
     "customer_values": {
       "additional_oidc_subjects": []
     }
+  },
+  {
+    "account_name": "aws-c2-shared-services",
+    "account_email": "accounts+aws-c2-shared-services@nuvibit.com",
+    "ou_path": "/root/infrastructure",
+    "close_on_deletion": false,
+    "account_tags": {
+      "AccountOwner": "stefano.franco@nuvibit.com",
+      "AccountType": "core",
+      "AccountDescription": "This account manages the shared services",
+      "AccountDecommission": false
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Operation Center",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "additional_oidc_subjects": []
+    }
   }
 ]
