@@ -141,8 +141,8 @@ module "ntc_account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.7.3"
-      aws_provider_version = "5.58.0"
+      terraform_version    = "1.8.5"
+      aws_provider_version = "5.76.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
@@ -228,8 +228,8 @@ module "ntc_account_factory" {
       terraform_parallelism = 10
       # https://github.com/hashicorp/terraform/releases
       # https://github.com/opentofu/opentofu/releases
-      terraform_version    = "1.7.3"
-      aws_provider_version = "5.58.0"
+      terraform_version    = "1.8.5"
+      aws_provider_version = "5.76.0"
       # (optional) define provider default tags which will be applied to all baseline resources
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
