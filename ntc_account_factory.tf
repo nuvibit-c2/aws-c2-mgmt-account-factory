@@ -109,6 +109,7 @@ module "ntc_account_factory" {
   ]
 
   # FIXME: after creating new aws account is not yet ready and can cause the step function to fail -> add retry / wait functionality
+  # deleting default VPC continues even on error
 
   # (optional) list of user-defined organizational events to trigger account lifecycle customization step function
   # this can be used to force account lifecycle actions for specified accounts
