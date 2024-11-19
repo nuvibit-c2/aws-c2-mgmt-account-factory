@@ -28,7 +28,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.7.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.7.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-event-trigger"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -105,6 +106,26 @@ module "ntc_account_factory" {
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["move_to_suspended_ou"]
       ]
     }
+  ]
+
+  # FIXME: after creating new aws account is not yet ready and can cause the step function to fail -> add retry / wait functionality
+
+  # (optional) list of user-defined organizational events to trigger account lifecycle customization step function
+  # this can be used to force account lifecycle actions for specified accounts
+  # https://docs.aws.amazon.com/organizations/latest/userguide/orgs_cloudtrail-integration.html 
+  account_lifecycle_customization_user_defined_event_triggers = [
+    # jsonencode({
+    #   "source" : "aws.organizations",
+    #   "detail" : {
+    #     "eventSource" : "organizations.amazonaws.com",
+    #     "eventName" : "CreateAccountResult",
+    #     "serviceEventDetails" : {
+    #       "createAccountStatus" : {
+    #         "accountId" : "228120440352" # aws-c2-management
+    #       }
+    #     }
+    #   }
+    # })
   ]
 
   # list of baseline definitions for accounts in a specific scope
