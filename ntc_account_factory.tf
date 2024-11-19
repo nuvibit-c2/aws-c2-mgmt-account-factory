@@ -147,7 +147,7 @@ module "ntc_account_factory" {
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
         BaselineScope   = "core-accounts",
-        BaselineVersion = "1.0"
+        BaselineVersion = "1.3"
       }
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
@@ -234,7 +234,7 @@ module "ntc_account_factory" {
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
         BaselineScope   = "workloads",
-        BaselineVersion = "1.0"
+        BaselineVersion = "1.3"
       }
       # (optional) schedule baseline pipelines to rerun every x hours
       schedule_rerun_every_x_hours = 0
