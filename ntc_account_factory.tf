@@ -119,6 +119,7 @@ module "ntc_account_factory" {
         "eventName" : "CreateAccountResult",
         "serviceEventDetails" : {
           "createAccountStatus" : {
+            "state": "SUCCEEDED",
             "accountId" : "228120440352" # aws-c2-management
           }
         }
