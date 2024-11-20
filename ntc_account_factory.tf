@@ -108,25 +108,22 @@ module "ntc_account_factory" {
     }
   ]
 
-  # FIXME: after creating new aws account is not yet ready and can cause the step function to fail -> add retry / wait functionality
-  # deleting default VPC continues even on error
-
   # (optional) list of user-defined organizational events to trigger account lifecycle customization step function
   # this can be used to force account lifecycle actions for specified accounts
   # https://docs.aws.amazon.com/organizations/latest/userguide/orgs_cloudtrail-integration.html 
   account_lifecycle_customization_user_defined_event_triggers = [
-    # jsonencode({
-    #   "source" : "aws.organizations",
-    #   "detail" : {
-    #     "eventSource" : "organizations.amazonaws.com",
-    #     "eventName" : "CreateAccountResult",
-    #     "serviceEventDetails" : {
-    #       "createAccountStatus" : {
-    #         "accountId" : "228120440352" # aws-c2-management
-    #       }
-    #     }
-    #   }
-    # })
+    jsonencode({
+      "source" : "aws.organizations",
+      "detail" : {
+        "eventSource" : "organizations.amazonaws.com",
+        "eventName" : "CreateAccountResult",
+        "serviceEventDetails" : {
+          "createAccountStatus" : {
+            "accountId" : "228120440352" # aws-c2-management
+          }
+        }
+      }
+    })
   ]
 
   # list of baseline definitions for accounts in a specific scope
