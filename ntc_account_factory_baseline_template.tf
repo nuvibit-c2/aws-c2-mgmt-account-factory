@@ -81,7 +81,8 @@ data "aws_iam_policy_document" "monitoring_reader" {
 # ¦ NTC ACCOUNT BASELINE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.3.0"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.3.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=fix-config-main-region"
 
   # account baseline can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates
@@ -158,6 +159,10 @@ EOT
         config_iam_role_name         = "ntc-config-role"
         config_iam_path              = "/"
         config_delivery_frequency    = "One_Hour"
+        # (optional) override account baseline main region with main region of security tooling
+        # this is necessary when security tooling uses a different main region
+        # omit to use the main region of the account baseline
+        config_security_main_region  = ""
       }
     },
   ]
