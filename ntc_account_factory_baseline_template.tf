@@ -161,7 +161,7 @@ EOT
         # (optional) override account baseline main region with main region of security tooling
         # this is necessary when security tooling uses a different main region
         # omit to use the main region of the account baseline
-        config_security_main_region  = ""
+        config_security_main_region = ""
       }
     },
   ]
