@@ -2,7 +2,8 @@
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.2.3"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.2.3"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=fix-error-handling"
 
   # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
@@ -44,16 +45,13 @@ module "account_lifecycle_customization_templates" {
       organizations_member_role   = "OrganizationAccountAccessRole"
       suspended_ou_id             = try(local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"], "")
     },
+    # step to enable enterprise support for new accounts - requires enterprise support plan
+    # https://aws.amazon.com/premiumsupport/plans/
     # {
-    #   template_name               = "invite_security_members"
+    #   template_name               = "enable_enterprise_support"
     #   organizations_event_trigger = "CreateAccountResult"
-    #   organizations_member_role   = "OrganizationAccountAccessRole"
-    #   security_regions            = local.all_enabled_regions
-    #   security_member_of = {
-    #     securityhub = true
-    #     guardduty   = true
-    #     inspector   = true
-    #   }
+    #   company_name                = "Nuvibit"
+    #   cc_email_addresses          = ["accounts@nuvibit.com"]
     # },
   ]
 }
