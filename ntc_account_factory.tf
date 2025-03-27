@@ -94,9 +94,9 @@ module "ntc_account_factory" {
         # }
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_opt_in_regions"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["delete_default_vpc"],
-        # module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["invite_security_members"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["increase_service_quota"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["tag_shared_resources"]
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["tag_shared_resources"],
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_enterprise_support"],
       ]
     },
     {

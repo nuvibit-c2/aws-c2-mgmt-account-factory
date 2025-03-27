@@ -47,11 +47,11 @@ module "account_lifecycle_customization_templates" {
     },
     # step to enable enterprise support for new accounts - requires enterprise support plan
     # https://aws.amazon.com/premiumsupport/plans/
-    # {
-    #   template_name               = "enable_enterprise_support"
-    #   organizations_event_trigger = "CreateAccountResult"
-    #   company_name                = "Nuvibit"
-    #   cc_email_addresses          = ["accounts@nuvibit.com"]
-    # },
+    {
+      template_name               = "enable_enterprise_support"
+      organizations_event_trigger = "CreateAccountResult"
+      company_name                = "Nuvibit"
+      cc_email_addresses          = ["accounts+test1@nuvibit.com","accounts+test2@nuvibit.com"]
+    },
   ]
 }
