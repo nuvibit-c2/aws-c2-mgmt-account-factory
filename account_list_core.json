@@ -33,7 +33,7 @@
   {
     "account_name": "aws-c2-connectivity",
     "account_email": "accounts+aws-c2-connectivity@nuvibit.com",
-    "ou_path": "/root/infrastructure",
+    "ou_path": "/root/core",
     "close_on_deletion": false,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
@@ -56,7 +56,7 @@
   {
     "account_name": "aws-c2-security",
     "account_email": "accounts+aws-c2-security@nuvibit.com",
-    "ou_path": "/root/security",
+    "ou_path": "/root/core",
     "close_on_deletion": false,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
@@ -78,7 +78,7 @@
   {
     "account_name": "aws-c2-log-archive",
     "account_email": "accounts+aws-c2-log-archive@nuvibit.com",
-    "ou_path": "/root/security",
+    "ou_path": "/root/core",
     "close_on_deletion": false,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
@@ -100,7 +100,7 @@
   {
     "account_name": "aws-c2-shared-services",
     "account_email": "accounts+aws-c2-shared-services@nuvibit.com",
-    "ou_path": "/root/infrastructure",
+    "ou_path": "/root/core",
     "close_on_deletion": false,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
