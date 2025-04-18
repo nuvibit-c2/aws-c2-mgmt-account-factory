@@ -194,7 +194,8 @@ module "ntc_account_factory" {
       # parameters must be encoded as JSON string - can also be used to pass ntc-parameters
       baseline_parameters_json = jsonencode(
         {
-          "parameters_bucket_name" : "aws-c2-ntc-parameters",
+          parameters_bucket_name = "aws-c2-ntc-parameters"
+          example_iam_role_name  = "ntc-example-role"
         }
       )
       # accounts which should be included in baseline scope
@@ -282,7 +283,7 @@ module "ntc_account_factory" {
       # parameters must be encoded as JSON string - can also be used to pass ntc-parameters
       baseline_parameters_json = jsonencode(
         {
-          "parameters_bucket_name" : "aws-c2-ntc-parameters",
+          parameters_bucket_name = "aws-c2-ntc-parameters"
         }
       )
       # accounts which should be included in baseline scope

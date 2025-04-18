@@ -66,7 +66,7 @@ resource "aws_iam_role" "ntc_example_iam" {
   # this condition allows certain resources or modules to be only provisioned once
   count = var.is_current_region_main_region == true ? 1 : 0
 
-  name               = "ntc_example_iam_role"
+  name               = var.baseline_parameters["example_iam_role_name"]
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ntc_example_iam[0].json
 }
@@ -96,6 +96,6 @@ resource "aws_iam_role_policy_attachment" "ntc_example_iam" {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ CROSS ACCOUNT - TEST
 # ---------------------------------------------------------------------------------------------------------------------
-data "aws_vpcs" "all" {
+data "aws_route53_zones" "all" {
   provider = aws.connectivity
 }
