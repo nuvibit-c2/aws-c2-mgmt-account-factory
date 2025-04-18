@@ -51,7 +51,7 @@ module "account_lifecycle_customization_templates" {
       template_name               = "enable_enterprise_support"
       organizations_event_trigger = "CreateAccountResult"
       company_name                = "Nuvibit"
-      cc_email_addresses          = ["accounts+test1@nuvibit.com","accounts+test2@nuvibit.com"]
+      cc_email_addresses          = ["accounts+test1@nuvibit.com", "accounts+test2@nuvibit.com"]
     },
   ]
 }

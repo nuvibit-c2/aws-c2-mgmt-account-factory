@@ -11,6 +11,7 @@ var.current_account_ou_path (string)
 var.current_account_tags (map)
 var.current_account_alternate_contacts (list)
 var.current_account_customer_values (any)
+var.baseline_parameters (any)
 
 These variables can be used inside the terraform baseline contents to decide which resources should only be deployed in a single region.
 
@@ -34,7 +35,7 @@ locals {
 module "ntc_parameters_reader_github" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = "aws-c2-ntc-parameters"
+  bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ module "ntc_parameters_reader_github" {
 module "ntc_parameters_reader_ssh" {
   source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = "aws-c2-ntc-parameters"
+  bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ module "ntc_parameters_reader_registry" {
   source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
   version = "1.1.2"
 
-  bucket_name = "aws-c2-ntc-parameters"
+  bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -90,4 +91,11 @@ resource "aws_iam_role_policy_attachment" "ntc_example_iam" {
 
   role       = aws_iam_role.ntc_example_iam[0].name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ CROSS ACCOUNT - TEST
+# ---------------------------------------------------------------------------------------------------------------------
+data "aws_vpcs" "all" {
+  provider = aws.connectivity
 }

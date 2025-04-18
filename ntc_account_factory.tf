@@ -28,7 +28,8 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.8.4"
+  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.8.4"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-parameters"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -119,7 +120,7 @@ module "ntc_account_factory" {
           "eventName" : "CreateAccountResult",
           "serviceEventDetails" : {
             "createAccountStatus" : {
-              "state": "SUCCEEDED",
+              "state" : "SUCCEEDED",
               "accountId" : "228120440352" # aws-c2-management
             }
           }
@@ -158,20 +159,18 @@ module "ntc_account_factory" {
       # (optional) additional providers which assume a specific account role for cross account orchestration
       # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
-        # {
-        #   configuration_alias = "example"
-        #   role_arn            = "arn:aws:iam::111111111111:role/example-role"
-        #   session_name        = "ntc-account-factory"
-        # }
+        {
+          configuration_alias = "connectivity"
+          role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
+          session_name        = "ntc-account-factory"
+        }
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name                     = "baseline_openid_connect"
-        #   content                       = templatefile("${path.module}/files/account_baseline_example.tf")
-        #   terraform_version_minimum     = "1.3.9"
-        #   aws_provider_version_minimum  = "4.59.0"
-        # },
+        {
+          file_name = "baseline_openid_connect"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -191,6 +190,13 @@ module "ntc_account_factory" {
       baseline_regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
+      # adding additional parameters to be used in baseline terraform code
+      # parameters must be encoded as JSON string - can also be used to pass ntc-parameters
+      baseline_parameters_json = jsonencode(
+        {
+          "parameters_bucket_name" : "aws-c2-ntc-parameters",
+        }
+      )
       # accounts which should be included in baseline scope
       include_accounts_all         = false
       include_accounts_by_ou_paths = []
@@ -257,10 +263,6 @@ module "ntc_account_factory" {
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
         module.account_baseline_templates.account_baseline_terraform_files["aws_config"],
-        {
-          file_name = "poc_assume_role"
-          content   = templatefile("${path.module}/files/account_baseline_poc.tf", {})
-        },
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -276,6 +278,13 @@ module "ntc_account_factory" {
       baseline_regions = ["us-east-1", "eu-central-1"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
+      # adding additional parameters to be used in baseline terraform code
+      # parameters must be encoded as JSON string - can also be used to pass ntc-parameters
+      baseline_parameters_json = jsonencode(
+        {
+          "parameters_bucket_name" : "aws-c2-ntc-parameters",
+        }
+      )
       # accounts which should be included in baseline scope
       include_accounts_all = false
       include_accounts_by_ou_paths = [
