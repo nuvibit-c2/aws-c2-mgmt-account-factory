@@ -167,10 +167,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        {
-          file_name = "baseline_openid_connect"
-          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-        },
+        # {
+        #   file_name = "baseline_openid_connect"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        # },
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -260,6 +260,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
+        # {
+        #   file_name = "baseline_openid_connect"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        # },
         module.account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
