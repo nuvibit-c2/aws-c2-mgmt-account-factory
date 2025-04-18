@@ -20,42 +20,42 @@ The same IAM role cannot be created in each region because IAM is a global servi
 Instead the IAM role should only be created in the main region and in every other region a data source should be used to get the role ARN.
 */
 
-# ---------------------------------------------------------------------------------------------------------------------
-# § LOCALS
-# ---------------------------------------------------------------------------------------------------------------------
-locals {
-  ntc_parameters_github   = try(module.ntc_parameters_reader_github.all_parameters, {})
-  ntc_parameters_ssh      = try(module.ntc_parameters_reader_ssh.all_parameters, {})
-  ntc_parameters_registry = try(module.ntc_parameters_reader_registry.all_parameters, {})
-}
+# # ---------------------------------------------------------------------------------------------------------------------
+# # § LOCALS
+# # ---------------------------------------------------------------------------------------------------------------------
+# locals {
+#   ntc_parameters_github   = try(module.ntc_parameters_reader_github.all_parameters, {})
+#   ntc_parameters_ssh      = try(module.ntc_parameters_reader_ssh.all_parameters, {})
+#   ntc_parameters_registry = try(module.ntc_parameters_reader_registry.all_parameters, {})
+# }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# § Private Module from Github with HTTPS - requires 'account_baseline_github_access_token'
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_reader_github" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
+# # ---------------------------------------------------------------------------------------------------------------------
+# # § Private Module from Github with HTTPS - requires 'account_baseline_github_access_token'
+# # ---------------------------------------------------------------------------------------------------------------------
+# module "ntc_parameters_reader_github" {
+#   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = var.baseline_parameters["parameters_bucket_name"]
-}
+#   bucket_name = var.baseline_parameters["parameters_bucket_name"]
+# }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# § Private Module from Git with SSH - requires 'account_baseline_git_ssh_key'
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_reader_ssh" {
-  source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
+# # ---------------------------------------------------------------------------------------------------------------------
+# # § Private Module from Git with SSH - requires 'account_baseline_git_ssh_key'
+# # ---------------------------------------------------------------------------------------------------------------------
+# module "ntc_parameters_reader_ssh" {
+#   source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
 
-  bucket_name = var.baseline_parameters["parameters_bucket_name"]
-}
+#   bucket_name = var.baseline_parameters["parameters_bucket_name"]
+# }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# § Private Module from Terraform Registry - requires 'account_baseline_terraform_registry_token' & 'account_baseline_terraform_registry_host'
-# ---------------------------------------------------------------------------------------------------------------------
-module "ntc_parameters_reader_registry" {
-  source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
-  version = "1.1.2"
+# # ---------------------------------------------------------------------------------------------------------------------
+# # § Private Module from Terraform Registry - requires 'account_baseline_terraform_registry_token' & 'account_baseline_terraform_registry_host'
+# # ---------------------------------------------------------------------------------------------------------------------
+# module "ntc_parameters_reader_registry" {
+#   source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
+#   version = "1.1.2"
 
-  bucket_name = var.baseline_parameters["parameters_bucket_name"]
-}
+#   bucket_name = var.baseline_parameters["parameters_bucket_name"]
+# }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ IAM ROLE
