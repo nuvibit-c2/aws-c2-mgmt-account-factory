@@ -205,7 +205,7 @@ module "ntc_account_factory" {
           import_id = "ntc-oidc-spacelift-role"
           # by default import statements are created for all accounts in the current baseline scope
           # use 'import_condition_account_names' to limit the import statement to specific accounts
-          import_condition_account_names = ["aws-c2-managment"]
+          import_condition_account_names = ["aws-c2-management"]
         }
       ]
       # accounts which should be included in baseline scope
