@@ -28,8 +28,7 @@ locals {
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_account_factory" {
-  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.8.4"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=feat-baseline-parameters"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=1.9.0"
 
   # this bucket stores required files for account factory
   account_factory_baseline_bucket_name = "aws-c2-ntc-af-baseline"
@@ -98,6 +97,7 @@ module "ntc_account_factory" {
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["increase_service_quota"],
         module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["tag_shared_resources"],
         # module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_enterprise_support"],
+        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["create_account_alias"]
       ]
     },
     {
@@ -121,7 +121,33 @@ module "ntc_account_factory" {
           "serviceEventDetails" : {
             "createAccountStatus" : {
               "state" : "SUCCEEDED",
-              "accountId" : "228120440352" # aws-c2-management
+              "accountId" : local.account_factory_all_account_ids["aws-c2-management"]
+            }
+          }
+        }
+      }),
+      jsonencode({
+        "source" : "aws.organizations",
+        "detail" : {
+          "eventSource" : "organizations.amazonaws.com",
+          "eventName" : "CreateAccountResult",
+          "serviceEventDetails" : {
+            "createAccountStatus" : {
+              "state" : "SUCCEEDED",
+              "accountId" : local.account_factory_all_account_ids["aws-c2-portus-dev"]
+            }
+          }
+        }
+      }),
+      jsonencode({
+        "source" : "aws.organizations",
+        "detail" : {
+          "eventSource" : "organizations.amazonaws.com",
+          "eventName" : "CreateAccountResult",
+          "serviceEventDetails" : {
+            "createAccountStatus" : {
+              "state" : "SUCCEEDED",
+              "accountId" : local.account_factory_all_account_ids["aws-c2-hephaistos-dev"]
             }
           }
         }

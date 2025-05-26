@@ -2,8 +2,7 @@
 # ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
 module "account_lifecycle_customization_templates" {
-  # source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.2.3"
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=fix-error-handling"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=account-alias"
 
   # customization steps can either be defined by customer or consumed via template module
   # https://github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
@@ -52,6 +51,11 @@ module "account_lifecycle_customization_templates" {
       organizations_event_trigger = "CreateAccountResult"
       company_name                = "Nuvibit"
       cc_email_addresses          = ["accounts+test1@nuvibit.com", "accounts+test2@nuvibit.com"]
+    },
+    {
+      template_name               = "create_account_alias"
+      organizations_event_trigger = "CreateAccountResult"
+      account_alias_tag_key       = "AccountAlias"
     },
   ]
 }
