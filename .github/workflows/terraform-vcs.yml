@@ -10,7 +10,7 @@ on:
 
 jobs:
   terraform-vcs:
-    uses: nuvibit/github-terraform-workflows/.github/workflows/terraform-vcs.yml@v1
+    uses: nuvibit/github-terraform-workflows/.github/workflows/terraform-vcs.yml@v2
     with:
       tflint_repo: "nuvibit/github-tflint-config"
       tflint_repo_config_path: "aws/.tflint_ntc.hcl"
