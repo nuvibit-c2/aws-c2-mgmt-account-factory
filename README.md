@@ -27,7 +27,7 @@ Version: 1.3.2
 
 Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
 
-Version: account-alias
+Version: 1.3.0
 
 ### ntc\_account\_factory
 
