@@ -33,7 +33,7 @@ locals {
 # § Private Module from Github with HTTPS - requires 'account_baseline_github_access_token'
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_reader_github" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
+source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.4"
 
   bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
@@ -42,7 +42,7 @@ module "ntc_parameters_reader_github" {
 # § Private Module from Git with SSH - requires 'account_baseline_git_ssh_key'
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_reader_ssh" {
-  source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.2"
+source = "git@github.com:nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=1.1.4"
 
   bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
@@ -52,7 +52,7 @@ module "ntc_parameters_reader_ssh" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "ntc_parameters_reader_registry" {
   source  = "spacelift.io/nuvibit/ntc-parameters/aws//modules/reader"
-  version = "1.1.2"
+  version = "1.1.4"
 
   bucket_name = var.baseline_parameters["parameters_bucket_name"]
 }
