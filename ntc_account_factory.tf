@@ -202,12 +202,19 @@ module "ntc_account_factory" {
       # (optional) import existing resources into account baseline
       baseline_import_resources = [
         {
+          import_to = "module.baseline_eu_central_1[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          import_id = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
+          # by default import statements are created for all accounts in the current baseline scope
+          # use 'import_condition_account_names' to limit the import statement to specific accounts
+          import_condition_account_names = ["aws-c2-management"]
+        },
+        {
           import_to = "module.baseline_eu_central_1[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io[0]"
           import_id = "ntc-oidc-spacelift-role"
           # by default import statements are created for all accounts in the current baseline scope
           # use 'import_condition_account_names' to limit the import statement to specific accounts
           import_condition_account_names = ["aws-c2-management"]
-        }
+        },
       ]
       # accounts which should be included in baseline scope
       include_accounts_all         = false
