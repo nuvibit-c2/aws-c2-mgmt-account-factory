@@ -92,18 +92,18 @@ module "ntc_account_factory" {
         #     "DEFAULT_REGION" : "eu-central-1"
         #   }
         # }
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_opt_in_regions"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["delete_default_vpc"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["increase_service_quota"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["tag_shared_resources"],
-        # module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["enable_enterprise_support"],
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["create_account_alias"]
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["enable_opt_in_regions"],
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["delete_default_vpc"],
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["increase_service_quota"],
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["tag_shared_resources"],
+        # module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["enable_enterprise_support"],
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["create_account_alias"]
       ]
     },
     {
       organizations_event_trigger = "CloseAccountResult"
       step_sequence = [
-        module.account_lifecycle_customization_templates.account_lifecycle_customization_steps["move_to_suspended_ou"]
+        module.ntc_account_lifecycle_templates.account_lifecycle_customization_steps["move_to_suspended_ou"]
       ]
     }
   ]

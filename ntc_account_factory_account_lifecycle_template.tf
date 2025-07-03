@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ NTC ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES
+# ¦ NTC ACCOUNT LIFECYCLE TEMPLATES
 # ---------------------------------------------------------------------------------------------------------------------
-module "account_lifecycle_customization_templates" {
+module "ntc_account_lifecycle_templates" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.3.0"
 
   # customization steps can either be defined by customer or consumed via template module
