@@ -2,7 +2,7 @@ locals {
   ntc_parameters_bucket_name = "aws-c2-ntc-parameters"
   ntc_parameters_writer_node = "mgmt-account-factory"
 
-  # parameters that are managed by account factory pipeline
+  # parameters to store in the ntc-parameters bucket
   ntc_parameters_to_write = {
     "core_accounts"      = local.account_factory_core_account_ids
     "baseline_role_arns" = module.ntc_account_factory.account_factory_baseline_iam_role_arns
@@ -39,9 +39,9 @@ module "ntc_parameters_writer" {
   bucket_name        = local.ntc_parameters_bucket_name
   parameter_node     = local.ntc_parameters_writer_node
   node_parameters    = local.ntc_parameters_to_write
+  replace_parameters = true
   store_account_map  = true
   account_map        = local.ntc_account_map
-  replace_parameters = true
 
   providers = {
     aws = aws.euc1
