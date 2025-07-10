@@ -23,23 +23,17 @@ Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseli
 
 Version: 1.3.2
 
-### account\_lifecycle\_customization\_templates
-
-Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
-
-Version: 1.3.0
-
 ### ntc\_account\_factory
 
 Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory
 
-Version: 1.9.0
+Version: 1.10.0
 
-### ntc\_parameters\_bucket
+### ntc\_account\_lifecycle\_templates
 
-Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters
+Source: github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates
 
-Version: 1.1.4
+Version: 1.3.0
 
 ### ntc\_parameters\_reader
 
