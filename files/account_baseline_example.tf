@@ -1,6 +1,7 @@
 /*
 NTC Account Factory will inject the following input vars inside the Terraform account baseline:
 
+var.aws_partition (string)
 var.current_region (string)
 var.main_region (string)
 var.is_current_region_main_region (bool)
@@ -11,7 +12,12 @@ var.current_account_ou_path (string)
 var.current_account_tags (map)
 var.current_account_alternate_contacts (list)
 var.current_account_customer_values (any)
+var.baseline_scope_name (string)
 var.baseline_parameters (any)
+var.baseline_terraform_version (string)
+var.baseline_terraform_binary (string)
+var.baseline_aws_provider_version (string)
+var.baseline_execution_role_name (string)
 
 These variables can be used inside the terraform baseline contents to decide which resources should only be deployed in a single region.
 
