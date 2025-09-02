@@ -53,15 +53,6 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 data "aws_region" "default" {}
 data "aws_caller_identity" "current" {}
-data "aws_organizations_organization" "current" {}
-# data "aws_regions" "enabled" {
-#   all_regions = true
-
-#   filter {
-#     name   = "opt-in-status"
-#     values = ["opted-in", "opt-in-not-required"]
-#   }
-# }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ LOCALS
@@ -71,6 +62,4 @@ locals {
     ManagedBy     = "OpenTofu"
     ProvisionedBy = "aws-c2-mgmt-account-factory"
   }
-
-  # all_enabled_regions = data.aws_regions.enabled.names
 }
