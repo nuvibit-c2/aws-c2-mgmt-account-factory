@@ -98,6 +98,50 @@
     }
   },
   {
+    "account_name": "aws-c2-backup-vault",
+    "account_email": "accounts+aws-c2-backup-vault@nuvibit.com",
+    "ou_path": "/root/core",
+    "close_on_deletion": false,
+    "account_tags": {
+      "AccountOwner": "stefano.franco@nuvibit.com",
+      "AccountType": "core",
+      "AccountDescription": "This account manages the centralized backup vault",
+      "AccountDecommission": false
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Operation Center",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "additional_oidc_subjects": []
+    }
+  },
+  {
+    "account_name": "aws-c2-platform-tooling",
+    "account_email": "accounts+aws-c2-platform-tooling@nuvibit.com",
+    "ou_path": "/root/core",
+    "close_on_deletion": false,
+    "account_tags": {
+      "AccountOwner": "stefano.franco@nuvibit.com",
+      "AccountType": "core",
+      "AccountDescription": "This account manages different platform tooling like an image factory.",
+      "AccountDecommission": false
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Operation Center",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "additional_oidc_subjects": []
+    }
+  },
+  {
     "account_name": "aws-c2-shared-services",
     "account_email": "accounts+aws-c2-shared-services@nuvibit.com",
     "ou_path": "/root/core",
