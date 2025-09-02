@@ -112,22 +112,21 @@ module "ntc_account_factory" {
   # this can be used to force account lifecycle actions for specified accounts
   # https://docs.aws.amazon.com/organizations/latest/userguide/orgs_cloudtrail-integration.html 
   account_lifecycle_customization_on_demand_triggers = {
-    # iterate over local.account_factory_all_account_ids map to create a list of user-defined events
-    user_defined_events = concat([
-      for account_name, account_id in local.account_factory_all_account_ids : jsonencode({
-        "source" : "aws.organizations",
-        "detail" : {
-          "eventSource" : "organizations.amazonaws.com",
-          "eventName" : "CreateAccountResult",
-          "serviceEventDetails" : {
-            "createAccountStatus" : {
-              "state" : "SUCCEEDED",
-              "accountId" : account_id
-            }
-          }
-        }
-      })
-    ])
+    # user_defined_events = [
+    #   jsonencode({
+    #     "source" : "aws.organizations",
+    #     "detail" : {
+    #       "eventSource" : "organizations.amazonaws.com",
+    #       "eventName" : "CreateAccountResult",
+    #       "serviceEventDetails" : {
+    #         "createAccountStatus" : {
+    #           "state" : "SUCCEEDED",
+    #           "accountId" : "INSERT_ACCOUNT_ID"
+    #         }
+    #       }
+    #     }
+    #   })
+    # ]
   }
 
   # list of baseline definitions for accounts in a specific scope
