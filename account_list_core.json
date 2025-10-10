@@ -162,5 +162,27 @@
     "customer_values": {
       "additional_oidc_subjects": []
     }
+  },
+  {
+    "account_name": "aws-c2-cognito",
+    "account_email": "accounts+aws-c2-cognito@nuvibit.com",
+    "ou_path": "/root/core",
+    "close_on_deletion": false,
+    "account_tags": {
+      "AccountOwner": "jonas.saegesser@nuvibit.com",
+      "AccountType": "core",
+      "AccountDescription": "This account manages cognito",
+      "AccountDecommission": false
+    },
+    "alternate_contacts": [
+      {
+        "type": "SECURITY",
+        "name": "Security Operation Center",
+        "email_address": "security@nuvibit.com"
+      }
+    ],
+    "customer_values": {
+      "additional_oidc_subjects": []
+    }
   }
 ]
