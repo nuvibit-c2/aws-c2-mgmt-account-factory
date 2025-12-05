@@ -8,31 +8,3 @@ import {
   id = "228120440352"
 }
 */
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_object.ntc_store_nodeowners
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket_versioning.ntc_parameters
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket_server_side_encryption_configuration.ntc_parameters
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket_public_access_block.ntc_parameters
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket_policy.ntc_parameters
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket_ownership_controls.ntc_parameters
-}
-
-removed {
-  from = module.ntc_parameters_bucket.aws_s3_bucket.ntc_parameters
-}

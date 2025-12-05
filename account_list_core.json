@@ -98,14 +98,14 @@
     }
   },
   {
-    "account_name": "aws-c2-backup-vault",
-    "account_email": "accounts+aws-c2-backup-vault@nuvibit.com",
+    "account_name": "aws-c2-backup",
+    "account_email": "accounts+aws-c2-backup@nuvibit.com",
     "ou_path": "/root/core",
     "close_on_deletion": false,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "core",
-      "AccountDescription": "This account manages the centralized backup vault",
+      "AccountDescription": "This account manages the centralized backup",
       "AccountDecommission": false
     },
     "alternate_contacts": [
