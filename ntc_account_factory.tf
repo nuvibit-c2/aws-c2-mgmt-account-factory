@@ -24,21 +24,6 @@ locals {
   ]
 }
 
-moved {
-  from = module.ntc_account_factory.aws_organizations_account.ntc_factory_account["aws-c2-backup-vault"]
-  to   = module.ntc_account_factory.aws_organizations_account.ntc_factory_account["aws-c2-backup"]
-}
-
-moved {
-  from = module.ntc_account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["core-accounts/aws-c2-backup-vault"]
-  to   = module.ntc_account_factory.aws_dynamodb_table.ntc_account_baseline_delete_protection["core-accounts/aws-c2-backup"]
-}
-
-moved {
-  from = module.ntc_account_factory.aws_codepipeline.ntc_baseline_pipeline["core-accounts/aws-c2-backup-vault"]
-  to   = module.ntc_account_factory.aws_codepipeline.ntc_baseline_pipeline["core-accounts/aws-c2-backup"]
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ NTC ACCOUNT FACTORY
 # ---------------------------------------------------------------------------------------------------------------------
