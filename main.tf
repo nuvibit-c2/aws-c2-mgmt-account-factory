@@ -42,7 +42,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      version               = "~> 5.33"
+      version               = "~> 6.0"
       configuration_aliases = []
     }
   }
@@ -52,6 +52,7 @@ terraform {
 # ¦ DATA
 # ---------------------------------------------------------------------------------------------------------------------
 data "aws_region" "default" {}
+data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -62,4 +63,8 @@ locals {
     ManagedBy     = "OpenTofu"
     ProvisionedBy = "aws-c2-mgmt-account-factory"
   }
+  default_region               = data.aws_region.default.region
+  current_partition            = data.aws_partition.current.partition  # e.g. "aws"
+  current_partition_dns_suffix = data.aws_partition.current.dns_suffix # e.g. "amazonaws.com"
+  current_account_id           = data.aws_caller_identity.current.account_id
 }
