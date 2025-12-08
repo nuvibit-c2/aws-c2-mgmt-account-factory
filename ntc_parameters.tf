@@ -36,10 +36,20 @@
 # LOCAL VARIABLES - ACCOUNT FACTORY PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
-  # S3 bucket name for centralized parameter storage (created by mgmt-organizations)
+  # -------------------------------------------------------------------------------------------------------------------
+  # S3 Bucket Name
+  # -------------------------------------------------------------------------------------------------------------------
+  # Centralized parameter storage bucket (created by mgmt-organizations)
+  # ⚠️  Must match the bucket name across all accounts in the organization
+  # -------------------------------------------------------------------------------------------------------------------
   ntc_parameters_bucket_name = "aws-c2-ntc-parameters"
 
-  # This account's parameter node name (namespace: mgmt-account-factory)
+  # -------------------------------------------------------------------------------------------------------------------
+  # Parameter Node Name
+  # -------------------------------------------------------------------------------------------------------------------
+  # This account's namespace in the parameter bucket
+  # Convention: <account-type>-<account-purpose>
+  # -------------------------------------------------------------------------------------------------------------------
   ntc_parameters_writer_node = "mgmt-account-factory"
 
   # -----------------------------------------------------
@@ -197,7 +207,7 @@ module "ntc_parameters_reader" {
 module "ntc_parameters_writer" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.4"
 
-  bucket_name        = local.ntc_parameters_bucket_name
+  bucket_name        = local.ntc_parameters_bucket_name # S3 bucket for parameter storage
   parameter_node     = local.ntc_parameters_writer_node # Namespace: mgmt-account-factory
   node_parameters    = local.ntc_parameters_to_write    # core_accounts, baseline_role_arns
   replace_parameters = true                             # Always replace (prevent drift)
