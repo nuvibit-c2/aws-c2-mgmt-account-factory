@@ -59,6 +59,7 @@ data "aws_caller_identity" "current" {}
 # ¦ LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
+  # default tags are applied to all resources the provider creates
   default_tags = {
     ManagedBy     = "OpenTofu"
     ProvisionedBy = "aws-c2-mgmt-account-factory"
