@@ -150,7 +150,7 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "core",
       "AccountDescription": "This account manages the shared services",
-      "AccountDecommission": false
+      "AccountDecommission": true
     },
     "alternate_contacts": [
       {
