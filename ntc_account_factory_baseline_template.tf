@@ -564,6 +564,20 @@ flatten([
 EOT
       }
     },
+    {
+      file_name     = "oidc_github"
+      template_name = "openid_connect"
+      openid_connect_inputs = {
+        provider                  = "token.actions.githubusercontent.com"
+        audience                  = "sts.amazonaws.com"
+        role_name                 = "ntc-oidc-github-role"
+        role_path                 = "/"
+        role_max_session_in_hours = 1
+        permission_boundary_arn   = ""
+        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        subject_list              = ["repo:nuvibit-c2/$${var.current_account_name}:*"]
+      }
+    },
     # -----------------------------------------------------------------------------------------------------------------
     # TEMPLATE 4: AWS Config - Compliance and Configuration Monitoring
     # -----------------------------------------------------------------------------------------------------------------

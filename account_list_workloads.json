@@ -9,7 +9,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-ares-dev",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123",
       "AccountDNSZoneName": "ares-dev.nuvibit.dev"
     },
@@ -34,7 +34,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-portus-dev",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123",
       "AccountDNSZoneName": "portus-dev.nuvibit.dev"
     },
@@ -59,7 +59,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-hephaistos-dev",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123"
     },
     "alternate_contacts": [
@@ -82,7 +82,7 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "1234"
     },
     "alternate_contacts": [
@@ -105,7 +105,7 @@
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
       "AccountDescription": "This is a demo account",
-      "AccountDecommission": false,
+      "AccountDecommission": true,
       "CostCenter": "123"
     },
     "alternate_contacts": [
