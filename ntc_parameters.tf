@@ -208,8 +208,8 @@ module "ntc_parameters_writer" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=1.1.4"
 
   bucket_name        = local.ntc_parameters_bucket_name # S3 bucket for parameter storage
-  parameter_node     = local.ntc_parameters_writer_node # Namespace: mgmt-account-factory
-  node_parameters    = local.ntc_parameters_to_write    # core_accounts, baseline_role_arns
+  parameter_node     = local.ntc_parameters_writer_node # This account's namespace
+  node_parameters    = local.ntc_parameters_to_write    # Parameters to write
   replace_parameters = true                             # Always replace (prevent drift)
 
   # Account Factory Special Feature: Store comprehensive account inventory
