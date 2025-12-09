@@ -1,64 +1,14 @@
 [
   {
-    "account_name": "aws-c2-ares-dev",
-    "account_email": "accounts+aws-c2-ares-dev@nuvibit.com",
-    "ou_path": "/root/workloads/dev",
+    "account_name": "aws-c2-webshop-prod",
+    "account_email": "accounts+aws-c2-webshop-prod@nuvibit.com",
+    "ou_path": "/root/workloads/prod",
     "close_on_deletion": true,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
-      "AccountAlias": "nuvibit-c2-ares-dev",
-      "AccountDescription": "This is a demo account",
-      "AccountDecommission": true,
-      "CostCenter": "123",
-      "AccountDNSZoneName": "ares-dev.nuvibit.dev"
-    },
-    "alternate_contacts": [
-      {
-        "type": "SECURITY",
-        "name": "Security Contact",
-        "email_address": "security@nuvibit.com"
-      }
-    ],
-    "customer_values": {
-      "additional_oidc_subjects": []
-    }
-  },
-  {
-    "account_name": "aws-c2-portus-dev",
-    "account_email": "accounts+aws-c2-portus-dev@nuvibit.com",
-    "ou_path": "/root/workloads/dev",
-    "close_on_deletion": true,
-    "account_tags": {
-      "AccountOwner": "stefano.franco@nuvibit.com",
-      "AccountType": "workload",
-      "AccountAlias": "nuvibit-c2-portus-dev",
-      "AccountDescription": "This is a demo account",
-      "AccountDecommission": true,
-      "CostCenter": "123",
-      "AccountDNSZoneName": "portus-dev.nuvibit.dev"
-    },
-    "alternate_contacts": [
-      {
-        "type": "SECURITY",
-        "name": "Security Contact",
-        "email_address": "security@nuvibit.com"
-      }
-    ],
-    "customer_values": {
-      "additional_oidc_subjects": []
-    }
-  },
-  {
-    "account_name": "aws-c2-hephaistos-dev",
-    "account_email": "accounts+aws-c2-hephaistos-dev@nuvibit.com",
-    "ou_path": "/root/workloads/dev",
-    "close_on_deletion": true,
-    "account_tags": {
-      "AccountOwner": "stefano.franco@nuvibit.com",
-      "AccountType": "workload",
-      "AccountAlias": "nuvibit-c2-hephaistos-dev",
-      "AccountDescription": "This is a demo account",
+      "AccountAlias": "nuvibit-c2-webshop-prod",
+      "AccountDescription": "Webshop application in production stage",
       "AccountDecommission": true,
       "CostCenter": "123"
     },
@@ -74,16 +24,17 @@
     }
   },
   {
-    "account_name": "aws-c2-apollo-prod",
-    "account_email": "accounts+aws-c2-apollo-prod@nuvibit.com",
-    "ou_path": "/root/workloads/prod",
+    "account_name": "aws-c2-webshop-test",
+    "account_email": "accounts+aws-c2-webshop-test@nuvibit.com",
+    "ou_path": "/root/workloads/test",
     "close_on_deletion": true,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
-      "AccountDescription": "This is a demo account",
+      "AccountAlias": "nuvibit-c2-webshop-test",
+      "AccountDescription": "Webshop application in testing stage",
       "AccountDecommission": true,
-      "CostCenter": "1234"
+      "CostCenter": "123"
     },
     "alternate_contacts": [
       {
@@ -97,14 +48,15 @@
     }
   },
   {
-    "account_name": "aws-c2-apollo-dev",
-    "account_email": "accounts+aws-c2-apollo-dev@nuvibit.com",
+    "account_name": "aws-c2-webshop-dev",
+    "account_email": "accounts+aws-c2-webshop-dev@nuvibit.com",
     "ou_path": "/root/workloads/dev",
     "close_on_deletion": true,
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "workload",
-      "AccountDescription": "This is a demo account",
+      "AccountAlias": "nuvibit-c2-webshop-dev",
+      "AccountDescription": "Webshop application in development stage",
       "AccountDecommission": true,
       "CostCenter": "123"
     },
