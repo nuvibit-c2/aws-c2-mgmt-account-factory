@@ -184,7 +184,7 @@
 # ⚠️  Manual changes to baseline-managed resources will be reverted on next run
 #
 # =====================================================================================================================
-module "account_baseline_templates" {
+module "ntc_account_baseline_templates" {
   source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=1.3.2"
 
   # -----------------------------------------------------------------------------------------------------------------
@@ -730,6 +730,294 @@ EOT
         # this is necessary when security tooling uses a different main region
         # omit to use the main region of the account baseline
         config_security_main_region = ""
+      }
+    },
+    # -----------------------------------------------------------------------------------------------------------------
+    # TEMPLATE 5: Terraform State Backend - Secure Remote State Storage
+    # -----------------------------------------------------------------------------------------------------------------
+    # PURPOSE: Create dedicated Terraform/OpenTofu state backend infrastructure in each account
+    # 
+    # WHAT IT DOES:
+    #   - Creates S3 bucket for storing Terraform/OpenTofu state files
+    #   - Creates KMS CMK for state file encryption
+    #   - Configures S3 bucket with security best practices (versioning, encryption, logging)
+    #   - Sets up state locking mechanism (S3 native or DynamoDB)
+    #   - Grants access to CI/CD roles and administrators via IAM policies
+    # 
+    # USE CASES:
+    #   ✓ Store Terraform state for workload deployments in each account
+    #   ✓ Enable team collaboration on infrastructure code
+    #   ✓ Prevent concurrent state modifications with locking
+    #   ✓ Maintain state file history with versioning
+    #   ✓ Secure sensitive data in state with encryption
+    #   ✓ Control access to state via IAM roles
+    # 
+    # WHAT IS TERRAFORM STATE BACKEND?
+    #   Terraform state files track the mapping between your Terraform configuration
+    #   and real-world resources. Remote backends provide:
+    #   - Centralized state storage: Team members access same state
+    #   - State locking: Prevent simultaneous modifications
+    #   - Encryption at rest: Protect sensitive data in state
+    #   - Versioning: Recover from mistakes or corruption
+    #   - Access control: Limit who can read/write state
+    # 
+    # TEMPLATE TYPE: tfstate_backend
+    #   Creates complete backend infrastructure:
+    #   - S3 bucket: State file storage with versioning
+    #   - KMS key: Customer managed key for encryption
+    #   - Bucket policy: Least privilege access control
+    #   - KMS key policy: Encryption/decryption permissions
+    #   - Optional DynamoDB table: State locking (if not using S3 native locking)
+    # 
+    # CONFIGURATION:
+    #   s3_bucket_name: Name of the S3 bucket
+    #     - Must be globally unique across ALL AWS accounts
+    #     - Use account name prefix for uniqueness: "$${var.current_account_name}-tfstate"
+    #     - var.current_account_name is automatically injected by Account Factory
+    #     - Example: "aws-c2-prod-app-tfstate"
+    #     - ⚠️  Cannot be changed after creation without manual migration
+    #   
+    #   s3_bucket_force_destroy: Allow bucket deletion with content
+    #     - true: Allows destroying bucket even if it contains state files
+    #     - false: Prevents accidental deletion (RECOMMENDED for production)
+    #     - ⚠️  WARNING: true will DELETE ALL STATE FILES when bucket is destroyed
+    #     - Use true for: Development, testing, temporary accounts
+    #     - Use false for: Production, long-lived accounts
+    #     - Consider impact: Lost state = unable to manage existing infrastructure
+    #   
+    #   state_locking_mechanism: How to prevent concurrent state modifications
+    #     - "s3": Use S3 native locking (Terraform/OpenTofu 1.10.0+)
+    #       • Simpler: No DynamoDB table needed
+    #       • Lower cost: No DynamoDB charges
+    #       • Newer feature: Requires recent Terraform/OpenTofu version
+    #     - "dynamodb": Use DynamoDB for locking (traditional method)
+    #       • Proven: Works with all Terraform versions
+    #       • Cost: Small DynamoDB table charges (~$1-2/month)
+    #       • Compatible: Works with older Terraform versions
+    #     
+    #     Recommendation: Use "s3" if running Terraform/OpenTofu 1.10.0+
+    #   
+    #   access_rules: Define who can access the state backend
+    #     - List of access rules, each granting permissions to specific roles
+    #     - Multiple rules for different access patterns (CI/CD, admins, developers)
+    #     - Supports prefix-based access for state file isolation
+    # 
+    # ACCESS RULES CONFIGURATION:
+    #   Each access rule defines:
+    #   
+    #   name: Descriptive name for the access rule
+    #     - Used for documentation and policy statement IDs
+    #     - Example: "CI/CD Pipeline Access", "Administrator Access"
+    #   
+    #   description: Human-readable explanation
+    #     - What this rule grants and why
+    #     - Helpful for future maintainers
+    #   
+    #   role_arns: List of IAM role ARNs to grant access
+    #     - Fully qualified role ARNs (including account ID)
+    #     - Supports wildcards for SSO roles: "AWSReservedSSO_*"
+    #     - Use injected variables for dynamic ARNs:
+    #       • $${var.current_account_id}: Current account ID
+    #       • $${var.aws_partition}: AWS partition (aws, aws-cn, aws-us-gov)
+    #     
+    #     Common role patterns:
+    #     • OIDC CI/CD role: "arn:aws:iam::ACCOUNT_ID:role/ntc-oidc-cicd-role"
+    #     • SSO admin role: "arn:aws:iam::ACCOUNT_ID:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*"
+    #     • Cross-account role: "arn:aws:iam::OTHER_ACCOUNT_ID:role/role-name"
+    #   
+    #   allowed_prefixes: Restrict access to specific state file paths
+    #     - ["*"]: Full access to all state files (typical for admins)
+    #     - ["env:/prod/*"]: Access only to production workspace states
+    #     - ["app1/*", "app2/*"]: Access only to specific application states
+    #     - Use for: Multi-tenant scenarios, team isolation, environment separation
+    # 
+    # EXAMPLE ACCESS PATTERNS:
+    #   
+    #   Pattern 1: CI/CD and Administrators (Most Common)
+    #   ```hcl
+    #   access_rules = [
+    #     {
+    #       name        = "Full Backend Access"
+    #       description = "CI/CD pipelines and administrators"
+    #       role_arns = [
+    #         "arn:aws:iam::$${var.current_account_id}:role/ntc-oidc-spacelift-role",
+    #         "arn:aws:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*",
+    #       ]
+    #       allowed_prefixes = ["*"]
+    #     }
+    #   ]
+    #   ```
+    #   
+    #   Pattern 2: Separate CI/CD and Admin Access
+    #   ```hcl
+    #   access_rules = [
+    #     {
+    #       name        = "CI/CD Pipeline Access"
+    #       description = "Automated deployments via OIDC"
+    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/ntc-oidc-github-role"]
+    #       allowed_prefixes = ["*"]
+    #     },
+    #     {
+    #       name        = "Administrator Access"
+    #       description = "SSO administrators for manual operations"
+    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_*"]
+    #       allowed_prefixes = ["*"]
+    #     }
+    #   ]
+    #   ```
+    #   
+    #   Pattern 3: Environment-Based Isolation
+    #   ```hcl
+    #   access_rules = [
+    #     {
+    #       name        = "Production Deployments"
+    #       description = "Production CI/CD pipeline only"
+    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/prod-deployment-role"]
+    #       allowed_prefixes = ["env:/prod/*"]
+    #     },
+    #     {
+    #       name        = "Development Deployments"
+    #       description = "Development team access"
+    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/dev-team-role"]
+    #       allowed_prefixes = ["env:/dev/*", "env:/test/*"]
+    #     }
+    #   ]
+    #   ```
+    # 
+    # SECURITY FEATURES (AUTOMATIC):
+    #   ✓ S3 Bucket Encryption: KMS CMK with automatic rotation
+    #   ✓ S3 Versioning: Protect against accidental state corruption
+    #   ✓ S3 Public Access Block: Prevent public exposure of state
+    #   ✓ TLS Enforcement: Deny unencrypted (HTTP) requests
+    #   ✓ KMS Key Policy: Least privilege access to encryption key
+    #   ✓ Bucket Policy: IAM-based access control per role
+    #   ✓ State Locking: Prevent concurrent modifications
+    # 
+    # TERRAFORM BACKEND CONFIGURATION:
+    #   After backend is created, configure Terraform to use it:
+    #   
+    #   For S3 native locking (Terraform/OpenTofu 1.10.0+):
+    #   ```hcl
+    #   terraform {
+    #     backend "s3" {
+    #       bucket         = "ACCOUNT_NAME-tfstate"
+    #       key            = "path/to/state.tfstate"
+    #       region         = "eu-central-1"
+    #       encrypt        = true
+    #       kms_key_id     = "arn:aws:kms:REGION:ACCOUNT_ID:key/KEY_ID"
+    #       use_lockfile   = true  # S3 native locking
+    #     }
+    #   }
+    #   ```
+    #   
+    #   For DynamoDB locking (traditional):
+    #   ```hcl
+    #   terraform {
+    #     backend "s3" {
+    #       bucket         = "ACCOUNT_NAME-tfstate"
+    #       key            = "path/to/state.tfstate"
+    #       region         = "eu-central-1"
+    #       encrypt        = true
+    #       kms_key_id     = "arn:aws:kms:REGION:ACCOUNT_ID:key/KEY_ID"
+    #       dynamodb_table = "ACCOUNT_NAME-tfstate-lock"
+    #     }
+    #   }
+    #   ```
+    # 
+    # MULTI-REGION DEPLOYMENT:
+    #   - Backend created in MAIN region only (global resource)
+    #   - All regions reference the same backend bucket
+    #   - Use different state file paths per region: "region/REGION/terraform.tfstate"
+    # 
+    # BEST PRACTICES:
+    #   ✓ Use account name prefix for globally unique bucket names
+    #   ✓ Set force_destroy = false in production (prevent accidental deletion)
+    #   ✓ Use S3 native locking for new deployments (simpler, cheaper)
+    #   ✓ Grant access via IAM roles, not IAM users
+    #   ✓ Use separate state files for different environments (env:/prod/, env:/dev/)
+    #   ✓ Regularly review access rules and remove unused roles
+    #   ✓ Use state file prefixes for multi-tenant scenarios
+    # 
+    # MIGRATION CONSIDERATIONS:
+    #   Moving to remote backend from local state:
+    #   1. Create backend via this baseline template
+    #   2. Add backend configuration to Terraform
+    #   3. Run 'terraform init -migrate-state'
+    #   4. Verify state migration successful
+    #   5. Delete local state file (terraform.tfstate)
+    # 
+    # TROUBLESHOOTING:
+    #   If Terraform can't access backend:
+    #   ✓ Verify IAM role is in 'access_rules' list
+    #   ✓ Check KMS key policy allows role to decrypt
+    #   ✓ Confirm bucket policy allows s3:GetObject/PutObject
+    #   ✓ Validate state file path matches backend config
+    #   ✓ Review CloudTrail for AccessDenied events
+    #   ✓ Ensure state locking mechanism matches backend config
+    # 
+    # BENEFITS:
+    #   ✓ Team collaboration: Everyone uses same state
+    #   ✓ Prevents conflicts: State locking avoids concurrent modifications
+    #   ✓ Disaster recovery: Versioned state enables rollback
+    #   ✓ Security: Encrypted state protects sensitive data (passwords, keys)
+    #   ✓ Access control: IAM policies restrict who can read/write state
+    #   ✓ Auditability: CloudTrail logs all state access
+    #   ✓ Automation: CI/CD pipelines can safely manage infrastructure
+    # 
+    # ⚠️  CRITICAL WARNINGS:
+    #   • State files contain sensitive data (passwords, keys, secrets)
+    #   • force_destroy = true will DELETE ALL STATE FILES when bucket destroyed
+    #   • Lost state = unable to manage existing infrastructure via Terraform (import required)
+    #   • Always backup state before major changes
+    #   • Never commit state files to version control
+    #   • Restrict access to state backend to necessary roles only
+    # -----------------------------------------------------------------------------------------------------------------
+    {
+      file_name     = "tfstate_backend"
+      template_name = "tfstate_backend"
+      tfstate_backend_inputs = {
+        # -----------------------------------------------------------------------------------------------------------------
+        # S3 Bucket Configuration
+        # -----------------------------------------------------------------------------------------------------------------
+        s3_bucket_name = "$${var.current_account_name}-tfstate" # ⚠️  Must be globally unique
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # Force Destroy - DANGER ZONE
+        # -----------------------------------------------------------------------------------------------------------------
+        # ⚠️  WARNING: true will DELETE ALL STATE FILES when bucket is destroyed!
+        # Use true for: Testing, development, temporary accounts
+        # Use false for: Production, critical infrastructure, long-lived accounts
+        # -----------------------------------------------------------------------------------------------------------------
+        s3_bucket_force_destroy = true # Set to false for production!
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # State Locking Mechanism
+        # -----------------------------------------------------------------------------------------------------------------
+        # "s3": S3 native locking (Terraform/OpenTofu 1.10.0+) - Recommended
+        # "dynamodb": DynamoDB locking (traditional, works with older versions)
+        # -----------------------------------------------------------------------------------------------------------------
+        state_locking_mechanism = "s3" # Use "s3" for new deployments
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # Access Rules - Grant Backend Access to Roles
+        # -----------------------------------------------------------------------------------------------------------------
+        # Define who can read/write Terraform state
+        # Supports multiple rules for different access patterns
+        # -----------------------------------------------------------------------------------------------------------------
+        access_rules = [
+          {
+            name        = "TFstate Backend Access"
+            description = "Grant access to the tfstate backend S3 bucket and KMS key"
+            role_arns = [
+              # Grant access to OIDC IAM role (CI/CD pipelines)
+              "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/ntc-oidc-github-role",
+              # Grant access to SSO Admin users (manual operations)
+              "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*",
+            ]
+            # Grant access to all state files (use specific prefixes for isolation)
+            allowed_prefixes = ["*"]
+          }
+        ]
       }
     },
   ]

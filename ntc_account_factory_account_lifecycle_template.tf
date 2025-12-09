@@ -359,7 +359,7 @@ module "ntc_account_lifecycle_templates" {
       organizations_member_role   = "OrganizationAccountAccessRole"
       # Dynamically retrieve suspended OU ID from NTC parameters
       # Falls back to empty string if OU doesn't exist (template will skip execution)
-      suspended_ou_id = try(local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"], "")
+      suspended_ou_id = local.ntc_parameters["mgmt-organizations"]["ou_ids"]["/root/suspended"]
     },
     # -----------------------------------------------------------------------------------------------------------------
     # TEMPLATE 6: Enable Enterprise Support
