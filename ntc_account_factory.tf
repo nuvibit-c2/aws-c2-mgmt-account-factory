@@ -183,14 +183,14 @@ module "ntc_account_factory" {
   # Useful for: Large organizations with many accounts, parallel baseline deployments
   # -----------------------------------------------------------------------------------------------------------------
   increase_aws_service_quotas = {
-    codebuild_concurrent_runs_arm_small     = 20 # Increase for parallel baseline deployments
-    codebuild_concurrent_runs_arm_large     = 0
-    codebuild_concurrent_runs_linux_small   = 0 # Linux instances if not using ARM
-    codebuild_concurrent_runs_linux_medium  = 0
-    codebuild_concurrent_runs_linux_large   = 0
-    codebuild_concurrent_runs_linux_2xlarge = 0
-    codepipelines_max_count                 = 0
-    event_rules_max_count                   = 0
+    codebuild_concurrent_runs_arm_small      = 20 # Increase for parallel baseline deployments
+    codebuild_concurrent_runs_arm_large      = 0
+    codebuild_concurrent_runs_linux_small    = 0 # Linux instances if not using ARM
+    codebuild_concurrent_runs_linux_medium   = 0
+    codebuild_concurrent_runs_linux_large    = 0
+    codebuild_concurrent_runs_linux_2xlarge  = 0
+    codepipelines_max_count                  = 0
+    event_rules_max_count                    = 0
   }
 
   # -----------------------------------------------------------------------------------------------------------------
