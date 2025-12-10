@@ -311,7 +311,7 @@ module "ntc_account_factory" {
     #   jsonencode({
     #     "source" : "aws.organizations",
     #     "detail" : {
-    #       "eventSource" : "organizations.${local.current_partition_dns_suffix}",
+    #       "eventSource" : "organizations.amazonaws.com",
     #       "eventName" : "CreateAccountResult",
     #       "serviceEventDetails" : {
     #         "createAccountStatus" : {

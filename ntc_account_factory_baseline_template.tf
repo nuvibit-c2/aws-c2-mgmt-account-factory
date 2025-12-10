@@ -336,7 +336,7 @@ module "ntc_account_baseline_templates" {
         policy_arn          = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
         role_principal_type = "Service"
         # grant permission to assume role in member account
-        role_principal_identifiers = ["ec2.${local.current_partition_dns_suffix}"]
+        role_principal_identifiers = ["ec2.amazonaws.com"]
         # (optional) set to true to create an instance profile
         role_is_instance_profile = true
       }
