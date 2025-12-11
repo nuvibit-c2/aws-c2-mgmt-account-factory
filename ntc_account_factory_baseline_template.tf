@@ -246,7 +246,7 @@ module "ntc_account_baseline_templates" {
       template_name = "iam_role"
       iam_role_inputs = {
         role_name  = "CloudWatch-CrossAccountSharingRole"
-        policy_arn = "arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess"
+        policy_arn = "arn:${local.current_partition}:iam::aws:policy/CloudWatchReadOnlyAccess"
         # alternative: custom policy JSON for more granular control
         policy_json         = ""
         role_principal_type = "AWS"
@@ -333,7 +333,7 @@ module "ntc_account_baseline_templates" {
       template_name = "iam_role"
       iam_role_inputs = {
         role_name           = "ntc-ssm-instance-profile"
-        policy_arn          = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        policy_arn          = "arn:${local.current_partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
         role_principal_type = "Service"
         # grant permission to assume role in member account
         role_principal_identifiers = ["ec2.amazonaws.com"]
@@ -540,7 +540,7 @@ module "ntc_account_baseline_templates" {
         role_path                 = "/"
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
-        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/AdministratorAccess"
         # make sure to define a subject which is limited to your scope (e.g. a generic subject could grant access to all terraform cloud users)
         # you can use dynamic values by referencing the injected baseline variables (e.g. var.current_account_name) - additional '$' escape is required
         # for additional flexibility use 'subject_list_encoded' which allows injecting more complex structures (e.g. grant permission to multiple pipelines in one account)
@@ -574,7 +574,7 @@ EOT
         role_path                 = "/"
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
-        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/AdministratorAccess"
         subject_list              = ["repo:nuvibit-c2/$${var.current_account_name}:*"]
       }
     },
