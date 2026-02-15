@@ -86,7 +86,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_lifecycle_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=1.3.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-lifecycle-templates?ref=2.0.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT LIFECYCLE CUSTOMIZATION TEMPLATES

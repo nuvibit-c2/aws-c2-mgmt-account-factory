@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=2.1.2"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.0.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -244,6 +244,23 @@ module "ntc_account_baseline_templates" {
     {
       file_name     = "iam_monitoring_reader"
       template_name = "iam_role"
+      iam_role_inputs = {
+        role_name  = "CloudWatch-CrossAccountSharingRole"
+        policy_arn = "arn:${local.current_partition}:iam::aws:policy/CloudWatchReadOnlyAccess"
+        # alternative: custom policy JSON for more granular control
+        policy_json         = ""
+        role_principal_type = "AWS"
+        # grant permission to assume role in member account
+        role_principal_identifiers = [
+          local.account_factory_core_account_ids["aws-c2-management"] # replace with your monitoring account
+        ]
+      }
+    },
+    # NOTE: migrating to unified baseline template with same configuration
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_iam_monitoring_reader"
+      template_name                 = "iam_role"
       iam_role_inputs = {
         role_name  = "CloudWatch-CrossAccountSharingRole"
         policy_arn = "arn:${local.current_partition}:iam::aws:policy/CloudWatchReadOnlyAccess"
@@ -331,6 +348,21 @@ module "ntc_account_baseline_templates" {
     {
       file_name     = "iam_instance_profile"
       template_name = "iam_role"
+      iam_role_inputs = {
+        role_name           = "ntc-ssm-instance-profile"
+        policy_arn          = "arn:${local.current_partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        role_principal_type = "Service"
+        # grant permission to assume role in member account
+        role_principal_identifiers = ["ec2.amazonaws.com"]
+        # (optional) set to true to create an instance profile
+        role_is_instance_profile = true
+      }
+    },
+    # NOTE: migrating to unified baseline template with same configuration
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_iam_instance_profile"
+      template_name                 = "iam_role"
       iam_role_inputs = {
         role_name           = "ntc-ssm-instance-profile"
         policy_arn          = "arn:${local.current_partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -578,6 +610,57 @@ EOT
         subject_list              = ["repo:nuvibit-c2/$${var.current_account_name}:*"]
       }
     },
+    # NOTE: migrating to unified baseline template with same configuration
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_oidc_spacelift"
+      template_name                 = "openid_connect"
+      openid_connect_inputs = {
+        provider                  = "nuvibit.app.spacelift.io"
+        audience                  = "nuvibit.app.spacelift.io"
+        role_name                 = "ntc-oidc-spacelift-role"
+        role_path                 = "/"
+        role_max_session_in_hours = 1
+        permission_boundary_arn   = ""
+        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        # make sure to define a subject which is limited to your scope (e.g. a generic subject could grant access to all terraform cloud users)
+        # you can use dynamic values by referencing the injected baseline variables (e.g. var.current_account_name) - additional '$' escape is required
+        # for additional flexibility use 'subject_list_encoded' which allows injecting more complex structures (e.g. grant permission to multiple pipelines in one account)
+        /* examples for common openid_connect subjects
+          terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
+          spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
+          gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
+          github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+          jenkins         = "job:JOB_NAME/master"
+        */
+        # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
+        subject_list_encoded = <<EOT
+flatten([
+  [
+    "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"
+  ],
+  [
+    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${subject}:*"
+  ]
+])
+EOT
+      }
+    },
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_oidc_github"
+      template_name                 = "openid_connect"
+      openid_connect_inputs = {
+        provider                  = "token.actions.githubusercontent.com"
+        audience                  = "sts.amazonaws.com"
+        role_name                 = "ntc-oidc-github-role"
+        role_path                 = "/"
+        role_max_session_in_hours = 1
+        permission_boundary_arn   = ""
+        permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/AdministratorAccess"
+        subject_list              = ["repo:nuvibit-c2/$${var.current_account_name}:*"]
+      }
+    },
     # -----------------------------------------------------------------------------------------------------------------
     # TEMPLATE 4: AWS Config - Compliance and Configuration Monitoring
     # -----------------------------------------------------------------------------------------------------------------
@@ -731,6 +814,26 @@ EOT
     {
       file_name     = "aws_config"
       template_name = "aws_config"
+      aws_config_inputs = {
+        config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
+        config_log_archive_kms_key_arn = local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"]
+        # optional inputs
+        config_recorder_name         = "ntc-config-recorder"
+        config_delivery_channel_name = "ntc-config-delivery"
+        config_iam_role_name         = "ntc-config-role"
+        config_iam_path              = "/"
+        config_delivery_frequency    = "One_Hour"
+        # (optional) override account baseline main region with main region of security tooling
+        # this is necessary when security tooling uses a different main region
+        # omit to use the main region of the account baseline
+        config_security_main_region = ""
+      }
+    },
+    # NOTE: migrating to unified baseline template with same configuration
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_aws_config"
+      template_name                 = "aws_config"
       aws_config_inputs = {
         config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
         config_log_archive_kms_key_arn = local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"]
@@ -1002,7 +1105,7 @@ EOT
         # Use true for: Testing, development, temporary accounts
         # Use false for: Production, critical infrastructure, long-lived accounts
         # -----------------------------------------------------------------------------------------------------------------
-        s3_bucket_force_destroy = true # Set to false for production!
+        s3_bucket_force_destroy = true # NOTE: set to false for production!
 
         # -----------------------------------------------------------------------------------------------------------------
         # State Locking Mechanism
@@ -1010,7 +1113,57 @@ EOT
         # "s3": S3 native locking (Terraform/OpenTofu 1.10.0+) - Recommended
         # "dynamodb": DynamoDB locking (traditional, works with older versions)
         # -----------------------------------------------------------------------------------------------------------------
-        state_locking_mechanism = "s3" # Use "s3" for new deployments
+        state_locking_mechanism = "s3"
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # Access Rules - Grant Backend Access to Roles
+        # -----------------------------------------------------------------------------------------------------------------
+        # Define who can read/write Terraform state
+        # Supports multiple rules for different access patterns
+        # -----------------------------------------------------------------------------------------------------------------
+        access_rules = [
+          {
+            name        = "TFstate Backend Access"
+            description = "Grant access to the tfstate backend S3 bucket and KMS key"
+            role_arns = [
+              # Grant access to OIDC IAM role (CI/CD pipelines)
+              "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/ntc-oidc-github-role",
+              # Grant access to SSO Admin users (manual operations)
+              "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*",
+            ]
+            # Grant access to all state files (use specific prefixes for isolation)
+            allowed_prefixes = ["*"]
+          }
+        ]
+      }
+    },
+    # NOTE: migrating to unified baseline template with same configuration
+    {
+      unified_multi_region_baseline = true
+      file_name                     = "unified_tfstate_backend"
+      template_name                 = "tfstate_backend"
+      tfstate_backend_inputs = {
+        # -----------------------------------------------------------------------------------------------------------------
+        # S3 Bucket Configuration
+        # -----------------------------------------------------------------------------------------------------------------
+        s3_bucket_name = "$${var.current_account_name}-tfstate" # ⚠️  Must be globally unique
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # Force Destroy - DANGER ZONE
+        # -----------------------------------------------------------------------------------------------------------------
+        # ⚠️  WARNING: true will DELETE ALL STATE FILES when bucket is destroyed!
+        # Use true for: Testing, development, temporary accounts
+        # Use false for: Production, critical infrastructure, long-lived accounts
+        # -----------------------------------------------------------------------------------------------------------------
+        s3_bucket_force_destroy = true # NOTE: set to false for production!
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # State Locking Mechanism
+        # -----------------------------------------------------------------------------------------------------------------
+        # "s3": S3 native locking (Terraform/OpenTofu 1.10.0+) - Recommended
+        # "dynamodb": DynamoDB locking (traditional, works with older versions)
+        # -----------------------------------------------------------------------------------------------------------------
+        state_locking_mechanism = "s3"
 
         # -----------------------------------------------------------------------------------------------------------------
         # Access Rules - Grant Backend Access to Roles
