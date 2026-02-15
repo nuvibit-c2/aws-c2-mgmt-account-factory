@@ -435,6 +435,23 @@ module "ntc_account_factory" {
           import_condition_account_names = ["aws-c2-management"] # Only import in this account
         },
       ]
+      
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Moved Statements - Move Existing Resources In State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Move existing resources to new resource name to avoid recreation
+      # Use 'moved_condition_account_names' to limit the moved statement to specific accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      # (optional) move resources inside account baseline
+      baseline_moved_resources = [
+        # {
+        #   moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_iam__cloudwatch_crossaccountsharingrole[0]"
+        #   moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_iam__cloudwatch_crossaccountsharingrole"
+        #   # by default moved statements are created for all accounts in the current baseline scope
+        #   # use 'moved_condition_account_names' to limit the moved statement to specific accounts
+        #   moved_condition_account_names = ["aws-c2-management"]
+        # }
+      ]
 
       # -----------------------------------------------------------------------------------------------------------------
       # Account Targeting - Include Accounts in Baseline Scope
@@ -477,279 +494,309 @@ module "ntc_account_factory" {
         }
       ]
     },
-    # # =================================================================================================================
-    # # BASELINE SCOPE 2: WORKLOAD ACCOUNTS - PROD
-    # # =================================================================================================================
-    # # Purpose: Governance for production application/workload accounts
-    # # Targeting: Accounts in workload prod OUs (/root/workloads/prod)
-    # # NOTE: update non-prod scope first to validate baseline configuration before applying to production accounts
-    # # =================================================================================================================
-    # {
-    #   scope_name = "workload-accounts-prod"
-    #   # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
-    #   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-    #   # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
-    #   unified_multi_region_baseline = true
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Terraform/OpenTofu Configuration
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   terraform_binary      = "opentofu" # Terraform or OpenTofu
-    #   terraform_parallelism = 10         # Reduce to avoid API rate limits
-    #   terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
-    #   aws_provider_version  = "6.25.0"   # AWS provider version
+    # =================================================================================================================
+    # BASELINE SCOPE 2: WORKLOAD ACCOUNTS - PROD
+    # =================================================================================================================
+    # Purpose: Governance for production application/workload accounts
+    # Targeting: Accounts in workload prod OUs (/root/workloads/prod)
+    # NOTE: update non-prod scope first to validate baseline configuration before applying to production accounts
+    # =================================================================================================================
+    {
+      scope_name = "workload-accounts-prod"
+      # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
+      # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
+      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      unified_multi_region_baseline = true
+      # -----------------------------------------------------------------------------------------------------------------
+      # Terraform/OpenTofu Configuration
+      # -----------------------------------------------------------------------------------------------------------------
+      terraform_binary      = "opentofu" # Terraform or OpenTofu
+      terraform_parallelism = 10         # Reduce to avoid API rate limits
+      terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
+      aws_provider_version  = "6.25.0"   # AWS provider version
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Provider Default Tags - Applied to All Baseline Resources
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   provider_default_tags = {
-    #     ManagedBy       = "ntc-account-factory"
-    #     BaselineScope   = "workload-accounts-prod"
-    #     BaselineVersion = "2.0.0" # you can define your own versioning scheme
-    #   }
+      # -----------------------------------------------------------------------------------------------------------------
+      # Provider Default Tags - Applied to All Baseline Resources
+      # -----------------------------------------------------------------------------------------------------------------
+      provider_default_tags = {
+        ManagedBy       = "ntc-account-factory"
+        BaselineScope   = "workload-accounts-prod"
+        BaselineVersion = "2.0.0" # you can define your own versioning scheme
+      }
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Scheduled Drift Remediation
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   schedule_rerun_every_x_hours = 0 # 0 = disabled, >0 = rerun every X hours
-    #   # IAM role which exists in member accounts and can be assumed by baseline pipeline
-    #   baseline_execution_role_name = "OrganizationAccountAccessRole"
-    #   # session name used by baseline pipeline in member accounts
-    #   baseline_execution_session_name = "ntc-account-factory"
-    #   # (optional) additional providers which assume a specific account role for cross account orchestration
-    #   # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
-    #   baseline_assume_role_providers = [
-    #     {
-    #       configuration_alias = "connectivity"
-    #       role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
-    #       session_name        = "ntc-account-factory"
-    #     }
-    #   ]
-    #   # add terraform code to baseline from static files or dynamic templates
-    #   baseline_terraform_files = [
-    #     # {
-    #     #   file_name = "baseline_openid_connect"
-    #     #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-    #     # },
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
-    #   ]
-    #   # add delay to pipeline to avoid errors on first run
-    #   # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
-    #   pipeline_delay_options = {
-    #     wait_for_seconds        = 120
-    #     wait_retry_count        = 5
-    #     wait_for_execution_role = true
-    #     wait_for_regions        = true
-    #   }
-    #   # baseline terraform code will be provisioned in each specified region
-    #   baseline_regions = ["us-east-1", "eu-central-1"]
-    #   # baseline terraform code which can be provisioned in a single region (e.g. IAM)
-    #   baseline_main_region = "eu-central-1"
-
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Baseline Parameters - Custom Configuration Data
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Pass custom parameters to baseline templates via var.baseline_parameters
-    #   # Use for: environment-specific values, configuration data
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   baseline_parameters_json = jsonencode(
-    #     {
-    #       example_iam_role_name = "ntc-example-role" # Example custom parameter
-    #     }
-    #   )
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Import existing resources to avoid recreation
-    #   # Use import_condition_account_names to limit imports to specific accounts
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   baseline_import_resources = [
-    #     # {
-    #     #   import_to                      = ""
-    #     #   import_id                      = ""
-    #     #   import_condition_account_names = []
-    #     # }
-    #   ]
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Account Targeting - Include Accounts in Baseline Scope
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Target by OU paths for workload accounts (prod, dev, test environments)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   include_accounts_all = false # Don't include all accounts
-    #   include_accounts_by_ou_paths = [
-    #     "/root/workloads/prod", # Production workload accounts
-    #   ]
-    #   include_accounts_by_names = [] # Optional: specific account names
-    #   include_accounts_by_tags  = [] # Optional: accounts with specific tags
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Account Exclusions - Remove Specific Accounts from Scope
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Exclusions applied after inclusions (higher priority)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   exclude_accounts_by_ou_paths = [] # No OU exclusions
-    #   exclude_accounts_by_names    = [] # Optional: exclude specific accounts
-    #   exclude_accounts_by_tags     = [] # No tag exclusions
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Decommissioning - Destroy Baseline Resources
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # ⚠️  CRITICAL: Decommission resources BEFORE deleting the baseline scope!
-    #   # Tag-based decommissioning is common pattern for workload accounts
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   decommission_accounts_all         = false # Don't decommission all
-    #   decommission_accounts_by_ou_paths = []    # No OU-based decommissioning
-    #   decommission_accounts_by_names    = []    # Optional: specific accounts
-    #   decommission_accounts_by_tags = [         # Decommission by tag (common pattern)
-    #     {
-    #       key   = "AccountDecommission"
-    #       value = true
-    #     }
-    #   ]
-    # },
-    # # =================================================================================================================
-    # # BASELINE SCOPE 3: WORKLOAD ACCOUNTS - NON-PROD
-    # # =================================================================================================================
-    # # Purpose: Governance for non-production application/workload accounts
-    # # Targeting: Accounts in workload non-prod OUs (/root/workloads/dev, /root/workloads/test)
-    # # =================================================================================================================
-    # {
-    #   scope_name = "workload-accounts-non-prod"
-    #   # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
-    #   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-    #   # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
-    #   unified_multi_region_baseline = true
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Terraform/OpenTofu Configuration
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   terraform_binary      = "opentofu" # Terraform or OpenTofu
-    #   terraform_parallelism = 10         # Reduce to avoid API rate limits
-    #   terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
-    #   aws_provider_version  = "6.25.0"   # AWS provider version
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Provider Default Tags - Applied to All Baseline Resources
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   provider_default_tags = {
-    #     ManagedBy       = "ntc-account-factory"
-    #     BaselineScope   = "workload-accounts-non-prod"
-    #     BaselineVersion = "2.0.0" # you can define your own versioning scheme
-    #   }
-
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Scheduled Drift Remediation
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   schedule_rerun_every_x_hours = 0 # 0 = disabled, >0 = rerun every X hours
-    #   # IAM role which exists in member accounts and can be assumed by baseline pipeline
-    #   baseline_execution_role_name = "OrganizationAccountAccessRole"
-    #   # session name used by baseline pipeline in member accounts
-    #   baseline_execution_session_name = "ntc-account-factory"
-    #   # (optional) additional providers which assume a specific account role for cross account orchestration
-    #   # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
-    #   baseline_assume_role_providers = [
-    #     {
-    #       configuration_alias = "connectivity"
-    #       role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
-    #       session_name        = "ntc-account-factory"
-    #     }
-    #   ]
-    #   # add terraform code to baseline from static files or dynamic templates
-    #   baseline_terraform_files = [
-    #     # {
-    #     #   file_name = "baseline_openid_connect"
-    #     #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-    #     # },
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
-    #     module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
-    #   ]
-    #   # add delay to pipeline to avoid errors on first run
-    #   # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
-    #   pipeline_delay_options = {
-    #     wait_for_seconds        = 120
-    #     wait_retry_count        = 5
-    #     wait_for_execution_role = true
-    #     wait_for_regions        = true
-    #   }
-    #   # baseline terraform code will be provisioned in each specified region
-    #   baseline_regions = ["us-east-1", "eu-central-1"]
-    #   # baseline terraform code which can be provisioned in a single region (e.g. IAM)
-    #   baseline_main_region = "eu-central-1"
+      # -----------------------------------------------------------------------------------------------------------------
+      # Scheduled Drift Remediation
+      # -----------------------------------------------------------------------------------------------------------------
+      schedule_rerun_every_x_hours = 0 # 0 = disabled, >0 = rerun every X hours
+      # IAM role which exists in member accounts and can be assumed by baseline pipeline
+      baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # session name used by baseline pipeline in member accounts
+      baseline_execution_session_name = "ntc-account-factory"
+      # (optional) additional providers which assume a specific account role for cross account orchestration
+      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      baseline_assume_role_providers = [
+        {
+          configuration_alias = "connectivity"
+          role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
+          session_name        = "ntc-account-factory"
+        }
+      ]
+      # add terraform code to baseline from static files or dynamic templates
+      baseline_terraform_files = [
+        # {
+        #   file_name = "baseline_openid_connect"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        # },
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
+      ]
+      # add delay to pipeline to avoid errors on first run
+      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+      pipeline_delay_options = {
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = true
+      }
+      # baseline terraform code will be provisioned in each specified region
+      baseline_regions = ["us-east-1", "eu-central-1"]
+      # baseline terraform code which can be provisioned in a single region (e.g. IAM)
+      baseline_main_region = "eu-central-1"
 
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Baseline Parameters - Custom Configuration Data
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Pass custom parameters to baseline templates via var.baseline_parameters
-    #   # Use for: environment-specific values, configuration data
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   baseline_parameters_json = jsonencode(
-    #     {
-    #       example_iam_role_name = "ntc-example-role" # Example custom parameter
-    #     }
-    #   )
+      # -----------------------------------------------------------------------------------------------------------------
+      # Baseline Parameters - Custom Configuration Data
+      # -----------------------------------------------------------------------------------------------------------------
+      # Pass custom parameters to baseline templates via var.baseline_parameters
+      # Use for: environment-specific values, configuration data
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_parameters_json = jsonencode(
+        {
+          example_iam_role_name = "ntc-example-role" # Example custom parameter
+        }
+      )
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Import existing resources to avoid recreation
-    #   # Use import_condition_account_names to limit imports to specific accounts
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   baseline_import_resources = [
-    #     # {
-    #     #   import_to                      = ""
-    #     #   import_id                      = ""
-    #     #   import_condition_account_names = []
-    #     # }
-    #   ]
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Import existing resources to avoid recreation
+      # Use import_condition_account_names to limit imports to specific accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_import_resources = [
+        # {
+        #   import_to                      = ""
+        #   import_id                      = ""
+        #   import_condition_account_names = []
+        # }
+      ]
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Account Targeting - Include Accounts in Baseline Scope
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Target by OU paths for workload accounts (prod, dev, test environments)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   include_accounts_all = false # Don't include all accounts
-    #   include_accounts_by_ou_paths = [
-    #     "/root/workloads/dev",  # Development workload accounts
-    #     "/root/workloads/test", # Test workload accounts
-    #   ]
-    #   include_accounts_by_names = [] # Optional: specific account names
-    #   include_accounts_by_tags  = [] # Optional: accounts with specific tags
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Moved Statements - Move Existing Resources In State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Move existing resources to new resource name to avoid recreation
+      # Use 'moved_condition_account_names' to limit the moved statement to specific accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      # (optional) move resources inside account baseline
+      baseline_moved_resources = [
+        # {
+        #   moved_from                    = ""
+        #   moved_to                      = ""
+        #   moved_condition_account_names = []
+        # }
+      ]
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Account Exclusions - Remove Specific Accounts from Scope
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Exclusions applied after inclusions (higher priority)
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   exclude_accounts_by_ou_paths = [] # No OU exclusions
-    #   exclude_accounts_by_names    = [] # Optional: exclude specific accounts
-    #   exclude_accounts_by_tags     = [] # No tag exclusions
+      # -----------------------------------------------------------------------------------------------------------------
+      # Account Targeting - Include Accounts in Baseline Scope
+      # -----------------------------------------------------------------------------------------------------------------
+      # Target by OU paths for workload accounts (prod, dev, test environments)
+      # -----------------------------------------------------------------------------------------------------------------
+      include_accounts_all = false # Don't include all accounts
+      include_accounts_by_ou_paths = [
+        "/root/workloads/prod", # Production workload accounts
+      ]
+      include_accounts_by_names = [] # Optional: specific account names
+      include_accounts_by_tags  = [] # Optional: accounts with specific tags
 
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # Decommissioning - Destroy Baseline Resources
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   # ⚠️  CRITICAL: Decommission resources BEFORE deleting the baseline scope!
-    #   # Tag-based decommissioning is common pattern for workload accounts
-    #   # -----------------------------------------------------------------------------------------------------------------
-    #   decommission_accounts_all         = false # Don't decommission all
-    #   decommission_accounts_by_ou_paths = []    # No OU-based decommissioning
-    #   decommission_accounts_by_names    = []    # Optional: specific accounts
-    #   decommission_accounts_by_tags = [         # Decommission by tag (common pattern)
-    #     {
-    #       key   = "AccountDecommission"
-    #       value = true
-    #     }
-    #   ]
-    # },
+      # -----------------------------------------------------------------------------------------------------------------
+      # Account Exclusions - Remove Specific Accounts from Scope
+      # -----------------------------------------------------------------------------------------------------------------
+      # Exclusions applied after inclusions (higher priority)
+      # -----------------------------------------------------------------------------------------------------------------
+      exclude_accounts_by_ou_paths = [] # No OU exclusions
+      exclude_accounts_by_names    = [] # Optional: exclude specific accounts
+      exclude_accounts_by_tags     = [] # No tag exclusions
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Decommissioning - Destroy Baseline Resources
+      # -----------------------------------------------------------------------------------------------------------------
+      # ⚠️  CRITICAL: Decommission resources BEFORE deleting the baseline scope!
+      # Tag-based decommissioning is common pattern for workload accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      decommission_accounts_all         = false # Don't decommission all
+      decommission_accounts_by_ou_paths = []    # No OU-based decommissioning
+      decommission_accounts_by_names    = []    # Optional: specific accounts
+      decommission_accounts_by_tags = [         # Decommission by tag (common pattern)
+        {
+          key   = "AccountDecommission"
+          value = true
+        }
+      ]
+    },
+    # =================================================================================================================
+    # BASELINE SCOPE 3: WORKLOAD ACCOUNTS - NON-PROD
+    # =================================================================================================================
+    # Purpose: Governance for non-production application/workload accounts
+    # Targeting: Accounts in workload non-prod OUs (/root/workloads/dev, /root/workloads/test)
+    # =================================================================================================================
+    {
+      scope_name = "workload-accounts-non-prod"
+      # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
+      # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
+      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      unified_multi_region_baseline = true
+      # -----------------------------------------------------------------------------------------------------------------
+      # Terraform/OpenTofu Configuration
+      # -----------------------------------------------------------------------------------------------------------------
+      terraform_binary      = "opentofu" # Terraform or OpenTofu
+      terraform_parallelism = 10         # Reduce to avoid API rate limits
+      terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
+      aws_provider_version  = "6.25.0"   # AWS provider version
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Provider Default Tags - Applied to All Baseline Resources
+      # -----------------------------------------------------------------------------------------------------------------
+      provider_default_tags = {
+        ManagedBy       = "ntc-account-factory"
+        BaselineScope   = "workload-accounts-non-prod"
+        BaselineVersion = "2.0.0" # you can define your own versioning scheme
+      }
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Scheduled Drift Remediation
+      # -----------------------------------------------------------------------------------------------------------------
+      schedule_rerun_every_x_hours = 0 # 0 = disabled, >0 = rerun every X hours
+      # IAM role which exists in member accounts and can be assumed by baseline pipeline
+      baseline_execution_role_name = "OrganizationAccountAccessRole"
+      # session name used by baseline pipeline in member accounts
+      baseline_execution_session_name = "ntc-account-factory"
+      # (optional) additional providers which assume a specific account role for cross account orchestration
+      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      baseline_assume_role_providers = [
+        {
+          configuration_alias = "connectivity"
+          role_arn            = local.ntc_parameters["connectivity"]["baseline_assume_role_arn"]
+          session_name        = "ntc-account-factory"
+        }
+      ]
+      # add terraform code to baseline from static files or dynamic templates
+      baseline_terraform_files = [
+        # {
+        #   file_name = "baseline_openid_connect"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        # },
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
+      ]
+      # add delay to pipeline to avoid errors on first run
+      # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
+      pipeline_delay_options = {
+        wait_for_seconds        = 120
+        wait_retry_count        = 5
+        wait_for_execution_role = true
+        wait_for_regions        = true
+      }
+      # baseline terraform code will be provisioned in each specified region
+      baseline_regions = ["us-east-1", "eu-central-1"]
+      # baseline terraform code which can be provisioned in a single region (e.g. IAM)
+      baseline_main_region = "eu-central-1"
+
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Baseline Parameters - Custom Configuration Data
+      # -----------------------------------------------------------------------------------------------------------------
+      # Pass custom parameters to baseline templates via var.baseline_parameters
+      # Use for: environment-specific values, configuration data
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_parameters_json = jsonencode(
+        {
+          example_iam_role_name = "ntc-example-role" # Example custom parameter
+        }
+      )
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Import existing resources to avoid recreation
+      # Use import_condition_account_names to limit imports to specific accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_import_resources = [
+        # {
+        #   import_to                      = ""
+        #   import_id                      = ""
+        #   import_condition_account_names = []
+        # }
+      ]
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Moved Statements - Move Existing Resources In State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Move existing resources to new resource name to avoid recreation
+      # Use 'moved_condition_account_names' to limit the moved statement to specific accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      # (optional) move resources inside account baseline
+      baseline_moved_resources = [
+        # {
+        #   moved_from                    = ""
+        #   moved_to                      = ""
+        #   moved_condition_account_names = []
+        # }
+      ]
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Account Targeting - Include Accounts in Baseline Scope
+      # -----------------------------------------------------------------------------------------------------------------
+      # Target by OU paths for workload accounts (prod, dev, test environments)
+      # -----------------------------------------------------------------------------------------------------------------
+      include_accounts_all = false # Don't include all accounts
+      include_accounts_by_ou_paths = [
+        "/root/workloads/dev",  # Development workload accounts
+        "/root/workloads/test", # Test workload accounts
+      ]
+      include_accounts_by_names = [] # Optional: specific account names
+      include_accounts_by_tags  = [] # Optional: accounts with specific tags
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Account Exclusions - Remove Specific Accounts from Scope
+      # -----------------------------------------------------------------------------------------------------------------
+      # Exclusions applied after inclusions (higher priority)
+      # -----------------------------------------------------------------------------------------------------------------
+      exclude_accounts_by_ou_paths = [] # No OU exclusions
+      exclude_accounts_by_names    = [] # Optional: exclude specific accounts
+      exclude_accounts_by_tags     = [] # No tag exclusions
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Decommissioning - Destroy Baseline Resources
+      # -----------------------------------------------------------------------------------------------------------------
+      # ⚠️  CRITICAL: Decommission resources BEFORE deleting the baseline scope!
+      # Tag-based decommissioning is common pattern for workload accounts
+      # -----------------------------------------------------------------------------------------------------------------
+      decommission_accounts_all         = false # Don't decommission all
+      decommission_accounts_by_ou_paths = []    # No OU-based decommissioning
+      decommission_accounts_by_names    = []    # Optional: specific accounts
+      decommission_accounts_by_tags = [         # Decommission by tag (common pattern)
+        {
+          key   = "AccountDecommission"
+          value = true
+        }
+      ]
+    },
   ]
 }
