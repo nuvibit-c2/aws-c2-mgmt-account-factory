@@ -9,7 +9,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-webshop-prod",
       "AccountDescription": "Webshop application in production stage",
-      "AccountDecommission": true,
+      "AccountDecommission": false,
       "CostCenter": "123"
     },
     "alternate_contacts": [
@@ -33,7 +33,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-webshop-test",
       "AccountDescription": "Webshop application in testing stage",
-      "AccountDecommission": true,
+      "AccountDecommission": false,
       "CostCenter": "123"
     },
     "alternate_contacts": [
@@ -57,7 +57,7 @@
       "AccountType": "workload",
       "AccountAlias": "nuvibit-c2-webshop-dev",
       "AccountDescription": "Webshop application in development stage",
-      "AccountDecommission": true,
+      "AccountDecommission": false,
       "CostCenter": "123"
     },
     "alternate_contacts": [
