@@ -162,7 +162,7 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.0.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.0.1"
 
   region = "eu-central-1"
   # -----------------------------------------------------------------------------------------------------------------
@@ -343,7 +343,10 @@ module "ntc_account_factory" {
     # =================================================================================================================
     {
       scope_name = "core-accounts"
-
+      # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
+      # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
+      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
       # -----------------------------------------------------------------------------------------------------------------
@@ -358,7 +361,7 @@ module "ntc_account_factory" {
       provider_default_tags = {
         ManagedBy       = "ntc-account-factory",
         BaselineScope   = "core-accounts",
-        BaselineVersion = "1.3.2" # you can define your own versioning scheme
+        BaselineVersion = "2.0.0" # you can define your own versioning scheme
       }
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -387,10 +390,10 @@ module "ntc_account_factory" {
         #   file_name = "baseline_openid_connect"
         #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
         # },
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
@@ -425,17 +428,17 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       baseline_import_resources = [
         {
-          import_to                      = "module.baseline_eu_central_1[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          import_to                      = "module.baseline_unified[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io"
           import_id                      = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
           import_condition_account_names = ["aws-c2-management"] # Only import in this account
         },
         {
-          import_to                      = "module.baseline_eu_central_1[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          import_to                      = "module.baseline_unified[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io"
           import_id                      = "ntc-oidc-spacelift-role"
           import_condition_account_names = ["aws-c2-management"] # Only import in this account
         },
       ]
-      
+
       # -----------------------------------------------------------------------------------------------------------------
       # Resource Moved Statements - Move Existing Resources In State (Optional)
       # -----------------------------------------------------------------------------------------------------------------
@@ -444,13 +447,81 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       # (optional) move resources inside account baseline
       baseline_moved_resources = [
-        # {
-        #   moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_iam__cloudwatch_crossaccountsharingrole[0]"
-        #   moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_iam__cloudwatch_crossaccountsharingrole"
-        #   # by default moved statements are created for all accounts in the current baseline scope
-        #   # use 'moved_condition_account_names' to limit the moved statement to specific accounts
-        #   moved_condition_account_names = ["aws-c2-management"]
-        # }
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_config_configuration_recorder.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder.ntc_config[\"eu-central-1\"]"
+          # by default moved statements are created for all accounts in the current baseline scope
+          # use 'moved_condition_account_names' to limit the moved statement to specific accounts
+          moved_condition_account_names = []
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_config_configuration_recorder_status.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder_status.ntc_config[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_config_delivery_channel.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_delivery_channel.ntc_config[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_instance_profile.ntc_baseline_iam_profile__ntc-ssm-instance-profile[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_instance_profile.ntc_baseline_iam_profile__ntc-ssm-instance-profile[0]"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_policy.ntc_config_delivery[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_policy.ntc_config_delivery"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_baseline_iam_role__CloudWatch-CrossAccountSharingRole[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_baseline_iam_role__CloudWatch-CrossAccountSharingRole"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_baseline_iam_role__ntc-ssm-instance-profile[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_baseline_iam_role__ntc-ssm-instance-profile"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_config[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_config"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__CloudWatch-CrossAccountSharingRole[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__CloudWatch-CrossAccountSharingRole[0]"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__ntc-ssm-instance-profile[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__ntc-ssm-instance-profile[0]"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_config[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_config"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_config_delivery[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_config_delivery"
+        },
+        {
+          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_oidc__nuvibit_app_spacelift_io[0]"
+          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_oidc__nuvibit_app_spacelift_io"
+        },
+        {
+          moved_from = "module.baseline_us_east_1[0].aws_config_configuration_recorder.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder.ntc_config[\"us-east-1\"]"
+        },
+        {
+          moved_from = "module.baseline_us_east_1[0].aws_config_configuration_recorder_status.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder_status.ntc_config[\"us-east-1\"]"
+        },
+        {
+          moved_from = "module.baseline_us_east_1[0].aws_config_delivery_channel.ntc_config"
+          moved_to   = "module.baseline_unified[0].aws_config_delivery_channel.ntc_config[\"us-east-1\"]"
+        }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
