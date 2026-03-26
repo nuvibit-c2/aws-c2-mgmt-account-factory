@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.0.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.0.1"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -815,6 +815,12 @@ EOT
     #       • Compatible: Works with older Terraform versions
     #     
     #     Recommendation: Use "s3" if running Terraform/OpenTofu 1.10.0+
+    #
+    #   config_iam_role_name: ntc-config-role
+    #     - IAM role used by Config service
+    #     - Grants access to evaluate the S3 bucket and KMS key created for the state backend
+    #     - Must match with role name in 'ntc-log-archive' module input (var.config_iam_role_name)
+    #     - Must match the the config_iam_role_name defined in the 'unified_aws_config'
     #   
     #   access_rules: Define who can access the state backend
     #     - List of access rules, each granting permissions to specific roles
@@ -1017,6 +1023,14 @@ EOT
         # "dynamodb": DynamoDB locking (traditional, works with older versions)
         # -----------------------------------------------------------------------------------------------------------------
         state_locking_mechanism = "s3"
+
+        # -----------------------------------------------------------------------------------------------------------------
+        # AWS Config Integration
+        # -----------------------------------------------------------------------------------------------------------------
+        # Provide the AWS Config IAM role name to allow Config to evaluate resources
+        # created by this tfstate_backend template (S3 bucket, KMS key, etc.)
+        # -----------------------------------------------------------------------------------------------------------------
+        config_iam_role_name = "ntc-config-role"
 
         # -----------------------------------------------------------------------------------------------------------------
         # Access Rules - Grant Backend Access to Roles
