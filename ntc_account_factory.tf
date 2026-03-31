@@ -162,7 +162,7 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.1.0"
 
   region = "eu-central-1"
   # -----------------------------------------------------------------------------------------------------------------
@@ -421,6 +421,18 @@ module "ntc_account_factory" {
       )
 
       # -----------------------------------------------------------------------------------------------------------------
+      # Maintenance Mode - Plan Only (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Set to true to run 'terraform plan' instead of 'terraform apply' in the baseline pipeline.
+      # This enables testing baseline changes before actually applying them.
+      # Workflow: 1) Enable maintenance mode → 2) Update baseline config → 3) Review plan output
+      #           → 4) Disable maintenance mode → 5) Trigger pipeline to apply changes
+      # NOTE: Toggling this flag changes the CodeBuild buildspec but does NOT change the baseline zip.
+      # To trigger the pipeline after disabling, update baseline tags/parameters or trigger manually.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_maintenance_plan_only = false
+
+      # -----------------------------------------------------------------------------------------------------------------
       # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
       # -----------------------------------------------------------------------------------------------------------------
       # Import existing resources to avoid recreation
@@ -522,6 +534,24 @@ module "ntc_account_factory" {
           moved_from = "module.baseline_us_east_1[0].aws_config_delivery_channel.ntc_config"
           moved_to   = "module.baseline_unified[0].aws_config_delivery_channel.ntc_config[\"us-east-1\"]"
         }
+      ]
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Removed Statements - Remove Resources From Baseline State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Remove resources from baseline state without destroying them in the account.
+      # This is useful when removing a resource from baseline management while keeping it in the account.
+      # The 'removed' block always uses 'lifecycle { destroy = false }' to prevent resource deletion.
+      # Use 'removed_condition_account_names' to limit the removed statement to specific accounts.
+      # NOTE: Requires Terraform >= 1.7 or OpenTofu >= 1.7 in the baseline pipeline.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_removed_resources = [
+        # {
+        #   removed_from = "module.baseline_unified.aws_iam_role.legacy_role"
+        #   # by default removed statements are created for all accounts in the current baseline scope
+        #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
+        #   removed_condition_account_names = []
+        # }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -638,7 +668,6 @@ module "ntc_account_factory" {
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
 
-
       # -----------------------------------------------------------------------------------------------------------------
       # Baseline Parameters - Custom Configuration Data
       # -----------------------------------------------------------------------------------------------------------------
@@ -650,6 +679,18 @@ module "ntc_account_factory" {
           example_iam_role_name = "ntc-example-role" # Example custom parameter
         }
       )
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Maintenance Mode - Plan Only (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Set to true to run 'terraform plan' instead of 'terraform apply' in the baseline pipeline.
+      # This enables testing baseline changes before actually applying them.
+      # Workflow: 1) Enable maintenance mode → 2) Update baseline config → 3) Review plan output
+      #           → 4) Disable maintenance mode → 5) Trigger pipeline to apply changes
+      # NOTE: Toggling this flag changes the CodeBuild buildspec but does NOT change the baseline zip.
+      # To trigger the pipeline after disabling, update baseline tags/parameters or trigger manually.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_maintenance_plan_only = false
 
       # -----------------------------------------------------------------------------------------------------------------
       # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
@@ -677,6 +718,24 @@ module "ntc_account_factory" {
         #   moved_from                    = ""
         #   moved_to                      = ""
         #   moved_condition_account_names = []
+        # }
+      ]
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Removed Statements - Remove Resources From Baseline State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Remove resources from baseline state without destroying them in the account.
+      # This is useful when removing a resource from baseline management while keeping it in the account.
+      # The 'removed' block always uses 'lifecycle { destroy = false }' to prevent resource deletion.
+      # Use 'removed_condition_account_names' to limit the removed statement to specific accounts.
+      # NOTE: Requires Terraform >= 1.7 or OpenTofu >= 1.7 in the baseline pipeline.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_removed_resources = [
+        # {
+        #   removed_from = "module.baseline_unified.aws_iam_role.legacy_role"
+        #   # by default removed statements are created for all accounts in the current baseline scope
+        #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
+        #   removed_condition_account_names = []
         # }
       ]
 
@@ -803,6 +862,18 @@ module "ntc_account_factory" {
       )
 
       # -----------------------------------------------------------------------------------------------------------------
+      # Maintenance Mode - Plan Only (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Set to true to run 'terraform plan' instead of 'terraform apply' in the baseline pipeline.
+      # This enables testing baseline changes before actually applying them.
+      # Workflow: 1) Enable maintenance mode → 2) Update baseline config → 3) Review plan output
+      #           → 4) Disable maintenance mode → 5) Trigger pipeline to apply changes
+      # NOTE: Toggling this flag changes the CodeBuild buildspec but does NOT change the baseline zip.
+      # To trigger the pipeline after disabling, update baseline tags/parameters or trigger manually.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_maintenance_plan_only = false
+
+      # -----------------------------------------------------------------------------------------------------------------
       # Resource Imports - Bring Existing Resources Under Baseline Management (Optional)
       # -----------------------------------------------------------------------------------------------------------------
       # Import existing resources to avoid recreation
@@ -828,6 +899,24 @@ module "ntc_account_factory" {
         #   moved_from                    = ""
         #   moved_to                      = ""
         #   moved_condition_account_names = []
+        # }
+      ]
+
+      # -----------------------------------------------------------------------------------------------------------------
+      # Resource Removed Statements - Remove Resources From Baseline State (Optional)
+      # -----------------------------------------------------------------------------------------------------------------
+      # Remove resources from baseline state without destroying them in the account.
+      # This is useful when removing a resource from baseline management while keeping it in the account.
+      # The 'removed' block always uses 'lifecycle { destroy = false }' to prevent resource deletion.
+      # Use 'removed_condition_account_names' to limit the removed statement to specific accounts.
+      # NOTE: Requires Terraform >= 1.7 or OpenTofu >= 1.7 in the baseline pipeline.
+      # -----------------------------------------------------------------------------------------------------------------
+      baseline_removed_resources = [
+        # {
+        #   removed_from = "module.baseline_unified.aws_iam_role.legacy_role"
+        #   # by default removed statements are created for all accounts in the current baseline scope
+        #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
+        #   removed_condition_account_names = []
         # }
       ]
 
