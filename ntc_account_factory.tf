@@ -388,7 +388,7 @@ module "ntc_account_factory" {
       baseline_terraform_files = [
         # {
         #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
@@ -646,7 +646,7 @@ module "ntc_account_factory" {
       baseline_terraform_files = [
         # {
         #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
@@ -826,7 +826,7 @@ module "ntc_account_factory" {
       baseline_terraform_files = [
         # {
         #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
