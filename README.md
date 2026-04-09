@@ -38,6 +38,12 @@ This repository leverages the following NTC building blocks:
 
 The NTC Implementation Blueprints consist of multiple repositories, each managing a specific domain or AWS account:
 
+### Bootstrap
+
+#### 0. [aws-c2-mgmt-ntc-bootstrap](https://github.com/nuvibit-c2/aws-c2-mgmt-ntc-bootstrap)
+**Purpose**: One-time initial setup for a new NTC implementation
+**Creates**: S3 state bucket, KMS encryption key, OIDC provider and IAM role for CI/CD
+
 ### Core Management Repositories
 
 #### 1. [aws-c2-mgmt-organizations](https://github.com/nuvibit-c2/aws-c2-mgmt-organizations)
@@ -95,6 +101,7 @@ All blueprint repositories follow a consistent GitOps workflow:
 
 The blueprint repositories should be deployed in the following order:
 
+0. **aws-c2-mgmt-ntc-bootstrap**   (one-time local apply)
 1. **aws-c2-mgmt-organizations**   (foundation setup)
 2. **aws-c2-mgmt-account-factory** ← *You are here*
 3. **aws-c2-mgmt-identity-center** (creates sso permissions)
