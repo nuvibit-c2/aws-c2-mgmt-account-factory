@@ -253,7 +253,7 @@ module "ntc_account_baseline_templates" {
         role_principal_type = "AWS"
         # grant permission to assume role in member account
         role_principal_identifiers = [
-          local.account_factory_core_account_ids["aws-c2-management"] # replace with your monitoring account
+          local.current_account_id # replace with your monitoring account
         ]
       }
     },

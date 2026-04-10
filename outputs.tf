@@ -25,3 +25,8 @@ output "ntc_account_factory_list" {
     if try(account.account_tags["AccountDecommission"], false) == false
   ]
 }
+
+# output "organization_account_summary" {
+#   description = "Organization account summary"
+#   value       = module.ntc_account_factory.organization_account_summary
+# }
