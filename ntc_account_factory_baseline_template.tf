@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.1.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -1005,7 +1005,10 @@ EOT
         # -----------------------------------------------------------------------------------------------------------------
         # S3 Bucket Configuration
         # -----------------------------------------------------------------------------------------------------------------
-        s3_bucket_name = "$${var.current_account_name}-tfstate" # ⚠️  Must be globally unique
+        s3_bucket_name        = "tfstate" # ⚠️  Must be globally unique or set 's3_regional_namespace' to true
+        s3_regional_namespace = true      # bucket name with regional namespace enabled will be: <state_bucket_name>-<account_id>-<region>-an
+        # ⚠️  WARNING: Updating 's3_regional_namespace' after creation will recreate the bucket and can lead to state loss
+
 
         # -----------------------------------------------------------------------------------------------------------------
         # Force Destroy - DANGER ZONE
