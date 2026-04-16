@@ -352,8 +352,8 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       terraform_binary      = "opentofu" # Use opentofu or terraform
       terraform_parallelism = 10         # Reduce to avoid API rate limits
-      terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
-      aws_provider_version  = "6.25.0"   # https://registry.terraform.io/providers/hashicorp/aws
+      terraform_version     = "1.11.6"   # https://github.com/opentofu/opentofu/releases
+      aws_provider_version  = "6.41.0"   # https://github.com/hashicorp/terraform-provider-aws/releases
 
       # -----------------------------------------------------------------------------------------------------------------
       # Provider Default Tags - Applied to All Baseline Resources
@@ -613,8 +613,8 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       terraform_binary      = "opentofu" # Terraform or OpenTofu
       terraform_parallelism = 10         # Reduce to avoid API rate limits
-      terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
-      aws_provider_version  = "6.25.0"   # AWS provider version
+      terraform_version     = "1.11.6"   # https://github.com/opentofu/opentofu/releases
+      aws_provider_version  = "6.41.0"   # https://github.com/hashicorp/terraform-provider-aws/releases
 
       # -----------------------------------------------------------------------------------------------------------------
       # Provider Default Tags - Applied to All Baseline Resources
@@ -793,8 +793,8 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       terraform_binary      = "opentofu" # Terraform or OpenTofu
       terraform_parallelism = 10         # Reduce to avoid API rate limits
-      terraform_version     = "1.10.7"   # https://github.com/opentofu/opentofu/releases
-      aws_provider_version  = "6.25.0"   # AWS provider version
+      terraform_version     = "1.11.6"   # https://github.com/opentofu/opentofu/releases
+      aws_provider_version  = "6.41.0"   # https://github.com/hashicorp/terraform-provider-aws/releases
 
       # -----------------------------------------------------------------------------------------------------------------
       # Provider Default Tags - Applied to All Baseline Resources
