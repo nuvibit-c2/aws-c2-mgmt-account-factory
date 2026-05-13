@@ -162,7 +162,7 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.2.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.3.0"
 
   region = "eu-central-1"
   # -----------------------------------------------------------------------------------------------------------------
@@ -330,6 +330,18 @@ module "ntc_account_factory" {
   # ===================================================================================================================
   # ACCOUNT BASELINE SCOPES - Continuous Governance Configuration
   # ===================================================================================================================
+  # BASELINE DEPLOYMENT MODE
+  # -----------------------------------------------------------------------------------------------------------------
+  # Controls the infrastructure used to execute account baseline deployments.
+  #   - "codepipeline" (default): Uses CodePipeline + CodeBuild to orchestrate and run Terraform/OpenTofu
+  #     baseline apply/plan operations. This is the standard deployment mode for AWS commercial regions.
+  #   - "ecs": Uses Step Functions + ECS (Fargate) as an alternative execution engine. Provides the exact
+  #     same baseline functionality (plan, apply, drift remediation, scheduling) but without depending on
+  #     CodePipeline or CodeBuild. This mode is required for AWS European Sovereign Cloud (ESC), where
+  #     CodePipeline and CodeBuild are not available.
+  # -----------------------------------------------------------------------------------------------------------------
+  account_baseline_deployment_mode = "codepipeline"
+
   # Define stateful Terraform-based configurations for different account groups
   # Templates defined in: 'ntc_account_factory_baseline_template.tf'
   # Each scope can have different baselines, regions, and targeting criteria

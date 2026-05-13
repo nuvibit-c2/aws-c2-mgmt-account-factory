@@ -89,11 +89,11 @@ resource "aws_ebs_encryption_by_default" "enabled" {
 resource "aws_ec2_instance_metadata_defaults" "imdsv2" {
   for_each = toset(var.baseline_regions)
 
-  region                           = each.value
-  http_tokens                      = "required"
-  http_put_response_hop_limit      = 2
-  instance_metadata_tags           = "disabled"
-  http_endpoint                    = "enabled"
+  region                      = each.value
+  http_tokens                 = "required"
+  http_put_response_hop_limit = 2
+  instance_metadata_tags      = "disabled"
+  http_endpoint               = "enabled"
 }
 
 
