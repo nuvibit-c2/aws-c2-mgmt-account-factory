@@ -38,6 +38,8 @@ locals {
   default_tags = {
     ManagedBy     = "OpenTofu"
     ProvisionedBy = "aws-c2-mgmt-account-factory"
+    # aws product tag
+    aws-apn-id = "pc:c1ztn0gbrzi3judwmfx1lrq1t"
   }
   default_region               = data.aws_region.default.region
   current_partition            = data.aws_partition.current.partition  # e.g. "aws"

@@ -374,6 +374,8 @@ module "ntc_account_factory" {
         ManagedBy       = "ntc-account-factory",
         BaselineScope   = "core-accounts",
         BaselineVersion = "2.0.0" # you can define your own versioning scheme
+        # aws product tag
+        aws-apn-id = "pc:c1ztn0gbrzi3judwmfx1lrq1t"
       }
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -635,6 +637,8 @@ module "ntc_account_factory" {
         ManagedBy       = "ntc-account-factory"
         BaselineScope   = "workload-accounts-prod"
         BaselineVersion = "2.0.0" # you can define your own versioning scheme
+        # aws product tag
+        aws-apn-id = "pc:c1ztn0gbrzi3judwmfx1lrq1t"
       }
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -815,6 +819,8 @@ module "ntc_account_factory" {
         ManagedBy       = "ntc-account-factory"
         BaselineScope   = "workload-accounts-non-prod"
         BaselineVersion = "2.0.0" # you can define your own versioning scheme
+        # aws product tag
+        aws-apn-id = "pc:c1ztn0gbrzi3judwmfx1lrq1t"
       }
 
       # -----------------------------------------------------------------------------------------------------------------
