@@ -162,7 +162,7 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.3.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.3.3"
 
   region = "eu-central-1"
   # -----------------------------------------------------------------------------------------------------------------
