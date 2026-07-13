@@ -43,6 +43,7 @@ locals {
   }
   default_region               = data.aws_region.default.region
   current_partition            = data.aws_partition.current.partition  # e.g. "aws"
+  #tflint-ignore: terraform_unused_declarations
   current_partition_dns_suffix = data.aws_partition.current.dns_suffix # e.g. "amazonaws.com"
   current_account_id           = data.aws_caller_identity.current.account_id
 }

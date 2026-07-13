@@ -547,13 +547,13 @@ module "ntc_account_baseline_templates" {
         # make sure to define a subject which is limited to your scope (e.g. a generic subject could grant access to all terraform cloud users)
         # you can use dynamic values by referencing the injected baseline variables (e.g. var.current_account_name) - additional '$' escape is required
         # for additional flexibility use 'subject_list_encoded' which allows injecting more complex structures (e.g. grant permission to multiple pipelines in one account)
-        /* examples for common openid_connect subjects
-          terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
-          spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
-          gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
-          github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
-          jenkins         = "job:JOB_NAME/master"
-        */
+        # examples for common openid_connect subjects
+        #   terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
+        #   spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
+        #   gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
+        #   github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+        #   jenkins         = "job:JOB_NAME/master"
+        
         # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
         subject_list_encoded = <<EOT
 flatten([
