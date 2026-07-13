@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=3.1.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.1.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -1018,14 +1018,6 @@ EOT
         # Use false for: Production, critical infrastructure, long-lived accounts
         # -----------------------------------------------------------------------------------------------------------------
         s3_bucket_force_destroy = true # NOTE: set to false for production!
-
-        # -----------------------------------------------------------------------------------------------------------------
-        # State Locking Mechanism
-        # -----------------------------------------------------------------------------------------------------------------
-        # "s3": S3 native locking (Terraform/OpenTofu 1.10.0+) - Recommended
-        # "dynamodb": DynamoDB locking (traditional, works with older versions)
-        # -----------------------------------------------------------------------------------------------------------------
-        state_locking_mechanism = "s3"
 
         # -----------------------------------------------------------------------------------------------------------------
         # AWS Config Integration
