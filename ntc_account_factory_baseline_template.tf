@@ -1020,14 +1020,6 @@ EOT
         s3_bucket_force_destroy = true # NOTE: set to false for production!
 
         # -----------------------------------------------------------------------------------------------------------------
-        # State Locking Mechanism
-        # -----------------------------------------------------------------------------------------------------------------
-        # "s3": S3 native locking (Terraform/OpenTofu 1.10.0+) - Recommended
-        # "dynamodb": DynamoDB locking (traditional, works with older versions)
-        # -----------------------------------------------------------------------------------------------------------------
-        state_locking_mechanism = "s3"
-
-        # -----------------------------------------------------------------------------------------------------------------
         # AWS Config Integration
         # -----------------------------------------------------------------------------------------------------------------
         # Provide the AWS Config IAM role name to allow Config to evaluate resources
