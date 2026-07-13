@@ -553,7 +553,7 @@ module "ntc_account_baseline_templates" {
         #   gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
         #   github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
         #   jenkins         = "job:JOB_NAME/master"
-        
+
         # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
         subject_list_encoded = <<EOT
 flatten([
