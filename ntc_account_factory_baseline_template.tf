@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.1.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feature/backup-vault-template"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -1049,5 +1049,103 @@ EOT
         ]
       }
     },
+    # -----------------------------------------------------------------------------------------------------------------
+    # AWS Backup - Local Vault per Baseline Region
+    # -----------------------------------------------------------------------------------------------------------------
+    # PURPOSE: Create a local AWS Backup vault (with its own KMS key) in every baseline region, ready to
+    # back up resources locally and copy recovery points to a central backup account
+    #
+    # WHAT IT DOES:
+    #   - Creates one AWS Backup vault + KMS key per region in 'baseline_regions' (always, no override)
+    #   - Creates an OPERATOR role (scheduled backups + copy-to-central) and a separate RESTORER role
+    #     (restores only), kept apart for least privilege
+    #   - Opts this account/region into the AWS Backup resource types the central backup policy expects
+    #
+    # USE CASES:
+    #   ✓ Local, in-account recovery points for fast restores without cross-account dependencies
+    #   ✓ Copy source for terraform-aws-ntc-backup's central backup plan, which targets this vault by
+    #     name (target_backup_vault_name = "<vault_prefix_name>-<region>") to pull recovery points out
+    #   ✓ Least-privilege separation between the always-on backup schedule and rarely-used restores
+    #   ✓ Disaster-recovery restore path back from the central backup account into this account
+    #
+    # CONFIGURATION:
+    #   backup_operator_iam_role_name
+    #     - Assumed by AWS Backup for scheduled backups and the copy-to-central job
+    #     - Configurable, if overridden, also update "member_account_backup_role_name" on the
+    #       central backup account, or cross-account copy fails with AccessDenied
+    #
+    #   backup_restorer_iam_role_name
+    #     - Assumed by AWS Backup only for restores, so a compromised/misused operator role can never
+    #       trigger one - purely local, nothing on the central side references this role's name
+    #
+    #   malware_scan_scanner_iam_role_name
+    #     - Assumed by GuardDuty (not AWS Backup) to read a recovery point's data during a malware scan -
+    #       separate from backup_operator_iam_role_name, which can only START a scan, not read the data
+    #     - Trusted exclusively by malware-protection.guardduty.amazonaws.com - purely local, nothing on
+    #       the central side references this role's name
+    #
+    #   vault_prefix_name: ntc-local-backup-vault
+    #     - Prefix of the vault name - the region is always appended ("<vault_prefix_name>-<region>")
+    #     - ⚠️  terraform-aws-ntc-backup's backup plan hardcodes this exact prefix as its copy source
+    #       (target_backup_vault_name) - changing it here requires updating that central module too
+    #
+    #   kms_deletion_window_in_days / kms_key_rotation_enabled
+    #     - Standard KMS CMK settings for the vault's encryption key, one per region
+    #
+    #   kms_key_owners: (optional) additional admin principals for the vault's KMS key. Wildard SSO role ARNs are supported.
+    #
+    #   resource_types: which AWS services this account opts into for AWS Backup
+    #     - Must use the SAME vocabulary as terraform-aws-ntc-backup's backup_definitions[].resource_types
+    #     - The central backup policy only backs up a resource type here if this account's region settings
+    #       also opted into it
+    #     - Allowed values: "EC2", "EBS", "RDS", "Aurora",
+    #       "Neptune", "DocumentDB", "DynamoDB", "EFS", "S3", "FSx", "CloudFormation", "Redshift",
+    #       "Redshift Serverless", "SAP HANA on Amazon EC2", "Storage Gateway", "Timestream", "EKS"
+    #
+    #   central_backup_account_id: account-level trust (root), not scoped to a specific role
+    #     - Required for backups of not fully managed resource-types (RDS, EC2, EBS, ...) and to enable the reverse restore-copy path from the central backup account
+    #     - Only leave empty for an account that never participates in central backup at all
+    #
+    #   vault_lock_config: (optional) WORM compliance lock, disabled by default
+    #     enabled: false
+    #       - Set true to apply an aws_backup_vault_lock_configuration to every regional vault
+    #       - ⚠️  AWS itself makes the lock permanent after 'changeable_for_days' - no Terraform operation
+    #         can delete or loosen it after that point, so do not enable this in throwaway/test accounts
+    #
+    #     min_retention_days: 7
+    #       - Shortest retention any backup/copy job's lifecycle may specify - jobs requesting less fail
+    #       - Lowest value AWS actually accepts is 1 (the API rejects 0 - omitting the lock entirely is
+    #         the only way to have no minimum)
+    #
+    #     max_retention_days: 30
+    #       - Longest retention any backup/copy job's lifecycle may specify - jobs requesting more fail
+    #       - Must be >= min_retention_days (enforced by this module's validation block)
+    #
+    #     changeable_for_days: 30
+    #       - Grace period after which the lock (and its min/max bounds) becomes permanent and immutable,
+    #         even to the account root user - AWS requires at least 3 days here
+    # -----------------------------------------------------------------------------------------------------------------
+    {
+      file_name     = "backup"
+      template_name = "backup"
+      backup_inputs = {
+        vault_prefix_name                  = "ntc-local-backup-vault"
+        backup_operator_iam_role_name      = "ntc-local-backup-operator-role"
+        backup_restorer_iam_role_name      = "ntc-local-backup-restorer-role"
+        malware_scan_scanner_iam_role_name = "ntc-local-backup-malware-scanner-role"
+        kms_deletion_window_in_days        = 30
+        kms_key_rotation_enabled           = true
+        kms_key_owners                     = [] # optional: additional admin principals for the vault's KMS key
+
+        central_backup_account_id = local.ntc_parameters["mgmt-account-factory"]["core_accounts"]["aws-c2-backup"]
+
+        vault_lock_config = {
+          enabled             = false # only activate if you want the local vault to have a lock config
+          min_retention_days  = 7
+          max_retention_days  = 30
+          changeable_for_days = 30
+        }
+      }
+    }
   ]
 }

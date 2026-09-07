@@ -408,6 +408,7 @@ module "ntc_account_factory" {
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["backup"]
       ]
       # add delay to pipeline to avoid errors on first run
       # in this case pipeline will wait for up to 10 minutes for dependencies to resolve
