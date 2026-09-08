@@ -1124,6 +1124,19 @@ EOT
     #     changeable_for_days: 30
     #       - Grace period after which the lock (and its min/max bounds) becomes permanent and immutable,
     #         even to the account root user - AWS requires at least 3 days here
+    #
+    #   region_overrides: (optional) per-region override of aws_backup_region_settings - AWS Backup
+    #     rejects a resource type it doesn't recognize in a given region outright. No entry for a region =
+    #     module defaults apply unchanged. Keyed by region (e.g. "eu-central-1"), each value an object
+    #     with two optional list(string) properties below, each REPLACING (not adding to) its respective
+    #     module default entirely when set - repeat every type the region should still have. Both map
+    #     directly to the two aws_backup_region_settings arguments of the same name, see:
+    #     https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/backup_region_settings
+    #       - resource_types_opt_in_preference: whether AWS Backup recognizes/backs up a type in this
+    #         region AT ALL.
+    #       - resource_type_management_preference: whether AWS Backup uses ADVANCED/full-management
+    #         features for a type - only a couple of types support this at all, most entries above need
+    #         nothing here.
     # -----------------------------------------------------------------------------------------------------------------
     {
       file_name     = "backup"
@@ -1144,6 +1157,14 @@ EOT
           min_retention_days  = 7
           max_retention_days  = 30
           changeable_for_days = 30
+        }
+        region_overrides = {
+          "eu-central-1" = {
+            resource_types_opt_in_preference = [
+              "Aurora", "DocumentDB", "DynamoDB", "EBS", "EC2", "EFS", "FSx", "Neptune", "RDS",
+              "Storage Gateway", "CloudFormation", "Redshift", "Redshift Serverless", "S3", "DSQL"
+            ]
+          }
         }
       }
     }
