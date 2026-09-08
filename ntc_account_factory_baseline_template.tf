@@ -1158,6 +1158,14 @@ EOT
           max_retention_days  = 30
           changeable_for_days = 30
         }
+        region_overrides = {
+          "eu-central-1" = {
+            resource_types_opt_in_preference = [
+              "Aurora", "DocumentDB", "DynamoDB", "EBS", "EC2", "EFS", "FSx", "Neptune", "RDS",
+              "Storage Gateway", "CloudFormation", "Redshift", "Redshift Serverless", "S3", "DSQL"
+            ]
+          }
+        }
       }
     }
   ]
