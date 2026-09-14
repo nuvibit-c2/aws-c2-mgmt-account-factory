@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=feature/backup-vault-template"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.2.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
