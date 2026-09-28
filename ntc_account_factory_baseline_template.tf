@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.2.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.3.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -1167,6 +1167,142 @@ EOT
           }
         }
       }
-    }
+    },
+    # -----------------------------------------------------------------------------------------------------------------
+    # ACCOUNT HARDENING - ACCOUNT-LEVEL SECURITY CONTROLS
+    # -----------------------------------------------------------------------------------------------------------------
+    # PURPOSE: Remediate common AWS Security Hub / Foundational Security Best Practices findings once per
+    # account, so individual spoke accounts don't need to configure these settings manually
+    #
+    # WHAT IT DOES (each control individually switchable, all enabled by default):
+    #   - ssm_document_public_sharing      Blocks public sharing of Systems Manager documents (SSM.7)
+    #   - ssm_automation_log_destination   Sends SSM Automation script output to CloudWatch Logs (SSM.6)
+    #   - ec2_imdsv2                       Sets IMDSv2 as the account default for new EC2 instances (EC2.8)
+    #   - ebs_encryption_by_default        Encrypts newly created EBS volumes and snapshots (EC2.7)
+    #   - ebs_snapshot_block_public_access Blocks public sharing of EBS snapshots (EC2.182)
+    #   - iam_password_policy              Enforces a strong IAM account password policy (IAM.7/16/17)
+    #   - s3_account_public_access_block   Blocks public access to S3 at the account level (S3.1)
+    #
+    # PER-ACCOUNT OVERRIDES:
+    #   An account changes or disables individual controls through "customer_values" in account_list_*.json.
+    #   The override is merged per control on top of the scope values below, so attributes left out keep the
+    #   scope value:
+    #
+    #     "customer_values": {
+    #       "account_baseline_overrides": {
+    #         "account_hardening": {
+    #           "ec2_imdsv2": { "enabled": false }
+    #         }
+    #       }
+    #     }
+    #
+    # ⚠️  These are account (or account+region) singletons. Only ONE resource may own each of them, so do not
+    # declare the same setting in a custom baseline file. files/unified_baseline_example.tf declares four of
+    # them (password policy, S3 public access block, EBS encryption, IMDSv2) and is commented out in every
+    # scope - keep it that way, or two resources will overwrite each other on every run and never converge.
+    #
+    # INPUTS: every control carries an "enabled" flag, shown below with the value set in this stack.
+    # "enabled = false" removes the control from the baseline entirely - the resource is not rendered and
+    # the setting is left untouched in the account, it is NOT reset to an AWS default.
+    #
+    #   ssm_document_public_sharing.enabled: true
+    #     - Writes the SSM service setting /ssm/documents/console/public-sharing-permission per region
+    #     - The value is fixed at "Disable", the only value which satisfies SSM.7
+    #
+    #   ssm_automation_log_destination.enabled: true
+    #     - Writes the SSM service setting /ssm/automation/customer-script-log-destination per region
+    #     - The value is fixed at "CloudWatch", the only value the SSM API accepts here
+    #
+    #   ec2_imdsv2: account-level default for new EC2 instances, per region. An instance can still override
+    #     these at launch, and EC2.8 is evaluated per instance, so this makes NEW instances compliant
+    #     without remediating existing ones.
+    #     enabled: true
+    #     http_tokens: "required"          - IMDSv2-only, the value EC2.8 expects
+    #                                        ("required" | "optional" | "no-preference")
+    #     http_endpoint: "no-preference"   - leaves the per-instance default untouched, which is what EC2.8
+    #                                        wants ("enabled" | "disabled" | "no-preference")
+    #     http_put_response_hop_limit: 1   - keeps IMDS credentials reachable only from the instance itself.
+    #                                        ⚠️  2 is LOOSER than the AWS default of 1 - a container which
+    #                                        needs the extra hop should set it in its own launch template,
+    #                                        or use ECS task roles / EKS Pod Identity (1 to 64, or -1)
+    #     instance_metadata_tags: "no-preference" - whether instance tags are exposed through IMDS
+    #                                        ("enabled" | "disabled" | "no-preference")
+    #
+    #   ebs_encryption_by_default.enabled: true
+    #     - Encrypts newly created EBS volumes and snapshots with the default EBS KMS key, per region
+    #     - Does NOT encrypt volumes which already exist
+    #
+    #   ebs_snapshot_block_public_access: per region
+    #     enabled: true
+    #     state: "block-all-sharing"       - also revokes snapshots which are ALREADY shared publicly
+    #                                        ("block-all-sharing" | "block-new-sharing")
+    #
+    #   iam_password_policy: account-global (not per region). Applies to IAM users only and has no effect on
+    #     identities federated through IAM Identity Center. The values below also satisfy Si001
+    #     IT-Grundschutz 5.0 (chapter 4 - T7) and the CIS AWS Foundations Benchmark.
+    #     enabled: true
+    #     minimum_password_length: 18      - minimum requirement for privileged users (6 to 128)
+    #     require_lowercase_characters / require_numbers / require_uppercase_characters / require_symbols: true
+    #                                      - character class requirements, all four needed for IAM.7
+    #     allow_users_to_change_password: true
+    #     password_reuse_prevention: 24    - ⚠️  IAM.16 requires EXACTLY 24 (1 to 24)
+    #     max_password_age: 90             - ⚠️  IAM.17 requires 90 or less (1 to 1095 days)
+    #
+    #   s3_account_public_access_block: account-global (not per region). Overrides any per-bucket public
+    #     access setting in the account.
+    #     enabled: true
+    #     block_public_acls / block_public_policy / ignore_public_acls / restrict_public_buckets: true
+    #                                      - ⚠️  S3.1 requires ALL FOUR to be true
+    #
+    #   SCOPE: wired into all three baseline scopes - "core-accounts", "workload-accounts-prod" and
+    #   "workload-accounts-non-prod" (see baseline_terraform_files in ntc_account_factory.tf).
+    # -----------------------------------------------------------------------------------------------------------------
+    {
+      file_name     = "account_hardening"
+      template_name = "account_hardening"
+      # Every control is spelled out at its module default, so the values this organization applies are
+      # visible here instead of hidden behind optional() defaults. Change a value to move the whole scope,
+      # or set "enabled = false" to drop a control from this baseline entirely.
+      account_hardening_inputs = {
+        ssm_document_public_sharing = {
+          enabled = true
+        }
+        ssm_automation_log_destination = {
+          enabled = true
+        }
+        ec2_imdsv2 = {
+          enabled                     = true
+          http_tokens                 = "required"
+          http_endpoint               = "no-preference"
+          http_put_response_hop_limit = 1
+          instance_metadata_tags      = "no-preference"
+        }
+        ebs_encryption_by_default = {
+          enabled = true
+        }
+        ebs_snapshot_block_public_access = {
+          enabled = true
+          state   = "block-all-sharing"
+        }
+        iam_password_policy = {
+          enabled                        = true
+          minimum_password_length        = 18
+          require_lowercase_characters   = true
+          require_numbers                = true
+          require_uppercase_characters   = true
+          require_symbols                = true
+          allow_users_to_change_password = true
+          password_reuse_prevention      = 24
+          max_password_age               = 90
+        }
+        s3_account_public_access_block = {
+          enabled                 = true
+          block_public_acls       = true
+          block_public_policy     = true
+          ignore_public_acls      = true
+          restrict_public_buckets = true
+        }
+      }
+    },
   ]
 }
