@@ -185,7 +185,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.3.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.4.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -243,7 +243,7 @@ module "ntc_account_baseline_templates" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_iam_monitoring_reader"
+      file_name                     = "iam_monitoring_reader"
       template_name                 = "iam_role"
       iam_role_inputs = {
         role_name  = "CloudWatch-CrossAccountSharingRole"
@@ -331,7 +331,7 @@ module "ntc_account_baseline_templates" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_iam_instance_profile"
+      file_name                     = "iam_instance_profile"
       template_name                 = "iam_role"
       iam_role_inputs = {
         role_name           = "ntc-ssm-instance-profile"
@@ -534,7 +534,7 @@ module "ntc_account_baseline_templates" {
     # -----------------------------------------------------------------------------------------------------------------
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_oidc_spacelift"
+      file_name                     = "oidc_spacelift"
       template_name                 = "openid_connect"
       openid_connect_inputs = {
         provider                  = "nuvibit.app.spacelift.io"
@@ -569,7 +569,7 @@ EOT
     },
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_oidc_github"
+      file_name                     = "oidc_github"
       template_name                 = "openid_connect"
       openid_connect_inputs = {
         provider                  = "token.actions.githubusercontent.com"
@@ -734,7 +734,7 @@ EOT
     # -----------------------------------------------------------------------------------------------------------------
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_aws_config"
+      file_name                     = "aws_config"
       template_name                 = "aws_config"
       aws_config_inputs = {
         config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
@@ -760,7 +760,7 @@ EOT
     #   - Creates S3 bucket for storing Terraform/OpenTofu state files
     #   - Creates KMS CMK for state file encryption
     #   - Configures S3 bucket with security best practices (versioning, encryption, logging)
-    #   - Sets up state locking mechanism (S3 native or DynamoDB)
+    #   - Sets up state locking mechanism (S3 native)
     #   - Grants access to CI/CD roles and administrators via IAM policies
     # 
     # USE CASES:
@@ -786,7 +786,6 @@ EOT
     #   - KMS key: Customer managed key for encryption
     #   - Bucket policy: Least privilege access control
     #   - KMS key policy: Encryption/decryption permissions
-    #   - Optional DynamoDB table: State locking (if not using S3 native locking)
     # 
     # CONFIGURATION:
     #   s3_bucket_name: Name of the S3 bucket
@@ -809,11 +808,6 @@ EOT
     #       • Simpler: No DynamoDB table needed
     #       • Lower cost: No DynamoDB charges
     #       • Newer feature: Requires recent Terraform/OpenTofu version
-    #     - "dynamodb": Use DynamoDB for locking (traditional method)
-    #       • Proven: Works with all Terraform versions
-    #       • Cost: Small DynamoDB table charges (~$1-2/month)
-    #       • Compatible: Works with older Terraform versions
-    #     
     #     Recommendation: Use "s3" if running Terraform/OpenTofu 1.10.0+
     #
     #   config_iam_role_name: ntc-config-role
@@ -846,15 +840,32 @@ EOT
     #       • $${var.aws_partition}: AWS partition (aws, aws-cn, aws-us-gov)
     #     
     #     Common role patterns:
-    #     • OIDC CI/CD role: "arn:aws:iam::ACCOUNT_ID:role/ntc-oidc-cicd-role"
-    #     • SSO admin role: "arn:aws:iam::ACCOUNT_ID:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*"
-    #     • Cross-account role: "arn:aws:iam::OTHER_ACCOUNT_ID:role/role-name"
+    #     • OIDC CI/CD role: "arn:$${var.aws_partition}:iam::ACCOUNT_ID:role/ntc-oidc-cicd-role"
+    #     • SSO admin role: "arn:$${var.aws_partition}:iam::ACCOUNT_ID:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*"
+    #     • Cross-account role: "arn:$${var.aws_partition}:iam::OTHER_ACCOUNT_ID:role/role-name"
     #   
     #   allowed_prefixes: Restrict access to specific state file paths
     #     - ["*"]: Full access to all state files (typical for admins)
     #     - ["env:/prod/*"]: Access only to production workspace states
     #     - ["app1/*", "app2/*"]: Access only to specific application states
     #     - Use for: Multi-tenant scenarios, team isolation, environment separation
+    #   
+    #   access_level: What the roles are allowed to do with the state (default: "read_write")
+    #     - "read_write": Read and write state files (terraform plan AND apply)
+    #     - "read_only": Read state files (terraform plan only)
+    #       • S3 native locking ('use_lockfile') writes '<key>.tflock' during plan, so read-only roles
+    #         can create/delete lock files (granted by the bucket policy, no IAM permissions required)
+    #       • The KMS key policy only allows encrypting '.tflock' objects, so state files cannot be written
+    #         even if the role has broader IAM permissions (e.g. AdministratorAccess)
+    #       • Deleting state files is explicitly denied in the bucket policy
+    #       • ⚠️  "read_only" protects the state file, it is NOT a permission boundary for the account:
+    #         terraform creates resources with the role's own IAM permissions and only writes state
+    #         periodically during apply. A role with write permissions (e.g. AdministratorAccess) can
+    #         still create resources before the apply fails on the state write, leaving them unmanaged
+    #         (local 'errored.tfstate', import or manual cleanup required)
+    #       • Pair "read_only" with a read-only IAM permission set (e.g. ReadOnlyAccess) so an apply
+    #         fails on the first API call. Use SCPs or permission boundaries for hard account limits
+    #     - Use "read_only" for: Operators, auditors, pull request reviewers
     # 
     # EXAMPLE ACCESS PATTERNS:
     #   
@@ -865,8 +876,8 @@ EOT
     #       name        = "Full Backend Access"
     #       description = "CI/CD pipelines and administrators"
     #       role_arns = [
-    #         "arn:aws:iam::$${var.current_account_id}:role/ntc-oidc-spacelift-role",
-    #         "arn:aws:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*",
+    #         "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/ntc-oidc-spacelift-role",
+    #         "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*",
     #       ]
     #       allowed_prefixes = ["*"]
     #     }
@@ -879,31 +890,48 @@ EOT
     #     {
     #       name        = "CI/CD Pipeline Access"
     #       description = "Automated deployments via OIDC"
-    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/ntc-oidc-github-role"]
+    #       role_arns   = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/ntc-oidc-github-role"]
     #       allowed_prefixes = ["*"]
     #     },
     #     {
     #       name        = "Administrator Access"
     #       description = "SSO administrators for manual operations"
-    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_*"]
+    #       role_arns   = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_*"]
     #       allowed_prefixes = ["*"]
     #     }
     #   ]
     #   ```
     #   
-    #   Pattern 3: Environment-Based Isolation
+    #   Pattern 3: Plan-Only Access for Operators
+    #   ```hcl
+    #   access_rules = [
+    #     {
+    #       name        = "Full Backend Access"
+    #       description = "CI/CD pipelines apply changes"
+    #       role_arns   = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/ntc-oidc-github-role"]
+    #     },
+    #     {
+    #       name         = "Operator Plan Access"
+    #       description  = "SSO operators can run terraform plan but not apply"
+    #       role_arns    = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_OperatorAccess_*"]
+    #       access_level = "read_only"
+    #     }
+    #   ]
+    #   ```
+    #   
+    #   Pattern 4: Environment-Based Isolation
     #   ```hcl
     #   access_rules = [
     #     {
     #       name        = "Production Deployments"
     #       description = "Production CI/CD pipeline only"
-    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/prod-deployment-role"]
+    #       role_arns   = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/prod-deployment-role"]
     #       allowed_prefixes = ["env:/prod/*"]
     #     },
     #     {
     #       name        = "Development Deployments"
     #       description = "Development team access"
-    #       role_arns   = ["arn:aws:iam::$${var.current_account_id}:role/dev-team-role"]
+    #       role_arns   = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/dev-team-role"]
     #       allowed_prefixes = ["env:/dev/*", "env:/test/*"]
     #     }
     #   ]
@@ -929,22 +957,8 @@ EOT
     #       key            = "path/to/state.tfstate"
     #       region         = "eu-central-1"
     #       encrypt        = true
-    #       kms_key_id     = "arn:aws:kms:REGION:ACCOUNT_ID:key/KEY_ID"
+    #       kms_key_id     = "arn:$${var.aws_partition}:kms:REGION:ACCOUNT_ID:key/KEY_ID"
     #       use_lockfile   = true  # S3 native locking
-    #     }
-    #   }
-    #   ```
-    #   
-    #   For DynamoDB locking (traditional):
-    #   ```hcl
-    #   terraform {
-    #     backend "s3" {
-    #       bucket         = "ACCOUNT_NAME-tfstate"
-    #       key            = "path/to/state.tfstate"
-    #       region         = "eu-central-1"
-    #       encrypt        = true
-    #       kms_key_id     = "arn:aws:kms:REGION:ACCOUNT_ID:key/KEY_ID"
-    #       dynamodb_table = "ACCOUNT_NAME-tfstate-lock"
     #     }
     #   }
     #   ```
@@ -999,7 +1013,7 @@ EOT
     # -----------------------------------------------------------------------------------------------------------------
     {
       unified_multi_region_baseline = true
-      file_name                     = "unified_tfstate_backend"
+      file_name                     = "tfstate_backend"
       template_name                 = "tfstate_backend"
       tfstate_backend_inputs = {
         # -----------------------------------------------------------------------------------------------------------------
@@ -1045,6 +1059,20 @@ EOT
             ]
             # Grant access to all state files (use specific prefixes for isolation)
             allowed_prefixes = ["*"]
+            # "read_write" (default) allows terraform plan and apply
+            access_level = "read_write"
+          },
+          {
+            name        = "TFstate Backend Plan Access"
+            description = "Grant read-only access to the tfstate backend (terraform plan)"
+            role_arns = [
+              # Grant plan access to SSO read-only users (review changes without being able to apply them)
+              "arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_SupportUser+ReadOnlyAccess_*",
+            ]
+            allowed_prefixes = ["*"]
+            # "read_only" allows terraform plan (read state and manage '.tflock' lock files only)
+            # it does not restrict IAM permissions: combine it with a read-only permission set
+            access_level = "read_only"
           }
         ]
       }

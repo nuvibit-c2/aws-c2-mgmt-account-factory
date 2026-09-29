@@ -404,10 +404,10 @@ module "ntc_account_factory" {
         #   file_name = "baseline_openid_connect"
         #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["backup"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["account_hardening"],
       ]
@@ -666,12 +666,12 @@ module "ntc_account_factory" {
         #   file_name = "baseline_openid_connect"
         #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_github"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["tfstate_backend"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["account_hardening"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -849,12 +849,12 @@ module "ntc_account_factory" {
         #   file_name = "baseline_openid_connect"
         #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
         # },
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_monitoring_reader"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_iam_instance_profile"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_spacelift"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_oidc_github"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_aws_config"],
-        module.ntc_account_baseline_templates.account_baseline_terraform_files["unified_tfstate_backend"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_github"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["tfstate_backend"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["account_hardening"],
       ]
       # add delay to pipeline to avoid errors on first run
