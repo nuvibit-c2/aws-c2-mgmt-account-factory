@@ -162,7 +162,7 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.6.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.8.0"
 
   region = "eu-central-1"
   # -----------------------------------------------------------------------------------------------------------------
@@ -227,18 +227,6 @@ module "ntc_account_factory" {
       }
     ]
   }
-
-  # -----------------------------------------------------------------------------------------------------------------
-  # BASELINE CREDENTIALS - Access Private Module Sources (Optional)
-  # -----------------------------------------------------------------------------------------------------------------
-  # ⚠️  WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
-  # Required only if baseline references private Git repos or module registries
-  # Reference: https://developer.hashicorp.com/terraform/language/modules/sources
-  # -----------------------------------------------------------------------------------------------------------------
-  account_baseline_git_ssh_key              = var.account_baseline_git_ssh_key
-  account_baseline_github_access_token      = var.account_baseline_github_access_token
-  account_baseline_terraform_registry_token = var.account_baseline_terraform_registry_token
-  account_baseline_terraform_registry_host  = "spacelift.io"
 
   # ===================================================================================================================
   # ACCOUNT LIFECYCLE CUSTOMIZATION - Event-Driven Automation
@@ -341,6 +329,55 @@ module "ntc_account_factory" {
   #     CodePipeline and CodeBuild are not available.
   # -----------------------------------------------------------------------------------------------------------------
   account_baseline_deployment_mode = "codepipeline"
+
+  # -----------------------------------------------------------------------------------------------------------------
+  # BASELINE CREDENTIALS - Access Private Module Sources (Optional)
+  # -----------------------------------------------------------------------------------------------------------------
+  # ⚠️  WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
+  # Required only if baseline references private Git repos or module registries
+  # Reference: https://developer.hashicorp.com/terraform/language/modules/sources
+  # -----------------------------------------------------------------------------------------------------------------
+  account_baseline_git_ssh_key              = var.account_baseline_git_ssh_key
+  account_baseline_github_access_token      = var.account_baseline_github_access_token
+  account_baseline_terraform_registry_token = var.account_baseline_terraform_registry_token
+  account_baseline_terraform_registry_host  = "spacelift.io"
+
+  # -----------------------------------------------------------------------------------------------------------------
+  # BASELINE STATE MIGRATION - Keep the Baseline State when an Account changes Scope or Name
+  # -----------------------------------------------------------------------------------------------------------------
+  # The baseline state of an account is stored per instance key "<scope_name>/<account_name>". The key changes when
+  # the account moves into another baseline scope (e.g. new 'ou_path') or is renamed. Declare the old and the new
+  # key and the baseline pipeline of the new key copies the state before terraform init instead of starting empty.
+  # Entries are temporary: remove them after the baseline pipeline of the new key ran successfully.
+  #
+  # ⚠️  WARNING:
+  #   - Add the entry in the same commit as the scope change or rename. Without it the factory apply fails on the
+  #     deletion protection of the old lock table and the new pipeline starts with an empty state
+  #   - The first run applies the delta between the two scope templates: resources only defined in the old scope
+  #     are destroyed. Compare the templates and review the plan of the first run
+  #   - Rename: change account name and email in the AWS console first and add a 'moved' block (see state_migrations.tf).
+  #     Otherwise terraform replaces the account resource, which creates a new AWS account
+  #   - Rename: baseline resources which use the account name (e.g. 'current_account_name' in resource names,
+  #     bucket names or tags) are updated or recreated in the first run. Check the templates before renaming
+  #   - Rename: resources outside the account factory may be keyed by the account name too (e.g. account
+  #     repositories or spacelift stacks). Migrate them as well, otherwise they are destroyed and recreated
+  #     under the new name (DANGER: risk of state or code loss)
+  #   - Account in several scopes: add one entry per scope
+  # -----------------------------------------------------------------------------------------------------------------
+  account_baseline_state_migrations = [
+    # example: 'aws-c2-example-prod' was baselined in scope 'workload-accounts-prod' and is now in 'workload-accounts-non-prod'
+    # {
+    #   from = "workload-accounts-prod/aws-c2-example-prod",
+    #   to   = "workload-accounts-non-prod/aws-c2-example-prod"
+    # },
+    # {
+    #   from = "workload-accounts-non-prod/aws-c2-example-old-test",
+    #   to   = "workload-accounts-non-prod/aws-c2-example-new-test"
+    # },
+  ]
+  # fail a baseline run before terraform init when it would start with an empty state while a non-empty
+  # state of the same AWS account exists under another instance key (guards against forgotten migrations)
+  account_baseline_state_migration_guard_enabled = true
 
   # Define stateful Terraform-based configurations for different account groups
   # Templates defined in: 'ntc_account_factory_baseline_template.tf'
