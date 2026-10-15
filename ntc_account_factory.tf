@@ -776,46 +776,6 @@ module "ntc_account_factory" {
         #   moved_to                      = ""
         #   moved_condition_account_names = []
         # }
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate[\"eu-central-1\"]"
-        }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -1000,46 +960,6 @@ module "ntc_account_factory" {
         #   moved_to                      = ""
         #   moved_condition_account_names = []
         # }
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[0]"
-          moved_to   = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate"
-          moved_to   = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate[\"eu-central-1\"]"
-        }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
