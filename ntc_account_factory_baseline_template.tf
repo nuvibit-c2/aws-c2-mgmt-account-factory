@@ -792,7 +792,7 @@ EOT
     #   s3_bucket_force_destroy: Allow bucket deletion with content
     #     - true: Allows destroying bucket even if it contains state files
     #     - false: Prevents accidental deletion (RECOMMENDED for production)
-    #     - WARNING: true will DELETE ALL STATE FILES when bucket is destroyed
+    #     - ⚠️  WARNING: true will DELETE ALL STATE FILES when bucket is destroyed
     #     - Use true for: Development, testing, temporary accounts
     #     - Use false for: Production, long-lived accounts
     #     - Consider impact: Lost state = unable to manage existing infrastructure
@@ -1009,12 +1009,12 @@ EOT
         s3_bucket_name        = "tfstate" # ⚠️  Must be globally unique or set 's3_regional_namespace' to true
         s3_regional_namespace = true      # bucket name with regional namespace enabled will be: <state_bucket_name>-<account_id>-<region>-an
         s3_regional_buckets   = true      # Set to true to create separate state buckets per baseline region
-        # WARNING: Updating 's3_regional_namespace' or 's3_regional_buckets' after creation will recreate the bucket and can lead to state loss
+        # ⚠️  WARNING: Updating 's3_regional_namespace' or 's3_regional_buckets' after creation will recreate the bucket and can lead to state loss
 
         # -----------------------------------------------------------------------------------------------------------------
         # Force Destroy - DANGER ZONE
         # -----------------------------------------------------------------------------------------------------------------
-        # WARNING: true will DELETE ALL STATE FILES when bucket is destroyed!
+        # ⚠️  WARNING: true will DELETE ALL STATE FILES when bucket is destroyed!
         # Use true for: Testing, development, temporary accounts
         # Use false for: Production, critical infrastructure, long-lived accounts
         # -----------------------------------------------------------------------------------------------------------------

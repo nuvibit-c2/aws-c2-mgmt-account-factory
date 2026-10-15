@@ -333,7 +333,7 @@ module "ntc_account_factory" {
   # -----------------------------------------------------------------------------------------------------------------
   # BASELINE CREDENTIALS - Access Private Module Sources (Optional)
   # -----------------------------------------------------------------------------------------------------------------
-  # WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
+  # ⚠️  WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
   # Required only if baseline references private Git repos or module registries
   # Reference: https://developer.hashicorp.com/terraform/language/modules/sources
   # -----------------------------------------------------------------------------------------------------------------
@@ -350,7 +350,7 @@ module "ntc_account_factory" {
   # key and the baseline pipeline of the new key copies the state before terraform init instead of starting empty.
   # Entries are temporary: remove them after the baseline pipeline of the new key ran successfully.
   #
-  # WARNING:
+  # ⚠️  WARNING:
   #   - Add the entry in the same commit as the scope change or rename. Without it the factory apply fails on the
   #     deletion protection of the old lock table and the new pipeline starts with an empty state
   #   - The first run applies the delta between the two scope templates: resources only defined in the old scope
@@ -394,7 +394,7 @@ module "ntc_account_factory" {
       scope_name = "core-accounts"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -427,7 +427,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
@@ -659,7 +659,7 @@ module "ntc_account_factory" {
       scope_name = "workload-accounts-prod"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -689,7 +689,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
@@ -843,7 +843,7 @@ module "ntc_account_factory" {
       scope_name = "workload-accounts-non-prod"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -873,7 +873,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
