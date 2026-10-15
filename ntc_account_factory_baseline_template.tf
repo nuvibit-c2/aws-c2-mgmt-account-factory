@@ -797,13 +797,6 @@ EOT
     #     - Use false for: Production, long-lived accounts
     #     - Consider impact: Lost state = unable to manage existing infrastructure
     #   
-    #   state_locking_mechanism: How to prevent concurrent state modifications
-    #     - "s3": Use S3 native locking (Terraform/OpenTofu 1.10.0+)
-    #       • Simpler: No DynamoDB table needed
-    #       • Lower cost: No DynamoDB charges
-    #       • Newer feature: Requires recent Terraform/OpenTofu version
-    #     Recommendation: Use "s3" if running Terraform/OpenTofu 1.10.0+
-    #   
     #   access_rules: Define who can access the state backend
     #     - List of access rules, each granting permissions to specific roles
     #     - Multiple rules for different access patterns (CI/CD, admins, developers)
