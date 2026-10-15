@@ -41,7 +41,7 @@ The NTC Implementation Blueprints consist of multiple repositories, each managin
 ### Bootstrap
 
 #### 0. [aws-c2-mgmt-ntc-bootstrap](https://github.com/nuvibit-c2/aws-c2-mgmt-ntc-bootstrap)
-**Purpose**: One-time initial setup for a new NTC implementation
+**Purpose**: One-time initial setup for a new NTC implementation  
 **Creates**: S3 state bucket, KMS encryption key, OIDC provider and IAM role for CI/CD
 
 ### Core Management Repositories
@@ -78,6 +78,11 @@ The NTC Implementation Blueprints consist of multiple repositories, each managin
 **Manages**: Transit Gateway, VPCs, Route 53, IPAM, network architecture  
 **Building Blocks**: [NTC Core Network](https://docs.nuvibit.com/ntc-building-blocks/connectivity/ntc-core-network/), [NTC VPC](https://docs.nuvibit.com/ntc-building-blocks/connectivity/ntc-vpc/), [NTC IPAM](https://docs.nuvibit.com/ntc-building-blocks/connectivity/ntc-ipam/), [NTC Route53](https://docs.nuvibit.com/ntc-building-blocks/connectivity/ntc-route53/), [NTC Parameters](https://docs.nuvibit.com/ntc-building-blocks/management/ntc-parameters/)
 
+#### 7. [aws-c2-backup](https://github.com/nuvibit-c2/aws-c2-backup)
+**Purpose**: Centralized, org-wide AWS Backup management  
+**Manages**: Per-region central backup vaults + KMS keys, tag-driven local/central backup plans, AWS Organizations BACKUP_POLICY documents, optional Backup Vault Lock (WORM)  
+**Building Blocks**: NTC Backup, [NTC Parameters](https://docs.nuvibit.com/ntc-building-blocks/management/ntc-parameters/)
+
 ## 🚀 Deployment Workflow
 
 All blueprint repositories follow a consistent GitOps workflow:
@@ -108,6 +113,7 @@ The blueprint repositories should be deployed in the following order:
 4. **aws-c2-log-archive**          (creates audit log archive)
 5. **aws-c2-security**             (creates security tooling)
 6. **aws-c2-connectivity**         (creates central connectivity)
+7. **aws-c2-backup**               (creates centralized AWS Backup)
 
 ### Implementation Guide
 

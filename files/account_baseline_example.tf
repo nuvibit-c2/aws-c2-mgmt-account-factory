@@ -42,6 +42,24 @@ resource "aws_shield_subscription" "advanced" {
 }
 
 
+# =====================================================================================================================
+# ⚠️  OWNERSHIP: THE FOUR SETTINGS BELOW ARE ALSO account_hardening CONTROLS
+# =====================================================================================================================
+# Each one is an account (or account+region) singleton, so only ONE resource may own it. They are owned by
+# the 'account_hardening' baseline template (see ntc_account_factory_baseline_template.tf), where all four
+# controls are enabled:
+#
+#   aws_iam_account_password_policy.strict          <-> iam_password_policy            enabled = true
+#   aws_s3_account_public_access_block.block_public <-> s3_account_public_access_block enabled = true
+#   aws_ebs_encryption_by_default.enabled           <-> ebs_encryption_by_default      enabled = true
+#   aws_ec2_instance_metadata_defaults.imdsv2       <-> ec2_imdsv2                     enabled = true
+#
+# This file is therefore commented out in every baseline scope (see baseline_terraform_files in
+# ntc_account_factory.tf). Before wiring it into a scope, delete these four resources from it (or disable the
+# matching controls in account_hardening_inputs). Otherwise two resources write the same AWS setting, overwrite
+# each other on every run and never converge.
+# =====================================================================================================================
+
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ UNIFIED BASELINE - IAM PASSWORD POLICY (GLOBAL)
 # ---------------------------------------------------------------------------------------------------------------------
@@ -89,9 +107,12 @@ resource "aws_ebs_encryption_by_default" "enabled" {
 resource "aws_ec2_instance_metadata_defaults" "imdsv2" {
   for_each = toset(var.baseline_regions)
 
-  region                      = each.value
-  http_tokens                 = "required"
-  http_put_response_hop_limit = 2
+  region      = each.value
+  http_tokens = "required"
+  # 1, not 2: AWS already defaults new instances to 1, so an account-wide 2 LOOSENS IMDS rather than
+  # hardening it. A container on bridge networking needs the extra hop - give it one in its own launch
+  # template, or avoid IMDS entirely with ECS task roles / EKS Pod Identity.
+  http_put_response_hop_limit = 1
   instance_metadata_tags      = "disabled"
   http_endpoint               = "enabled"
 }

@@ -333,7 +333,7 @@ module "ntc_account_factory" {
   # -----------------------------------------------------------------------------------------------------------------
   # BASELINE CREDENTIALS - Access Private Module Sources (Optional)
   # -----------------------------------------------------------------------------------------------------------------
-  # ⚠️  WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
+  # WARNING: Never commit credentials to Git! Use variables from secure sources (e.g., vault, environment variables).
   # Required only if baseline references private Git repos or module registries
   # Reference: https://developer.hashicorp.com/terraform/language/modules/sources
   # -----------------------------------------------------------------------------------------------------------------
@@ -350,7 +350,7 @@ module "ntc_account_factory" {
   # key and the baseline pipeline of the new key copies the state before terraform init instead of starting empty.
   # Entries are temporary: remove them after the baseline pipeline of the new key ran successfully.
   #
-  # ⚠️  WARNING:
+  # WARNING:
   #   - Add the entry in the same commit as the scope change or rename. Without it the factory apply fails on the
   #     deletion protection of the old lock table and the new pipeline starts with an empty state
   #   - The first run applies the delta between the two scope templates: resources only defined in the old scope
@@ -438,8 +438,8 @@ module "ntc_account_factory" {
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
+        #   file_name = "baseline_example"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
@@ -494,7 +494,7 @@ module "ntc_account_factory" {
       baseline_import_resources = [
         {
           import_to                      = "module.baseline_unified[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io"
-          import_id                      = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
+          import_id                      = "arn:${local.current_partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
           import_condition_account_names = ["aws-c2-management"] # Only import in this account
         },
         {
@@ -700,8 +700,8 @@ module "ntc_account_factory" {
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
+        #   file_name = "baseline_example"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
@@ -709,6 +709,7 @@ module "ntc_account_factory" {
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_github"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["tfstate_backend"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["backup"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["account_hardening"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -775,6 +776,46 @@ module "ntc_account_factory" {
         #   moved_to                      = ""
         #   moved_condition_account_names = []
         # }
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate[\"eu-central-1\"]"
+        }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -883,8 +924,8 @@ module "ntc_account_factory" {
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
         # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
+        #   file_name = "baseline_example"
+        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
         # },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
@@ -959,6 +1000,46 @@ module "ntc_account_factory" {
         #   moved_to                      = ""
         #   moved_condition_account_names = []
         # }
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_alias.ntc_state_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_key.ntc_state_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[0]"
+          moved_to   = "module.baseline_unified[0].aws_kms_key_policy.ntc_state_bucket_encryption[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_acl.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_ownership_controls.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_policy.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_public_access_block.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_server_side_encryption_configuration.ntc_tfstate[\"eu-central-1\"]"
+        },
+        {
+          moved_from = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate"
+          moved_to   = "module.baseline_unified[0].aws_s3_bucket_versioning.ntc_tfstate[\"eu-central-1\"]"
+        }
       ]
 
       # -----------------------------------------------------------------------------------------------------------------

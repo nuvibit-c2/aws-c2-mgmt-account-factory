@@ -105,7 +105,7 @@
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "core",
-      "AccountDescription": "This account manages the centralized backup",
+      "AccountDescription": "This account manages the centralized backup vault",
       "AccountDecommission": false
     },
     "alternate_contacts": [
@@ -127,7 +127,7 @@
     "account_tags": {
       "AccountOwner": "stefano.franco@nuvibit.com",
       "AccountType": "core",
-      "AccountDescription": "This account manages different platform tooling like an image factory.",
+      "AccountDescription": "Contains different platform tooling like image factory and container registry",
       "AccountDecommission": false
     },
     "alternate_contacts": [
