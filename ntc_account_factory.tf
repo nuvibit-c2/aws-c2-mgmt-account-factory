@@ -437,10 +437,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_example"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -605,6 +605,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -699,10 +705,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_example"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -794,6 +800,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -883,10 +895,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_example"
-        #   content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -978,6 +990,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------

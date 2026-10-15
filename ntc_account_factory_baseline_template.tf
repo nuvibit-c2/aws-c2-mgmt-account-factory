@@ -1248,10 +1248,12 @@ EOT
     # "enabled = false" removes the control from the baseline entirely - the resource is not rendered and
     # the setting is left untouched in the account, it is NOT reset to an AWS default.
     #
-    # ⚠️  These are account (or account+region) singletons. Only ONE resource may own each of them, so do not
-    # declare the same setting in a custom baseline file. files/account_baseline_example.tf declares four of
-    # them (password policy, S3 public access block, EBS encryption, IMDSv2) and is commented out in every
-    # scope - keep it that way, or two resources will overwrite each other on every run and never converge.
+    # ⚠️  Four controls are DISABLED here because files/account_baseline_example.tf declares the same AWS
+    # singletons: ec2_imdsv2, ebs_encryption_by_default, iam_password_policy and
+    # s3_account_public_access_block. Two resources owning one setting overwrite each other on every run.
+    # Their attribute values below are kept for reference only and have no effect while disabled, and a
+    # per-account override for any of the four is inert. To move one back here, delete its resource from
+    # account_baseline_example.tf in the same change.
     #
     #   ssm_document_public_sharing.enabled: true
     #     - Writes the SSM service setting /ssm/documents/console/public-sharing-permission per region
@@ -1266,7 +1268,7 @@ EOT
     #   ec2_imdsv2: account-level default for new EC2 instances, per region. An instance can still
     #     override these at launch, and EC2.8 is evaluated per instance, so this makes NEW instances
     #     compliant without remediating existing ones.
-    #     enabled: true
+    #     enabled: false  (owned by account_baseline_example.tf)
     #     http_tokens: "required"
     #       - "required" is IMDSv2-only and the value EC2.8 expects
     #       - Allowed values: "required", "optional", "no-preference"
@@ -1288,7 +1290,7 @@ EOT
     #       - Whether instance tags are exposed through IMDS by default
     #       - Allowed values: "enabled", "disabled", "no-preference"
     #
-    #   ebs_encryption_by_default.enabled: true
+    #   ebs_encryption_by_default.enabled: false  (owned by account_baseline_example.tf)
     #     - Encrypts newly created EBS volumes and snapshots with the default EBS KMS key, per region
     #     - Does NOT encrypt volumes which already exist
     #
@@ -1301,7 +1303,7 @@ EOT
     #   iam_password_policy: account-global (not per region). Applies to IAM users only and has no effect
     #     on identities federated through IAM Identity Center. The values below also satisfy Si001
     #     IT-Grundschutz 5.0 (chapter 4 - T7) and the CIS AWS Foundations Benchmark.
-    #     enabled: true
+    #     enabled: false  (owned by account_baseline_example.tf)
     #     minimum_password_length: 18
     #       - 18 is the minimum requirement for privileged users
     #       - Allowed values: 6 to 128
@@ -1318,7 +1320,7 @@ EOT
     #
     #   s3_account_public_access_block: account-global (not per region). Overrides any per-bucket public
     #     access setting in the account.
-    #     enabled: true
+    #     enabled: false  (owned by account_baseline_example.tf)
     #     block_public_acls / block_public_policy / ignore_public_acls: true
     #     restrict_public_buckets: true
     #       - ⚠️  S3.1 requires ALL FOUR flags to be true - setting any of them false fails the control
@@ -1339,22 +1341,26 @@ EOT
         ssm_automation_log_destination = {
           enabled = true
         }
+        # ⚠️  DISABLED - owned by files/account_baseline_example.tf instead. Enabling either of the four
+        # controls below while that file still declares its resource makes two resources write the same
+        # AWS setting, and they overwrite each other on every run. The values are kept for reference and
+        # have no effect while "enabled = false" (a disabled control is not rendered into the baseline).
         ec2_imdsv2 = {
-          enabled                     = true
+          enabled                     = false
           http_tokens                 = "required"
           http_endpoint               = "no-preference"
           http_put_response_hop_limit = 1
           instance_metadata_tags      = "no-preference"
         }
         ebs_encryption_by_default = {
-          enabled = true
+          enabled = false
         }
         ebs_snapshot_block_public_access = {
           enabled = true
           state   = "block-all-sharing"
         }
         iam_password_policy = {
-          enabled                        = true
+          enabled                        = false
           minimum_password_length        = 18
           require_lowercase_characters   = true
           require_numbers                = true
@@ -1365,7 +1371,7 @@ EOT
           max_password_age               = 90
         }
         s3_account_public_access_block = {
-          enabled                 = true
+          enabled                 = false
           block_public_acls       = true
           block_public_policy     = true
           ignore_public_acls      = true

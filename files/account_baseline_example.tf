@@ -43,21 +43,20 @@ resource "aws_shield_subscription" "advanced" {
 
 
 # =====================================================================================================================
-# ⚠️  OWNERSHIP: THE FOUR SETTINGS BELOW ARE ALSO account_hardening CONTROLS
+# ⚠️  OWNERSHIP: THIS FILE OWNS FOUR account_hardening CONTROLS
 # =====================================================================================================================
 # Each one is an account (or account+region) singleton, so only ONE resource may own it. They are owned by
-# the 'account_hardening' baseline template (see ntc_account_factory_baseline_template.tf), where all four
-# controls are enabled:
+# this file, which is wired into every baseline scope (see baseline_terraform_files in ntc_account_factory.tf).
+# The matching controls are disabled in the 'account_hardening' baseline template
+# (see ntc_account_factory_baseline_template.tf):
 #
-#   aws_iam_account_password_policy.strict          <-> iam_password_policy            enabled = true
-#   aws_s3_account_public_access_block.block_public <-> s3_account_public_access_block enabled = true
-#   aws_ebs_encryption_by_default.enabled           <-> ebs_encryption_by_default      enabled = true
-#   aws_ec2_instance_metadata_defaults.imdsv2       <-> ec2_imdsv2                     enabled = true
+#   aws_iam_account_password_policy.strict          <-> iam_password_policy            enabled = false
+#   aws_s3_account_public_access_block.block_public <-> s3_account_public_access_block enabled = false
+#   aws_ebs_encryption_by_default.enabled           <-> ebs_encryption_by_default      enabled = false
+#   aws_ec2_instance_metadata_defaults.imdsv2       <-> ec2_imdsv2                     enabled = false
 #
-# This file is therefore commented out in every baseline scope (see baseline_terraform_files in
-# ntc_account_factory.tf). Before wiring it into a scope, delete these four resources from it (or disable the
-# matching controls in account_hardening_inputs). Otherwise two resources write the same AWS setting, overwrite
-# each other on every run and never converge.
+# To move a setting to the template, delete its resource here and enable the control there in the same change.
+# Otherwise two resources write the same AWS setting, overwrite each other on every run and never converge.
 # =====================================================================================================================
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -65,7 +64,7 @@ resource "aws_shield_subscription" "advanced" {
 # ---------------------------------------------------------------------------------------------------------------------
 # IAM is a global service - no for_each/region needed, deploy once per account.
 resource "aws_iam_account_password_policy" "strict" {
-  minimum_password_length        = 14
+  minimum_password_length        = 18
   require_lowercase_characters   = true
   require_uppercase_characters   = true
   require_numbers                = true
