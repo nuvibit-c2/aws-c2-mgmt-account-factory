@@ -84,6 +84,8 @@
 # 2. aws_config                 - AWS Config recorders, rules, compliance monitoring
 # 3. openid_connect             - OIDC providers for CI/CD (GitHub, GitLab, Spacelift)
 # 4. tfstate_backend            - Terraform state management infrastructure
+# 5. backup                     - Local AWS Backup vaults, KMS keys and backup/restore roles
+# 6. account_hardening          - Account-level security settings (Security Hub FSBP controls)
 #
 # EXECUTION MODEL:
 # ----------------
@@ -151,7 +153,7 @@
 # Example provider configuration:
 #   baseline_assume_role_providers = [{
 #     configuration_alias = "connectivity"
-#     role_arn            = "arn:aws:iam::123456789012:role/ntc-account-baseline-role"
+#     role_arn            = "arn:${local.current_partition}:iam::123456789012:role/ntc-account-baseline-role"
 #     session_name        = "NTCBaselineRole"
 #   }]
 #
@@ -185,7 +187,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.4.0"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.6.1"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -242,9 +244,8 @@ module "ntc_account_baseline_templates" {
     #     - Add multiple accounts if you have dedicated monitoring accounts
     # -----------------------------------------------------------------------------------------------------------------
     {
-      unified_multi_region_baseline = true
-      file_name                     = "iam_monitoring_reader"
-      template_name                 = "iam_role"
+      file_name     = "iam_monitoring_reader"
+      template_name = "iam_role"
       iam_role_inputs = {
         role_name  = "CloudWatch-CrossAccountSharingRole"
         policy_arn = "arn:${local.current_partition}:iam::aws:policy/CloudWatchReadOnlyAccess"
@@ -330,9 +331,8 @@ module "ntc_account_baseline_templates" {
     #   - Systems Manager VPC endpoints if using private subnets
     # -----------------------------------------------------------------------------------------------------------------
     {
-      unified_multi_region_baseline = true
-      file_name                     = "iam_instance_profile"
-      template_name                 = "iam_role"
+      file_name     = "iam_instance_profile"
+      template_name = "iam_role"
       iam_role_inputs = {
         role_name           = "ntc-ssm-instance-profile"
         policy_arn          = "arn:${local.current_partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -533,9 +533,8 @@ module "ntc_account_baseline_templates" {
     #   ✓ Eliminates credential rotation burden
     # -----------------------------------------------------------------------------------------------------------------
     {
-      unified_multi_region_baseline = true
-      file_name                     = "oidc_spacelift"
-      template_name                 = "openid_connect"
+      file_name     = "oidc_spacelift"
+      template_name = "openid_connect"
       openid_connect_inputs = {
         provider                  = "nuvibit.app.spacelift.io"
         audience                  = "nuvibit.app.spacelift.io"
@@ -543,16 +542,16 @@ module "ntc_account_baseline_templates" {
         role_path                 = "/"
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
-        permission_policy_arn     = "arn:aws:iam::aws:policy/AdministratorAccess"
+        permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/AdministratorAccess"
         # make sure to define a subject which is limited to your scope (e.g. a generic subject could grant access to all terraform cloud users)
         # you can use dynamic values by referencing the injected baseline variables (e.g. var.current_account_name) - additional '$' escape is required
         # for additional flexibility use 'subject_list_encoded' which allows injecting more complex structures (e.g. grant permission to multiple pipelines in one account)
         # examples for common openid_connect subjects
-        #   terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
-        #   spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
-        #   gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
-        #   github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
-        #   jenkins         = "job:JOB_NAME/master"
+        # terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
+        # spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
+        # gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
+        # github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+        # jenkins         = "job:JOB_NAME/master"
 
         # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
         subject_list_encoded = <<EOT
@@ -568,9 +567,8 @@ EOT
       }
     },
     {
-      unified_multi_region_baseline = true
-      file_name                     = "oidc_github"
-      template_name                 = "openid_connect"
+      file_name     = "oidc_github"
+      template_name = "openid_connect"
       openid_connect_inputs = {
         provider                  = "token.actions.githubusercontent.com"
         audience                  = "sts.amazonaws.com"
@@ -638,12 +636,6 @@ EOT
     #   config_delivery_channel_name: ntc-config-delivery
     #     - Name of delivery channel to S3
     #     - Determines how often snapshots are sent
-    #   
-    #   config_iam_role_name: ntc-config-role
-    #     - IAM role for Config service
-    #     - Grants read access to all resource types
-    #     - Grants write access to S3 bucket and KMS key
-    #     - Must match with role name in 'ntc-log-archive' module input (var.config_iam_role_name)
     #   
     #   config_delivery_frequency: One_Hour
     #     - How often config snapshots are sent to S3
@@ -733,22 +725,24 @@ EOT
     #   5. Create dashboards for compliance metrics
     # -----------------------------------------------------------------------------------------------------------------
     {
-      unified_multi_region_baseline = true
-      file_name                     = "aws_config"
-      template_name                 = "aws_config"
+      file_name     = "aws_config"
+      template_name = "aws_config"
       aws_config_inputs = {
         config_log_archive_bucket_arn  = local.ntc_parameters["log-archive"]["log_bucket_arns"]["aws_config"]
         config_log_archive_kms_key_arn = local.ntc_parameters["log-archive"]["log_bucket_kms_key_arns"]["aws_config"]
         # optional inputs
         config_recorder_name         = "ntc-config-recorder"
         config_delivery_channel_name = "ntc-config-delivery"
-        config_iam_role_name         = "ntc-config-role"
-        config_iam_path              = "/"
         config_delivery_frequency    = "One_Hour"
         # (optional) override account baseline main region with main region of security tooling
         # this is necessary when security tooling uses a different main region
         # omit to use the main region of the account baseline
         config_security_main_region = ""
+
+        # (optional) advanced recording mode configuration - by default all supported resource types are recorded in continuous mode
+        config_recording_mode = {
+          frequency = "CONTINUOUS"
+        }
       }
     },
     # -----------------------------------------------------------------------------------------------------------------
@@ -809,12 +803,6 @@ EOT
     #       • Lower cost: No DynamoDB charges
     #       • Newer feature: Requires recent Terraform/OpenTofu version
     #     Recommendation: Use "s3" if running Terraform/OpenTofu 1.10.0+
-    #
-    #   config_iam_role_name: ntc-config-role
-    #     - IAM role used by Config service
-    #     - Grants access to evaluate the S3 bucket and KMS key created for the state backend
-    #     - Must match with role name in 'ntc-log-archive' module input (var.config_iam_role_name)
-    #     - Must match the the config_iam_role_name defined in the 'unified_aws_config'
     #   
     #   access_rules: Define who can access the state backend
     #     - List of access rules, each granting permissions to specific roles
@@ -964,8 +952,8 @@ EOT
     #   ```
     # 
     # MULTI-REGION DEPLOYMENT:
-    #   - Backend created in MAIN region only (global resource)
-    #   - All regions reference the same backend bucket
+    #   - s3_regional_buckets = true: one state bucket + KMS key per baseline region (used here)
+    #   - s3_regional_buckets = false: backend created in MAIN region only, all regions use the same bucket
     #   - Use different state file paths per region: "region/REGION/terraform.tfstate"
     # 
     # BEST PRACTICES:
@@ -1012,17 +1000,16 @@ EOT
     #   • Restrict access to state backend to necessary roles only
     # -----------------------------------------------------------------------------------------------------------------
     {
-      unified_multi_region_baseline = true
-      file_name                     = "tfstate_backend"
-      template_name                 = "tfstate_backend"
+      file_name     = "tfstate_backend"
+      template_name = "tfstate_backend"
       tfstate_backend_inputs = {
         # -----------------------------------------------------------------------------------------------------------------
         # S3 Bucket Configuration
         # -----------------------------------------------------------------------------------------------------------------
         s3_bucket_name        = "tfstate" # ⚠️  Must be globally unique or set 's3_regional_namespace' to true
         s3_regional_namespace = true      # bucket name with regional namespace enabled will be: <state_bucket_name>-<account_id>-<region>-an
-        # ⚠️  WARNING: Updating 's3_regional_namespace' after creation will recreate the bucket and can lead to state loss
-
+        s3_regional_buckets   = true      # Set to true to create separate state buckets per baseline region
+        # ⚠️  WARNING: Updating 's3_regional_namespace' or 's3_regional_buckets' after creation will recreate the bucket and can lead to state loss
 
         # -----------------------------------------------------------------------------------------------------------------
         # Force Destroy - DANGER ZONE
@@ -1034,12 +1021,24 @@ EOT
         s3_bucket_force_destroy = true # NOTE: set to false for production!
 
         # -----------------------------------------------------------------------------------------------------------------
-        # AWS Config Integration
+        # AWS Backup - Back Up the State Bucket(s)
         # -----------------------------------------------------------------------------------------------------------------
-        # Provide the AWS Config IAM role name to allow Config to evaluate resources
-        # created by this tfstate_backend template (S3 bucket, KMS key, etc.)
+        # Optional: Requires the 'backup' template in the same account. When enabled:
+        #   - the state bucket(s) get the 'backup_tags' (keys must match 'tag_key_to_enable_backup' and
+        #     'tag_key_to_define_backup_scope' in aws-c2-backup, scope is set explicitly to 'local-and-central')
+        #   - the kms key policy allows the backup roles to use the key, since it does not delegate access to IAM policies
+        #     (kms access is limited to calls through S3 in the bucket region)
+        #       - operator: kms:Decrypt, kms:DescribeKey (backup)
+        #       - restorer: kms:Decrypt, kms:DescribeKey, kms:GenerateDataKey (restore, can overwrite state)
+        # Role names must match 'member_account_backup_role_name' in aws-c2-backup.
         # -----------------------------------------------------------------------------------------------------------------
-        config_iam_role_name = "ntc-config-role"
+        backup_support_enabled = true
+        backup_tags = {
+          "ntc:backup"       = "true"
+          "ntc:backup-scope" = "local-and-central"
+        }
+        backup_operator_iam_role_name = "ntc-local-backup-operator-role"
+        backup_restorer_iam_role_name = "ntc-local-backup-restorer-role"
 
         # -----------------------------------------------------------------------------------------------------------------
         # Access Rules - Grant Backend Access to Roles
@@ -1078,7 +1077,7 @@ EOT
       }
     },
     # -----------------------------------------------------------------------------------------------------------------
-    # AWS Backup - Local Vault per Baseline Region
+    # TEMPLATE 6: AWS Backup - Local Vault per Baseline Region
     # -----------------------------------------------------------------------------------------------------------------
     # PURPOSE: Create a local AWS Backup vault (with its own KMS key) in every baseline region, ready to
     # back up resources locally and copy recovery points to a central backup account
@@ -1120,7 +1119,7 @@ EOT
     #   kms_deletion_window_in_days / kms_key_rotation_enabled
     #     - Standard KMS CMK settings for the vault's encryption key, one per region
     #
-    #   kms_key_owners: (optional) additional admin principals for the vault's KMS key. Wildard SSO role ARNs are supported.
+    #   kms_key_owners: (optional) additional admin principals for the vault's KMS key. Wildcard SSO role ARNs are supported.
     #
     #   resource_types: which AWS services this account opts into for AWS Backup
     #     - Must use the SAME vocabulary as terraform-aws-ntc-backup's backup_definitions[].resource_types
@@ -1176,28 +1175,49 @@ EOT
         malware_scan_scanner_iam_role_name = "ntc-local-backup-malware-scanner-role"
         kms_deletion_window_in_days        = 30
         kms_key_rotation_enabled           = true
-        kms_key_owners                     = [] # optional: additional admin principals for the vault's KMS key
-
-        central_backup_account_id = local.ntc_parameters["mgmt-account-factory"]["core_accounts"]["aws-c2-backup"]
-
+        kms_key_owners                     = ["arn:$${var.aws_partition}:iam::$${var.current_account_id}:role/aws-reserved/sso.amazonaws.com/*/AWSReservedSSO_AdministratorAccess_*"]
+        central_backup_account_id          = try(local.ntc_parameters["mgmt-account-factory"]["core_accounts"]["aws-c2-backup"], "")
         vault_lock_config = {
           enabled             = false # only activate if you want the local vault to have a lock config
           min_retention_days  = 7
           max_retention_days  = 30
           changeable_for_days = 30
         }
+        # ⚠️  Each list must name EVERY resource type AWS Backup supports in that region, not just the ones
+        # we care about. aws_backup_region_settings is a singleton: AWS always reports its full supported
+        # set, and any type missing from the list here shows up as "-> null" on every plan and can never be
+        # removed, because the API has no way to unset a type. Listing the complete set is what makes the
+        # resource converge. A type AWS does NOT support in a region fails the apply outright, so the sets
+        # differ per region (eu-central-2 has no DSQL, SAP HANA, Timestream or VirtualMachine).
+        # Everything listed is opted IN - the module has no way to express an explicit opt-out.
+        # Verify with: aws backup describe-region-settings --region <region>
+        # Re-check when AWS adds a resource type to a region, otherwise the diff returns for that type.
         region_overrides = {
           "eu-central-1" = {
             resource_types_opt_in_preference = [
-              "Aurora", "DocumentDB", "DynamoDB", "EBS", "EC2", "EFS", "FSx", "Neptune", "RDS",
-              "Storage Gateway", "CloudFormation", "Redshift", "Redshift Serverless", "S3", "DSQL"
+              "Aurora", "CloudFormation", "DocumentDB", "DSQL", "DynamoDB", "EBS", "EC2", "EFS", "EKS",
+              "FSx", "Neptune", "RDS", "Redshift", "Redshift Serverless", "S3", "SAP HANA on Amazon EC2",
+              "Storage Gateway", "Timestream", "VirtualMachine"
+            ]
+          }
+          "eu-central-2" = {
+            resource_types_opt_in_preference = [
+              "Aurora", "CloudFormation", "DocumentDB", "DynamoDB", "EBS", "EC2", "EFS", "EKS", "FSx",
+              "Neptune", "RDS", "Redshift", "Redshift Serverless", "S3", "Storage Gateway"
+            ]
+          }
+          "us-east-1" = {
+            resource_types_opt_in_preference = [
+              "Aurora", "CloudFormation", "DocumentDB", "DSQL", "DynamoDB", "EBS", "EC2", "EFS", "EKS",
+              "FSx", "Neptune", "RDS", "Redshift", "Redshift Serverless", "S3", "SAP HANA on Amazon EC2",
+              "Storage Gateway", "Timestream", "VirtualMachine"
             ]
           }
         }
       }
     },
     # -----------------------------------------------------------------------------------------------------------------
-    # ACCOUNT HARDENING - ACCOUNT-LEVEL SECURITY CONTROLS
+    # TEMPLATE 7: Account Hardening - Account-Level Security Controls
     # -----------------------------------------------------------------------------------------------------------------
     # PURPOSE: Remediate common AWS Security Hub / Foundational Security Best Practices findings once per
     # account, so individual spoke accounts don't need to configure these settings manually
@@ -1224,63 +1244,86 @@ EOT
     #       }
     #     }
     #
-    # ⚠️  These are account (or account+region) singletons. Only ONE resource may own each of them, so do not
-    # declare the same setting in a custom baseline file. files/unified_baseline_example.tf declares four of
-    # them (password policy, S3 public access block, EBS encryption, IMDSv2) and is commented out in every
-    # scope - keep it that way, or two resources will overwrite each other on every run and never converge.
-    #
     # INPUTS: every control carries an "enabled" flag, shown below with the value set in this stack.
     # "enabled = false" removes the control from the baseline entirely - the resource is not rendered and
     # the setting is left untouched in the account, it is NOT reset to an AWS default.
     #
+    # ⚠️  Four controls are DISABLED here because files/account_baseline_example.tf declares the same AWS
+    # singletons: ec2_imdsv2, ebs_encryption_by_default, iam_password_policy and
+    # s3_account_public_access_block. Two resources owning one setting overwrite each other on every run.
+    # Their attribute values below are kept for reference only and have no effect while disabled, and a
+    # per-account override for any of the four is inert. To move one back here, delete its resource from
+    # account_baseline_example.tf in the same change.
+    #
     #   ssm_document_public_sharing.enabled: true
     #     - Writes the SSM service setting /ssm/documents/console/public-sharing-permission per region
-    #     - The value is fixed at "Disable", the only value which satisfies SSM.7
+    #     - The value is fixed at "Disable", the only value which satisfies SSM.7 - there is no knob to
+    #       allow public sharing, turn the control off instead to stop managing the setting
     #
     #   ssm_automation_log_destination.enabled: true
     #     - Writes the SSM service setting /ssm/automation/customer-script-log-destination per region
-    #     - The value is fixed at "CloudWatch", the only value the SSM API accepts here
+    #     - The value is fixed at "CloudWatch", the only value the SSM API accepts here. Sending
+    #       automation output to S3 is configured per execution, not through this account-level setting
     #
-    #   ec2_imdsv2: account-level default for new EC2 instances, per region. An instance can still override
-    #     these at launch, and EC2.8 is evaluated per instance, so this makes NEW instances compliant
-    #     without remediating existing ones.
-    #     enabled: true
-    #     http_tokens: "required"          - IMDSv2-only, the value EC2.8 expects
-    #                                        ("required" | "optional" | "no-preference")
-    #     http_endpoint: "no-preference"   - leaves the per-instance default untouched, which is what EC2.8
-    #                                        wants ("enabled" | "disabled" | "no-preference")
-    #     http_put_response_hop_limit: 1   - keeps IMDS credentials reachable only from the instance itself.
-    #                                        ⚠️  2 is LOOSER than the AWS default of 1 - a container which
-    #                                        needs the extra hop should set it in its own launch template,
-    #                                        or use ECS task roles / EKS Pod Identity (1 to 64, or -1)
-    #     instance_metadata_tags: "no-preference" - whether instance tags are exposed through IMDS
-    #                                        ("enabled" | "disabled" | "no-preference")
+    #   ec2_imdsv2: account-level default for new EC2 instances, per region. An instance can still
+    #     override these at launch, and EC2.8 is evaluated per instance, so this makes NEW instances
+    #     compliant without remediating existing ones.
+    #     enabled: false  (owned by account_baseline_example.tf)
+    #     http_tokens: "required"
+    #       - "required" is IMDSv2-only and the value EC2.8 expects
+    #       - Allowed values: "required", "optional", "no-preference"
+    #     http_endpoint: "no-preference"
+    #       - "no-preference" leaves the per-instance default untouched, which is what EC2.8 wants -
+    #         "disabled" turns the metadata service off for new instances entirely
+    #       - Allowed values: "enabled", "disabled", "no-preference"
+    #     http_put_response_hop_limit: 1
+    #       - 1 keeps IMDS credentials reachable only from the instance itself. A container on bridge
+    #         networking is one extra hop, so 1 stops it reading the instance role - use ECS task roles
+    #         or EKS Pod Identity/IRSA there rather than raising this account-wide
+    #       - ⚠️  2 is LOOSER than leaving this alone: AWS already defaults new instances to 1, so setting
+    #         2 raises the ceiling for every instance in the account. A workload which genuinely needs it
+    #         should set it in its own launch template, where it is an auditable exception
+    #       - -1 means no account-level preference (instances fall back to the AWS default of 1). 1 is
+    #         pinned here instead so the value is explicit in aws ec2 get-instance-metadata-defaults
+    #       - Allowed values: 1 to 64, or -1
+    #     instance_metadata_tags: "no-preference"
+    #       - Whether instance tags are exposed through IMDS by default
+    #       - Allowed values: "enabled", "disabled", "no-preference"
     #
-    #   ebs_encryption_by_default.enabled: true
+    #   ebs_encryption_by_default.enabled: false  (owned by account_baseline_example.tf)
     #     - Encrypts newly created EBS volumes and snapshots with the default EBS KMS key, per region
     #     - Does NOT encrypt volumes which already exist
     #
     #   ebs_snapshot_block_public_access: per region
     #     enabled: true
-    #     state: "block-all-sharing"       - also revokes snapshots which are ALREADY shared publicly
-    #                                        ("block-all-sharing" | "block-new-sharing")
+    #     state: "block-all-sharing"
+    #       - "block-all-sharing" also revokes snapshots which are ALREADY shared publicly
+    #       - "block-new-sharing" only prevents new public sharing and leaves existing ones in place
     #
-    #   iam_password_policy: account-global (not per region). Applies to IAM users only and has no effect on
-    #     identities federated through IAM Identity Center. The values below also satisfy Si001
+    #   iam_password_policy: account-global (not per region). Applies to IAM users only and has no effect
+    #     on identities federated through IAM Identity Center. The values below also satisfy Si001
     #     IT-Grundschutz 5.0 (chapter 4 - T7) and the CIS AWS Foundations Benchmark.
-    #     enabled: true
-    #     minimum_password_length: 18      - minimum requirement for privileged users (6 to 128)
+    #     enabled: false  (owned by account_baseline_example.tf)
+    #     minimum_password_length: 18
+    #       - 18 is the minimum requirement for privileged users
+    #       - Allowed values: 6 to 128
     #     require_lowercase_characters / require_numbers / require_uppercase_characters / require_symbols: true
-    #                                      - character class requirements, all four needed for IAM.7
+    #       - Character class requirements, all four needed for IAM.7
     #     allow_users_to_change_password: true
-    #     password_reuse_prevention: 24    - ⚠️  IAM.16 requires EXACTLY 24 (1 to 24)
-    #     max_password_age: 90             - ⚠️  IAM.17 requires 90 or less (1 to 1095 days)
+    #       - Lets an IAM user rotate their own password without an admin
+    #     password_reuse_prevention: 24
+    #       - ⚠️  IAM.16 requires EXACTLY 24 - a lower value still applies but fails the control
+    #       - Allowed values: 1 to 24
+    #     max_password_age: 90
+    #       - ⚠️  IAM.17 requires 90 or less - a higher value still applies but fails the control
+    #       - Allowed values: 1 to 1095 days
     #
     #   s3_account_public_access_block: account-global (not per region). Overrides any per-bucket public
     #     access setting in the account.
-    #     enabled: true
-    #     block_public_acls / block_public_policy / ignore_public_acls / restrict_public_buckets: true
-    #                                      - ⚠️  S3.1 requires ALL FOUR to be true
+    #     enabled: false  (owned by account_baseline_example.tf)
+    #     block_public_acls / block_public_policy / ignore_public_acls: true
+    #     restrict_public_buckets: true
+    #       - ⚠️  S3.1 requires ALL FOUR flags to be true - setting any of them false fails the control
     #
     #   SCOPE: wired into all three baseline scopes - "core-accounts", "workload-accounts-prod" and
     #   "workload-accounts-non-prod" (see baseline_terraform_files in ntc_account_factory.tf).
@@ -1298,22 +1341,26 @@ EOT
         ssm_automation_log_destination = {
           enabled = true
         }
+        # ⚠️  DISABLED - owned by files/account_baseline_example.tf instead. Enabling either of the four
+        # controls below while that file still declares its resource makes two resources write the same
+        # AWS setting, and they overwrite each other on every run. The values are kept for reference and
+        # have no effect while "enabled = false" (a disabled control is not rendered into the baseline).
         ec2_imdsv2 = {
-          enabled                     = true
+          enabled                     = false
           http_tokens                 = "required"
           http_endpoint               = "no-preference"
           http_put_response_hop_limit = 1
           instance_metadata_tags      = "no-preference"
         }
         ebs_encryption_by_default = {
-          enabled = true
+          enabled = false
         }
         ebs_snapshot_block_public_access = {
           enabled = true
           state   = "block-all-sharing"
         }
         iam_password_policy = {
-          enabled                        = true
+          enabled                        = false
           minimum_password_length        = 18
           require_lowercase_characters   = true
           require_numbers                = true
@@ -1324,7 +1371,7 @@ EOT
           max_password_age               = 90
         }
         s3_account_public_access_block = {
-          enabled                 = true
+          enabled                 = false
           block_public_acls       = true
           block_public_policy     = true
           ignore_public_acls      = true

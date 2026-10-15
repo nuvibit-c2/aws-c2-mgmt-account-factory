@@ -394,7 +394,7 @@ module "ntc_account_factory" {
       scope_name = "core-accounts"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -427,7 +427,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
@@ -437,10 +437,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -494,7 +494,7 @@ module "ntc_account_factory" {
       baseline_import_resources = [
         {
           import_to                      = "module.baseline_unified[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io"
-          import_id                      = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
+          import_id                      = "arn:${local.current_partition}:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/nuvibit.app.spacelift.io"
           import_condition_account_names = ["aws-c2-management"] # Only import in this account
         },
         {
@@ -605,6 +605,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -659,7 +665,7 @@ module "ntc_account_factory" {
       scope_name = "workload-accounts-prod"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -689,7 +695,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
@@ -699,16 +705,17 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_github"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["aws_config"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["tfstate_backend"],
+        module.ntc_account_baseline_templates.account_baseline_terraform_files["backup"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["account_hardening"],
       ]
       # add delay to pipeline to avoid errors on first run
@@ -793,6 +800,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
@@ -842,7 +855,7 @@ module "ntc_account_factory" {
       scope_name = "workload-accounts-non-prod"
       # NOTE: new unified baseline simplifies multi-region deployments using the new enhanced region support in AWS provider v6
       # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/guides/enhanced-region-support
-      # WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
+      # ⚠️  WARNING: existing baseline resources need to be migrated or redeployed to use the unified baseline
       unified_multi_region_baseline = true
       # -----------------------------------------------------------------------------------------------------------------
       # Terraform/OpenTofu Configuration
@@ -872,7 +885,7 @@ module "ntc_account_factory" {
       # session name used by baseline pipeline in member accounts
       baseline_execution_session_name = "ntc-account-factory"
       # (optional) additional providers which assume a specific account role for cross account orchestration
-      # WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
+      # ⚠️  WARNING: removing an existing provider from 'baseline_assume_role_providers' can cause provider errors
       baseline_assume_role_providers = [
         {
           configuration_alias = "connectivity"
@@ -882,10 +895,10 @@ module "ntc_account_factory" {
       ]
       # add terraform code to baseline from static files or dynamic templates
       baseline_terraform_files = [
-        # {
-        #   file_name = "baseline_openid_connect"
-        #   content   = templatefile("${path.module}/files/unified_baseline_example.tf", {})
-        # },
+        {
+          file_name = "baseline_example"
+          content   = templatefile("${path.module}/files/account_baseline_example.tf", {})
+        },
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_monitoring_reader"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["iam_instance_profile"],
         module.ntc_account_baseline_templates.account_baseline_terraform_files["oidc_spacelift"],
@@ -977,6 +990,12 @@ module "ntc_account_factory" {
         #   # use 'removed_condition_account_names' to limit the removed statement to specific accounts
         #   removed_condition_account_names = []
         # }
+        # temporary: hardening singletons moved from the account_hardening template to files/account_baseline_example.tf.
+        # keeps the account settings in place while the example file takes ownership - remove after the baseline pipelines ran
+        { removed_from = "module.baseline_unified.aws_iam_account_password_policy.ntc_hardening_password_policy" },
+        { removed_from = "module.baseline_unified.aws_s3_account_public_access_block.ntc_hardening_block_public_access" },
+        { removed_from = "module.baseline_unified.aws_ebs_encryption_by_default.ntc_hardening_default_encryption" },
+        { removed_from = "module.baseline_unified.aws_ec2_instance_metadata_defaults.ntc_hardening_imdsv2" },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
