@@ -512,81 +512,13 @@ module "ntc_account_factory" {
       # -----------------------------------------------------------------------------------------------------------------
       # (optional) move resources inside account baseline
       baseline_moved_resources = [
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_config_configuration_recorder.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder.ntc_config[\"eu-central-1\"]"
-          # by default moved statements are created for all accounts in the current baseline scope
-          # use 'moved_condition_account_names' to limit the moved statement to specific accounts
-          moved_condition_account_names = []
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_config_configuration_recorder_status.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder_status.ntc_config[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_config_delivery_channel.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_delivery_channel.ntc_config[\"eu-central-1\"]"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_instance_profile.ntc_baseline_iam_profile__ntc-ssm-instance-profile[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_instance_profile.ntc_baseline_iam_profile__ntc-ssm-instance-profile[0]"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_openid_connect_provider.ntc_oidc__nuvibit_app_spacelift_io"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_policy.ntc_config_delivery[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_policy.ntc_config_delivery"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_baseline_iam_role__CloudWatch-CrossAccountSharingRole[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_baseline_iam_role__CloudWatch-CrossAccountSharingRole"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_baseline_iam_role__ntc-ssm-instance-profile[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_baseline_iam_role__ntc-ssm-instance-profile"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_config[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_config"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role.ntc_oidc__nuvibit_app_spacelift_io"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__CloudWatch-CrossAccountSharingRole[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__CloudWatch-CrossAccountSharingRole[0]"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__ntc-ssm-instance-profile[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_baseline_iam_policy__ntc-ssm-instance-profile[0]"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_config[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_config"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_config_delivery[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_config_delivery"
-        },
-        {
-          moved_from = "module.baseline_eu_central_1[0].aws_iam_role_policy_attachment.ntc_oidc__nuvibit_app_spacelift_io[0]"
-          moved_to   = "module.baseline_unified[0].aws_iam_role_policy_attachment.ntc_oidc__nuvibit_app_spacelift_io"
-        },
-        {
-          moved_from = "module.baseline_us_east_1[0].aws_config_configuration_recorder.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder.ntc_config[\"us-east-1\"]"
-        },
-        {
-          moved_from = "module.baseline_us_east_1[0].aws_config_configuration_recorder_status.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder_status.ntc_config[\"us-east-1\"]"
-        },
-        {
-          moved_from = "module.baseline_us_east_1[0].aws_config_delivery_channel.ntc_config"
-          moved_to   = "module.baseline_unified[0].aws_config_delivery_channel.ntc_config[\"us-east-1\"]"
-        }
+        # {
+        #   moved_from = "module.baseline_eu_central_1[0].aws_config_configuration_recorder.ntc_config"
+        #   moved_to   = "module.baseline_unified[0].aws_config_configuration_recorder.ntc_config[\"eu-central-1\"]"
+        #   # by default moved statements are created for all accounts in the current baseline scope
+        #   # use 'moved_condition_account_names' to limit the moved statement to specific accounts
+        #   moved_condition_account_names = []
+        # },
       ]
 
       # -----------------------------------------------------------------------------------------------------------------
