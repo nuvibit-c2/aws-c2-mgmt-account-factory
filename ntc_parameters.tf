@@ -145,7 +145,7 @@ locals {
 #   local.ntc_parameters["mgmt-account-factory"]["core_accounts"]["INSERT_ACCOUNT_NAME"]
 # =====================================================================================================================
 module "ntc_parameters_reader" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=2.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/reader?ref=2.0.2"
 
   region      = "eu-central-1"
   bucket_name = local.ntc_parameters_bucket_name
@@ -202,7 +202,7 @@ module "ntc_parameters_reader" {
 #   ✗ Large binary data (parameters should be small JSON-serializable values)
 # =====================================================================================================================
 module "ntc_parameters_writer" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=2.0.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-parameters//modules/writer?ref=2.0.2"
 
   region             = "eu-central-1"
   bucket_name        = local.ntc_parameters_bucket_name # S3 bucket for parameter storage
