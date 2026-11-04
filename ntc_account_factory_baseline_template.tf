@@ -429,6 +429,13 @@ module "ntc_account_baseline_templates" {
     #   Examples:
     #     - "repo:myorg/myrepo:environment:production" → Production environment
     #     - "repo:myorg/myrepo:ref:refs/heads/main" → Main branch only
+    #   ⚠️  Repositories created after 2026-07-15 use immutable subject claims with owner and repo IDs:
+    #   Format: "repo:ORG@ORG_ID/REPO@REPO_ID:environment:ENV"
+    #   Examples:
+    #     - "repo:myorg@123456/myrepo@*:*" → Any context of "myrepo" in org with ID 123456
+    #     - Get the org ID with: gh api /orgs/ORG --jq .id
+    #   Keep the legacy format for repositories created before that date (or opted in later)
+    #   https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/
     #   
     #   GitLab CI:
     #   Format: "project_path:GROUP/PROJECT:ref_type:branch:ref:BRANCH"
@@ -492,7 +499,7 @@ module "ntc_account_baseline_templates" {
     #   GitHub Actions:
     #   provider: "token.actions.githubusercontent.com"
     #   audience: "sts.amazonaws.com"
-    #   subject: "repo:ORG/REPO:environment:ENV"
+    #   subject: "repo:ORG/REPO:environment:ENV" (legacy) or "repo:ORG@ORG_ID/REPO@REPO_ID:environment:ENV" (repos created after 2026-07-15)
     #   
     #   GitLab CI:
     #   provider: "gitlab.com"
@@ -550,7 +557,8 @@ module "ntc_account_baseline_templates" {
         # terraform cloud = "organization:ORG_NAME:project:PROJECT_NAME:workspace:WORKSPACE_NAME:run_phase:RUN_PHASE"
         # spacelift       = "space:SPACE_ID:stack:STACK_ID:run_type:RUN_TYPE:scope:RUN_PHASE"
         # gitlab          = "project_path:GROUP_NAME/PROJECT_NAME:ref_type:branch:ref:main"
-        # github          = "repo:ORG_NAME/REPO_NAME:environment:prod"
+        # github          = "repo:ORG_NAME/REPO_NAME:environment:prod" (legacy, repos created before 2026-07-15)
+        # github          = "repo:ORG_NAME@ORG_ID/REPO_NAME@REPO_ID:environment:prod" (immutable, repos created after 2026-07-15)
         # jenkins         = "job:JOB_NAME/master"
 
         # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
@@ -577,7 +585,14 @@ EOT
         role_max_session_in_hours = 1
         permission_boundary_arn   = ""
         permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/AdministratorAccess"
-        subject_list              = ["repo:nuvibit-c2/$${var.current_account_name}:*"]
+        # github uses immutable subject claims for repositories created after 2026-07-15: 'repo:<org>@<org_id>/<repo>@<repo_id>:<context>'
+        # keep the legacy subject for repositories created before that date
+        # org id: gh api /orgs/nuvibit-c2 --jq .id
+        # https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/
+        subject_list = [
+          "repo:nuvibit-c2/$${var.current_account_name}:*",
+          "repo:nuvibit-c2@216485515/$${var.current_account_name}@*:*",
+        ]
       }
     },
     # -----------------------------------------------------------------------------------------------------------------
