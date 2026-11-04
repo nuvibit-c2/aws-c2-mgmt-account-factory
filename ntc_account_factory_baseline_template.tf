@@ -429,13 +429,6 @@ module "ntc_account_baseline_templates" {
     #   Examples:
     #     - "repo:myorg/myrepo:environment:production" → Production environment
     #     - "repo:myorg/myrepo:ref:refs/heads/main" → Main branch only
-    #   ⚠️  Repositories created after 2026-07-15 use immutable subject claims with owner and repo IDs:
-    #   Format: "repo:ORG@ORG_ID/REPO@REPO_ID:environment:ENV"
-    #   Examples:
-    #     - "repo:myorg@123456/myrepo@*:*" → Any context of "myrepo" in org with ID 123456
-    #     - Get the org ID with: gh api /orgs/ORG --jq .id
-    #   Keep the legacy format for repositories created before that date (or opted in later)
-    #   https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/
     #   
     #   GitLab CI:
     #   Format: "project_path:GROUP/PROJECT:ref_type:branch:ref:BRANCH"
