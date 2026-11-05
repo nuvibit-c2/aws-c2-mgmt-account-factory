@@ -187,7 +187,7 @@
 #
 # =====================================================================================================================
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.6.1"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.6.2"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
