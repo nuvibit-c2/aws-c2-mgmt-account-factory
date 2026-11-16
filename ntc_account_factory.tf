@@ -457,7 +457,7 @@ module "ntc_account_factory" {
         wait_for_regions        = true
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1"]
+      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
 
@@ -659,7 +659,7 @@ module "ntc_account_factory" {
         wait_for_regions        = true
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1"]
+      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
 
@@ -848,7 +848,7 @@ module "ntc_account_factory" {
         wait_for_regions        = true
       }
       # baseline terraform code will be provisioned in each specified region
-      baseline_regions = ["us-east-1", "eu-central-1"]
+      baseline_regions = ["us-east-1", "eu-central-1", "eu-central-2"]
       # baseline terraform code which can be provisioned in a single region (e.g. IAM)
       baseline_main_region = "eu-central-1"
 
