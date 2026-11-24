@@ -162,9 +162,23 @@ locals {
 # Central account vending machine for AWS Organizations
 # ===================================================================================================================
 module "ntc_account_factory" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.8.3"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-factory?ref=2.9.0"
 
   region = "eu-central-1"
+  # -----------------------------------------------------------------------------------------------------------------
+  # ORGANIZATIONS MEMBER ROLE - Management Account
+  # -----------------------------------------------------------------------------------------------------------------
+  # The Organizations member role (OrganizationAccountAccessRole) in the management account is only trusted by
+  # the Account Factory Lambda (including custom 'lambda_execution_role_arn' of lifecycle steps) and baseline
+  # pipeline roles. Additional principals of the management account (e.g. break-glass) must be trusted explicitly.
+  # Use IAM role ARNs, wildcards are supported in the role name
+  # -----------------------------------------------------------------------------------------------------------------
+  organizations_member_role_in_current_account_trusted_principal_arns = [
+    # break-glass: IAM Identity Center permission set 'AdministratorAccess'
+    # the sso role path may contain the identity center region (aws-reserved/sso.amazonaws.com/<region>/)
+    "arn:${local.current_partition}:iam::${local.current_account_id}:role/aws-reserved/sso.amazonaws.com/*AWSReservedSSO_AdministratorAccess_*"
+  ]
+
   # -----------------------------------------------------------------------------------------------------------------
   # S3 BUCKETS - State and Artifact Storage
   # -----------------------------------------------------------------------------------------------------------------
