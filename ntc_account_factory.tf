@@ -970,3 +970,55 @@ module "ntc_account_factory" {
     },
   ]
 }
+
+# ===================================================================================================================
+# SPACELIFT PLAN ROLE - Read Access to the Account Baseline Secrets
+# ===================================================================================================================
+# Proposed runs (plans of unreviewed branches) use the read-only role 'ntc-oidc-spacelift-plan-role' (ReadOnlyAccess,
+# created by the account baseline 'oidc_spacelift'). ReadOnlyAccess does not include secretsmanager:GetSecretValue,
+# but a plan refreshes the secret versions the account factory manages for the baseline tokens and fails without it.
+# The token values already reach proposed runs (Terraform variables from the Spacelift environment, Terraform state),
+# so this read access exposes nothing new. Limited to these secrets, KMS decryption only through Secrets Manager.
+# ===================================================================================================================
+locals {
+  # secrets of 'account_baseline_terraform_registry_token', '_github_access_token' and '_git_ssh_key'
+  # name: '<account_factory_secretsmanager_prefix><..._secret_name>', the arn gets a random suffix
+  # region: same as the account factory module ('region')
+  ntc_account_factory_baseline_secret_arns = [
+    for name in ["terraform_registry_token", "github_access_token", "git_ssh_key"] :
+    "arn:${local.current_partition}:secretsmanager:eu-central-1:${local.current_account_id}:secret:ntc-af-${name}-*"
+  ]
+}
+
+data "aws_iam_policy_document" "spacelift_plan_role_secret_read" {
+  statement {
+    sid       = "ReadAccountFactoryBaselineSecrets"
+    effect    = "Allow"
+    actions   = ["secretsmanager:GetSecretValue"]
+    resources = local.ntc_account_factory_baseline_secret_arns
+  }
+
+  # the secrets are encrypted with the account factory key, its key policy delegates access to iam policies
+  statement {
+    sid       = "DecryptAccountFactoryBaselineSecrets"
+    effect    = "Allow"
+    actions   = ["kms:Decrypt"]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "kms:ViaService"
+      values   = ["secretsmanager.eu-central-1.amazonaws.com"]
+    }
+    condition {
+      test     = "ArnLike"
+      variable = "kms:EncryptionContext:SecretARN"
+      values   = local.ntc_account_factory_baseline_secret_arns
+    }
+  }
+}
+
+resource "aws_iam_role_policy" "spacelift_plan_role_secret_read" {
+  name   = "ntc-af-baseline-secret-read"
+  role   = "ntc-oidc-spacelift-plan-role" # created by the account baseline (template 'oidc_spacelift')
+  policy = data.aws_iam_policy_document.spacelift_plan_role_secret_read.json
+}
