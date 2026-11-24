@@ -186,8 +186,29 @@
 # ⚠️  Manual changes to baseline-managed resources will be reverted on next run
 #
 # =====================================================================================================================
+locals {
+  # spacelift oidc subjects per token scope for the stack of each account (incl. additional stacks from customer values)
+  # - 'read': proposed runs (plans of unreviewed branches) and the planning phase of tracked runs without autodeploy
+  # - 'write': tracked runs (apply phase), tasks, destroy and testing runs
+  # - '*': any scope, used for the admin role until it is limited to scope 'write'
+  # https://docs.spacelift.io/integrations/cloud-providers/oidc#standard-claims
+  # the space id is taken from the account factory stack, all aws-c2 stacks must be in the same spacelift space
+  # '$${...}' is resolved by the account baseline, '${...}' by this stack
+  spacelift_oidc_subjects_encoded = { for scope in ["read", "write", "*"] : scope => <<EOT
+flatten([
+  [
+    "space:${var.spacelift_space_id}:stack:$${var.current_account_name}:*:scope:${scope}"
+  ],
+  [
+    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:${var.spacelift_space_id}:stack:$${subject}:*:scope:${scope}"
+  ]
+])
+EOT
+  }
+}
+
 module "ntc_account_baseline_templates" {
-  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.6.2"
+  source = "github.com/nuvibit-terraform-collection/terraform-aws-ntc-account-baseline-templates?ref=4.7.0"
 
   # -----------------------------------------------------------------------------------------------------------------
   # ACCOUNT BASELINE TEMPLATES
@@ -554,17 +575,21 @@ module "ntc_account_baseline_templates" {
         # github          = "repo:ORG_NAME@ORG_ID/REPO_NAME@REPO_ID:environment:prod" (immutable, repos created after 2026-07-15)
         # jenkins         = "job:JOB_NAME/master"
 
-        # subject_list = ["space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"]
-        subject_list_encoded = <<EOT
-flatten([
-  [
-    "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${var.current_account_name}:*"
-  ],
-  [
-    for subject in try(var.current_account_customer_values.additional_oidc_subjects, []) : "space:aws-c2-01HMSG08P7X6MD11FYV831WN2B:stack:$${subject}:*"
-  ]
-])
-EOT
+        # subjects are defined in 'local.spacelift_oidc_subjects_encoded' (top of this file)
+        # TODO: limit to scope 'write' once proposed runs use the plan role
+        subject_list_encoded = local.spacelift_oidc_subjects_encoded["*"]
+        # read-only role for proposed runs (plans of unreviewed branches have spacelift token scope 'read')
+        # the role is selected by a spacelift hook based on the token scope (see spacelift-administration)
+        additional_roles = [
+          {
+            role_name                 = "ntc-oidc-spacelift-plan-role"
+            role_path                 = "/"
+            role_max_session_in_hours = 1
+            permission_boundary_arn   = ""
+            permission_policy_arn     = "arn:${local.current_partition}:iam::aws:policy/ReadOnlyAccess"
+            subject_list_encoded      = local.spacelift_oidc_subjects_encoded["read"]
+          }
+        ]
       }
     },
     {
@@ -582,9 +607,10 @@ EOT
         # keep the legacy subject for repositories created before that date
         # org id: gh api /orgs/nuvibit-c2 --jq .id
         # https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/
+        # only allow workflows running on the main branch (workflow_dispatch can be started on any branch)
         subject_list = [
-          "repo:nuvibit-c2/$${var.current_account_name}:*",
-          "repo:nuvibit-c2@216485515/$${var.current_account_name}@*:*",
+          "repo:nuvibit-c2/$${var.current_account_name}:ref:refs/heads/main",
+          "repo:nuvibit-c2@216485515/$${var.current_account_name}@*:ref:refs/heads/main",
         ]
       }
     },
